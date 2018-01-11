@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">RoomSample</string>
+    <string name="tag_fragment_search_colis">TAG_FRAGMENT_SEARCH_COLIS</string>
+</resources>
