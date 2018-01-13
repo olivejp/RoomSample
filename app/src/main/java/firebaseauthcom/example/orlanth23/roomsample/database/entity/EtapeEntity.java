@@ -2,6 +2,7 @@ package firebaseauthcom.example.orlanth23.roomsample.database.entity;
 
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.ForeignKey;
+import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.Index;
 import android.arch.persistence.room.PrimaryKey;
 import android.arch.persistence.room.TypeConverters;
@@ -58,6 +59,7 @@ public class EtapeEntity implements Parcelable {
     public EtapeEntity() {
     }
 
+    @Ignore
     public EtapeEntity(String idEtapeAcheminement, String idColis, Long date, String pays, String localisation, String description, String commentaire, String status, EtapeOrigine origine) {
         this.idEtapeAcheminement = idEtapeAcheminement;
         this.idColis = idColis;

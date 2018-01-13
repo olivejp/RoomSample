@@ -6,6 +6,7 @@ import android.arch.persistence.room.RoomDatabase;
 import android.content.Context;
 
 import firebaseauthcom.example.orlanth23.roomsample.database.dao.ColisDao;
+import firebaseauthcom.example.orlanth23.roomsample.database.dao.ColisWithStepsDao;
 import firebaseauthcom.example.orlanth23.roomsample.database.dao.EtapeDao;
 import firebaseauthcom.example.orlanth23.roomsample.database.entity.ColisEntity;
 import firebaseauthcom.example.orlanth23.roomsample.database.entity.EtapeEntity;
@@ -27,4 +28,5 @@ public abstract class OptDatabase extends RoomDatabase {
 
     abstract public ColisDao colisDao();
     abstract public EtapeDao etapeDao();
+    abstract public ColisWithStepsDao colisWithStepsDao();
 }

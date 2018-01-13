@@ -1,7 +1,11 @@
 apply plugin: 'com.android.application'
 
+ext {
+    supportLibraryVersion = '27.0.2'
+}
+
 android {
-    compileSdkVersion 26
+    compileSdkVersion 27
     dataBinding {
         enabled = true
     }
@@ -9,10 +13,14 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
-
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = ["room.schemaLocation":"$projectDir/schemas".toString()]
+            }
+        }
         applicationId "firebaseauthcom.example.orlanth23.roomsample"
         minSdkVersion 19
-        targetSdkVersion 26
+        targetSdkVersion 27
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -31,17 +39,30 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'com.android.support:appcompat-v7:26.1.0'
+    implementation "com.android.support:appcompat-v7:${supportLibraryVersion}"
+    implementation "com.android.support:recyclerview-v7:${supportLibraryVersion}"
+    implementation "com.android.support:design:${supportLibraryVersion}"
+    implementation 'com.android.support.constraint:constraint-layout:1.0.2'
+    implementation "com.android.support:cardview-v7:${supportLibraryVersion}"
+    androidTestImplementation 'com.android.support.test:runner:1.0.1'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
+
     implementation "android.arch.persistence.room:runtime:1.0.0"
     implementation "android.arch.paging:runtime:1.0.0-alpha4-1"
     implementation 'android.arch.lifecycle:extensions:1.0.0'
-    implementation 'com.android.support:design:26.1.0'
-    implementation 'com.android.support.constraint:constraint-layout:1.0.2'
-    testImplementation 'junit:junit:4.12'
     testImplementation "android.arch.core:core-testing:1.0.0"
     testImplementation "android.arch.persistence.room:testing:1.0.0"
-    androidTestImplementation 'com.android.support.test:runner:1.0.1'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
     annotationProcessor "android.arch.persistence.room:compiler:1.0.0"
     annotationProcessor "android.arch.lifecycle:compiler:1.0.0"
+
+    implementation 'com.github.bumptech.glide:glide:4.4.0'
+    implementation 'jp.wasabeef:glide-transformations:3.0.1'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.4.0'
+
+    implementation 'com.jakewharton:butterknife:8.8.1'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
+
+    implementation 'com.caverock:androidsvg:1.2.1'
+
+    testImplementation 'junit:junit:4.12'
 }

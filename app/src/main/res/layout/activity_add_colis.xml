@@ -6,7 +6,7 @@
     tools:mContext="nc.opt.mobile.optmobile.activity.AddColisActivity">
 
     <fragment
-        android:name="firebaseauthcom.example.orlanth23.roomsample.fragment.AddColisFragment"
+        android:name="firebaseauthcom.example.orlanth23.roomsample.ui.fragment.AddColisFragment"
         android:tag="@string/tag_fragment_search_colis"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

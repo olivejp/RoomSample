@@ -1,4 +1,4 @@
-package firebaseauthcom.example.orlanth23.roomsample.fragment.viewmodel;
+package firebaseauthcom.example.orlanth23.roomsample.ui.fragment.viewmodel;
 
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
