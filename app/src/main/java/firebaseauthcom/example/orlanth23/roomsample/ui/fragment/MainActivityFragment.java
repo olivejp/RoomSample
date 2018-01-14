@@ -17,7 +17,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import firebaseauthcom.example.orlanth23.roomsample.R;
-import firebaseauthcom.example.orlanth23.roomsample.database.entity.ColisWithSteps;
+import firebaseauthcom.example.orlanth23.roomsample.database.local.entity.ColisWithSteps;
 import firebaseauthcom.example.orlanth23.roomsample.ui.activity.AddColisActivity;
 import firebaseauthcom.example.orlanth23.roomsample.ui.activity.viewmodel.MainActivityViewModel;
 import firebaseauthcom.example.orlanth23.roomsample.ui.adapter.ColisAdapter;

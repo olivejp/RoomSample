@@ -15,7 +15,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import firebaseauthcom.example.orlanth23.roomsample.R;
 import firebaseauthcom.example.orlanth23.roomsample.Utilities;
-import firebaseauthcom.example.orlanth23.roomsample.database.entity.ColisEntity;
+import firebaseauthcom.example.orlanth23.roomsample.database.local.entity.ColisEntity;
 import firebaseauthcom.example.orlanth23.roomsample.ui.fragment.viewmodel.AddColisFragmentViewModel;
 
 public class AddColisFragment extends Fragment {

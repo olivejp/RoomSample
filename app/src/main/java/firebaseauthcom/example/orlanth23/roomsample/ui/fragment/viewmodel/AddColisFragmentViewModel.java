@@ -4,8 +4,8 @@ import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.support.annotation.NonNull;
 
-import firebaseauthcom.example.orlanth23.roomsample.database.entity.ColisEntity;
-import firebaseauthcom.example.orlanth23.roomsample.database.repository.ColisRepository;
+import firebaseauthcom.example.orlanth23.roomsample.database.local.entity.ColisEntity;
+import firebaseauthcom.example.orlanth23.roomsample.database.local.repository.ColisRepository;
 
 /**
  * Created by orlanth23 on 11/01/2018.

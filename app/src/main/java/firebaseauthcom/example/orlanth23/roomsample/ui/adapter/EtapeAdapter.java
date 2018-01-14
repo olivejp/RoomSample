@@ -18,7 +18,7 @@ import butterknife.ButterKnife;
 import firebaseauthcom.example.orlanth23.roomsample.DateConverter;
 import firebaseauthcom.example.orlanth23.roomsample.R;
 import firebaseauthcom.example.orlanth23.roomsample.Utilities;
-import firebaseauthcom.example.orlanth23.roomsample.database.entity.EtapeEntity;
+import firebaseauthcom.example.orlanth23.roomsample.database.local.entity.EtapeEntity;
 
 /**
  * Created by orlanth23 on 05/10/2017.

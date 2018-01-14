@@ -11,12 +11,12 @@ import com.bumptech.glide.RequestBuilder;
 import java.util.List;
 
 import firebaseauthcom.example.orlanth23.roomsample.R;
-import firebaseauthcom.example.orlanth23.roomsample.database.entity.ColisEntity;
-import firebaseauthcom.example.orlanth23.roomsample.database.entity.ColisWithSteps;
-import firebaseauthcom.example.orlanth23.roomsample.database.repository.ColisRepository;
-import firebaseauthcom.example.orlanth23.roomsample.database.repository.ColisWithStepsRepository;
+import firebaseauthcom.example.orlanth23.roomsample.database.local.entity.ColisEntity;
+import firebaseauthcom.example.orlanth23.roomsample.database.local.entity.ColisWithSteps;
+import firebaseauthcom.example.orlanth23.roomsample.database.local.repository.ColisRepository;
+import firebaseauthcom.example.orlanth23.roomsample.database.local.repository.ColisWithStepsRepository;
 import firebaseauthcom.example.orlanth23.roomsample.glide.GlideApp;
-import firebaseauthcom.example.orlanth23.roomsample.glide.SvgSoftwareLayerSetter;
+import firebaseauthcom.example.orlanth23.roomsample.ui.glide.SvgSoftwareLayerSetter;
 
 import static com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade;
 
@@ -32,6 +32,7 @@ public class MainActivityViewModel extends AndroidViewModel {
     private RequestBuilder<PictureDrawable> requester;
     private ColisWithSteps colisWithStepsSelected;
     private boolean twoPane;
+    private boolean detailFlow;
 
     public MainActivityViewModel(@NonNull Application application) {
         super(application);
@@ -52,6 +53,14 @@ public class MainActivityViewModel extends AndroidViewModel {
 
     public void setTwoPane(boolean twoPane) {
         this.twoPane = twoPane;
+    }
+
+    public boolean isDetailFlow() {
+        return detailFlow;
+    }
+
+    public void setDetailFlow(boolean detailFlow) {
+        this.detailFlow = detailFlow;
     }
 
     public void setSelectedColis(ColisWithSteps colis) {

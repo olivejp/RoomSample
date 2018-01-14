@@ -36,9 +36,9 @@ import butterknife.ButterKnife;
 import firebaseauthcom.example.orlanth23.roomsample.DateConverter;
 import firebaseauthcom.example.orlanth23.roomsample.R;
 import firebaseauthcom.example.orlanth23.roomsample.Utilities;
-import firebaseauthcom.example.orlanth23.roomsample.database.entity.ColisEntity;
-import firebaseauthcom.example.orlanth23.roomsample.database.entity.ColisWithSteps;
-import firebaseauthcom.example.orlanth23.roomsample.database.entity.EtapeEntity;
+import firebaseauthcom.example.orlanth23.roomsample.database.local.entity.ColisEntity;
+import firebaseauthcom.example.orlanth23.roomsample.database.local.entity.ColisWithSteps;
+import firebaseauthcom.example.orlanth23.roomsample.database.local.entity.EtapeEntity;
 
 public class ColisAdapter extends RecyclerView.Adapter<ColisAdapter.ViewHolderColisAdapter> {
 
