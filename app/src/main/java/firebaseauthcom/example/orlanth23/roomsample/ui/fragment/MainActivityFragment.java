@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -29,7 +28,7 @@ import firebaseauthcom.example.orlanth23.roomsample.ui.adapter.ColisAdapter;
 
 public class MainActivityFragment extends Fragment {
 
-    private static final String TAG_PARCEL_RESULT_SEARCH_FRAGMENT = "TAG_PARCEL_RESULT_SEARCH_FRAGMENT";
+    private static final String TAG_HISTO = "TAG_HISTO";
     @BindView(R.id.recycler_colis_list)
     public RecyclerView colisList;
 
@@ -40,18 +39,7 @@ public class MainActivityFragment extends Fragment {
     private View.OnClickListener mOnClickListener = (View v) -> {
         ColisWithSteps colis = (ColisWithSteps) v.getTag();
         viewModel.setSelectedColis(colis);
-        if (getFragmentManager() != null) {
-            FragmentTransaction ft = getFragmentManager().beginTransaction();
-            viewModel.isTwoPane().observe(appCompatActivity, atomicBoolean -> {
-                if (atomicBoolean != null) {
-                    if (atomicBoolean.get()) {
-                        ft.replace(R.id.frame_detail, new HistoriqueColisFragment(), TAG_PARCEL_RESULT_SEARCH_FRAGMENT).commit();
-                    } else {
-                        ft.replace(R.id.frame_master, new HistoriqueColisFragment(), TAG_PARCEL_RESULT_SEARCH_FRAGMENT).addToBackStack(null).commit();
-                    }
-                }
-            });
-        }
+        displayHistorique(viewModel.isTwoPane());
     };
 
     @Override
@@ -83,5 +71,15 @@ public class MainActivityFragment extends Fragment {
     public void addColis(View v) {
         Intent intent = new Intent(getContext(), AddColisActivity.class);
         startActivity(intent);
+    }
+
+    private void displayHistorique(boolean twoPane) {
+        if (getFragmentManager() != null) {
+            if (twoPane) {
+                getFragmentManager().beginTransaction().replace(R.id.frame_detail, new HistoriqueColisFragment(), TAG_HISTO).commit();
+            } else {
+                getFragmentManager().beginTransaction().replace(R.id.frame_master, new HistoriqueColisFragment(), TAG_HISTO).addToBackStack(null).commit();
+            }
+        }
     }
 }

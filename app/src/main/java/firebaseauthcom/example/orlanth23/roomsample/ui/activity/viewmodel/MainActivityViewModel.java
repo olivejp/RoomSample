@@ -3,14 +3,12 @@ package firebaseauthcom.example.orlanth23.roomsample.ui.activity.viewmodel;
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.MutableLiveData;
 import android.graphics.drawable.PictureDrawable;
 import android.support.annotation.NonNull;
 
 import com.bumptech.glide.RequestBuilder;
 
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import firebaseauthcom.example.orlanth23.roomsample.R;
 import firebaseauthcom.example.orlanth23.roomsample.database.entity.ColisEntity;
@@ -33,7 +31,7 @@ public class MainActivityViewModel extends AndroidViewModel {
     private LiveData<List<ColisWithSteps>> listColis;
     private RequestBuilder<PictureDrawable> requester;
     private ColisWithSteps colisWithStepsSelected;
-    private MutableLiveData<AtomicBoolean> twoPane;
+    private boolean twoPane;
 
     public MainActivityViewModel(@NonNull Application application) {
         super(application);
@@ -48,17 +46,12 @@ public class MainActivityViewModel extends AndroidViewModel {
                 .listener(new SvgSoftwareLayerSetter());
     }
 
-    public LiveData<AtomicBoolean> isTwoPane() {
+    public boolean isTwoPane() {
         return twoPane;
     }
 
     public void setTwoPane(boolean twoPane) {
-        if (this.twoPane == null) {
-            this.twoPane = new MutableLiveData<>();
-            this.twoPane.setValue(new AtomicBoolean(twoPane));
-        } else {
-            this.twoPane.postValue(new AtomicBoolean(twoPane));
-        }
+        this.twoPane = twoPane;
     }
 
     public void setSelectedColis(ColisWithSteps colis) {

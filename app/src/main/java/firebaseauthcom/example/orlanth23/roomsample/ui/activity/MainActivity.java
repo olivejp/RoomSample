@@ -37,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
             getSupportFragmentManager().popBackStack();
             if (getSupportActionBar() != null) {
                 getSupportActionBar().setDisplayHomeAsUpEnabled(backStackCount != 1);
+                setTitle(R.string.app_name);
             }
         } else {
             super.onBackPressed();
