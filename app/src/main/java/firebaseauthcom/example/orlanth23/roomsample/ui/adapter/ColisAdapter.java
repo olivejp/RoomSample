@@ -98,7 +98,6 @@ public class ColisAdapter extends RecyclerView.Adapter<ColisAdapter.ViewHolderCo
     private void bindColis(ViewHolderColisAdapter holder, ColisEntity colis) {
         holder.mIdColis.setText(colis.getIdColis());
         holder.mParcelDescription.setText(colis.getDescription());
-        holder.mConstraintDetailColisLayout.setTag(colis);
         if (colis.getLastUpdate() == null) {
             holder.mStepLastUpdateText.setVisibility(View.GONE);
             holder.mStepLastUpdate.setVisibility(View.GONE);
@@ -136,6 +135,7 @@ public class ColisAdapter extends RecyclerView.Adapter<ColisAdapter.ViewHolderCo
     @Override
     public void onBindViewHolder(ViewHolderColisAdapter holder, int position) {
         holder.colisWithSteps = colisEntities.get(position);
+        holder.mConstraintDetailColisLayout.setTag(holder.colisWithSteps);
         ColisEntity colis = holder.colisWithSteps.colisEntity;
         List<EtapeEntity> list = holder.colisWithSteps.etapeEntityList;
         EtapeEntity lastEtape = null;
