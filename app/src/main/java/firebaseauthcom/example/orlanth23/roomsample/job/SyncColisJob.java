@@ -13,9 +13,9 @@ import static firebaseauthcom.example.orlanth23.roomsample.Constants.PERIODIC_SY
 /**
  * Created by 2761oli on 10/10/2017.
  */
-
 public class SyncColisJob extends Job {
-    static final String TAG = "sync_colis_job";
+
+    static final String SYNC_COLIS_JOB = "SYNC_COLIS_JOB";
 
     @Override
     @NonNull
@@ -29,7 +29,7 @@ public class SyncColisJob extends Job {
      * Schedule a periodic job which will be launch every 30 minutes.
      */
     public static void scheduleJob() {
-        new JobRequest.Builder(SyncColisJob.TAG)
+        new JobRequest.Builder(SyncColisJob.SYNC_COLIS_JOB)
                 .setRequiresDeviceIdle(false)
                 .setRequiredNetworkType(JobRequest.NetworkType.CONNECTED)
                 .setRequirementsEnforced(true)
@@ -43,7 +43,7 @@ public class SyncColisJob extends Job {
      * Launch immediately the sync job
      */
     public static void launchImmediateJob() {
-        new JobRequest.Builder(SyncColisJob.TAG)
+        new JobRequest.Builder(SyncColisJob.SYNC_COLIS_JOB)
                 .startNow();
     }
 }

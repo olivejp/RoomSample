@@ -1,4 +1,4 @@
-package firebaseauthcom.example.orlanth23.roomsample.network.retrofit;
+package firebaseauthcom.example.orlanth23.roomsample.network;
 
 
 import android.support.annotation.Nullable;

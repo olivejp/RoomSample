@@ -1,4 +1,4 @@
-package firebaseauthcom.example.orlanth23.roomsample.utils;
+package firebaseauthcom.example.orlanth23.roomsample.mapper;
 
 
 import android.support.annotation.NonNull;
@@ -13,30 +13,38 @@ import firebaseauthcom.example.orlanth23.roomsample.job.opt.EtapeDto;
  * Created by 2761oli on 23/10/2017.
  */
 
-public class EtapeService {
+public class EtapeMapper {
 
-    private EtapeService() {
-    }
-
-    public static EtapeEntity convertToEntity(@NonNull EtapeDto dto) {
-        EtapeEntity entity = new EtapeEntity();
-        entity.setDate(DateConverter.convertDateDtoToEntity(dto.getDate()));
-        entity.setCommentaire(dto.getCommentaire());
-        entity.setDescription(dto.getDescription());
-        entity.setLocalisation(dto.getLocalisation());
-        entity.setStatus(dto.getStatus());
-        entity.setPays(dto.getPays());
-        return entity;
+    private EtapeMapper() {
     }
 
     /**
-     * Va créer une étape à partir d'un checkpoint
+     * Convert an {@link EtapeDto} to an {@link EtapeEntity}
      *
-     * @param idColis
-     * @param checkpoint
-     * @return EtapeEntity
+     * @param idColis Foreign key to {@link firebaseauthcom.example.orlanth23.roomsample.database.local.entity.ColisEntity}
+     * @param etapeDto to transform
+     * @return {@link EtapeEntity}
      */
-    public static EtapeEntity createEtapeFromCheckpoint(@NonNull String idColis, @NonNull Checkpoint checkpoint) {
+    static EtapeEntity convertToEntity(@NonNull String idColis, @NonNull EtapeDto etapeDto) {
+        EtapeEntity etapeEntity = new EtapeEntity();
+        etapeEntity.setIdColis(idColis);
+        etapeEntity.setDate(DateConverter.convertDateDtoToEntity(etapeDto.getDate()));
+        etapeEntity.setCommentaire(etapeDto.getCommentaire());
+        etapeEntity.setDescription(etapeDto.getDescription());
+        etapeEntity.setLocalisation(etapeDto.getLocalisation());
+        etapeEntity.setStatus(etapeDto.getStatus());
+        etapeEntity.setPays(etapeDto.getPays());
+        return etapeEntity;
+    }
+
+    /**
+     * Convert an {@link Checkpoint} to an {@link EtapeEntity}
+     *
+     * @param idColis Foreign key to {@link firebaseauthcom.example.orlanth23.roomsample.database.local.entity.ColisEntity}
+     * @param checkpoint to transform
+     * @return {@link EtapeEntity}
+     */
+    static EtapeEntity createEtapeFromCheckpoint(@NonNull String idColis, @NonNull Checkpoint checkpoint) {
         EtapeEntity etape = new EtapeEntity();
         etape.setIdColis(idColis);
         if (checkpoint.getCheckpointTime() != null) {
@@ -53,7 +61,6 @@ public class EtapeService {
     }
 
     /**
-     *
      * @param status
      * @return
      */
@@ -78,5 +85,5 @@ public class EtapeService {
             default:
                 return R.drawable.ic_status_pending;
         }
-                                                                                                                                                                                                                                                                                                                                                                                         }
+    }
 }

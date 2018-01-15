@@ -3,27 +3,30 @@ package firebaseauthcom.example.orlanth23.roomsample.job;
 import android.content.Context;
 import android.util.Log;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import firebaseauthcom.example.orlanth23.roomsample.database.firebase.FirebaseService;
 import firebaseauthcom.example.orlanth23.roomsample.database.local.entity.ColisEntity;
-import firebaseauthcom.example.orlanth23.roomsample.job.aftership.SendTrackingData;
-import firebaseauthcom.example.orlanth23.roomsample.job.aftership.Tracking;
+import firebaseauthcom.example.orlanth23.roomsample.database.local.entity.ColisWithSteps;
+import firebaseauthcom.example.orlanth23.roomsample.database.local.repository.ColisRepository;
+import firebaseauthcom.example.orlanth23.roomsample.database.local.repository.ColisWithStepsRepository;
+import firebaseauthcom.example.orlanth23.roomsample.database.local.repository.EtapeRepository;
 import firebaseauthcom.example.orlanth23.roomsample.job.aftership.TrackingData;
 import firebaseauthcom.example.orlanth23.roomsample.job.opt.ColisDto;
-import firebaseauthcom.example.orlanth23.roomsample.network.retrofit.RetrofitClient;
-import firebaseauthcom.example.orlanth23.roomsample.utils.ColisService;
+import firebaseauthcom.example.orlanth23.roomsample.job.opt.HtmlTransformer;
+import firebaseauthcom.example.orlanth23.roomsample.mapper.ColisMapper;
+import firebaseauthcom.example.orlanth23.roomsample.network.aftership.RetrofitAfterShipClient;
 import io.reactivex.Observable;
 import io.reactivex.functions.Consumer;
 
-import static firebaseauthcom.example.orlanth23.roomsample.utils.ColisService.convertTrackingDataToEntity;
+import static firebaseauthcom.example.orlanth23.roomsample.mapper.ColisMapper.convertTrackingDataToEntity;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
 /**
  * Created by orlanth23 on 18/12/2017.
  */
 
-public class CoreSync {
+class CoreSync {
     private static final String TAG = CoreSync.class.getName();
 
     private CoreSync() {
@@ -33,115 +36,77 @@ public class CoreSync {
     private static Consumer<Throwable> consThrowable = throwable -> Log.e(TAG, "Erreur sur l'API AfterShip : " + throwable.getMessage() + " Localized message : " + throwable.getLocalizedMessage(), throwable);
 
     /**
-     * @param observable
-     * @param resultColis
-     * @param context
-     */
-    private static void callGetTracking(Observable<TrackingData> observable, ColisEntity resultColis, Context context) {
-        observable.subscribe(trackingData -> {
-            Log.d(TAG, "TrackingData récupéré : " + trackingData.toString());
-            Observable.just(convertTrackingDataToEntity(resultColis, trackingData))
-                    .subscribe(colisEntity -> {
-                        if (ColisService.save(context, colisEntity)) {
-                            Log.d(TAG, "Insertion en base réussie");
-                        } else {
-                            Log.d(TAG, "Insertion en base échouée");
-                        }
-                    }, consThrowable);
-        }, consThrowable);
-    }
-
-    /**
      * Création d'un Observable interval qui va envoyer un élément toutes les 10 secondes.
      * Cet élément sera synchronisé avec un élément de la liste de colis présents dans la DB.
-     * Pour ce colis qui sera présent toutes les 10 secondes, on va appeler le service CoreSync.getTracking()
+     * Pour ce colis qui sera présent toutes les 10 secondes, on va appeler le service CoreSync.callOptTracking()
      * L'interval de temps nous permet de ne pas saturer le réseau avec des requêtes quand on a trop de colis dans la DB.
      *
      * @param context
-     * @param sendNotification
      */
-    public static void getAllTracking(Context context, boolean sendNotification) {
+    static void callGetAllTracking(Context context) {
+        List<ColisEntity> listColis = ColisRepository.getInstance(context).getAllColis(true);
+
         Observable.zip(
                 Observable.interval(10, TimeUnit.SECONDS),
-                ColisService.observableListColisFromProvider(context).flatMapIterable(colisEntities -> colisEntities),
+                Observable.just(listColis).flatMapIterable(colisEntities -> colisEntities),
                 (aLong, colisEntity) -> colisEntity)
-                .subscribe(colisEntity -> CoreSync.getTracking(context, colisEntity.getIdColis(), sendNotification),
+                .subscribe(colisEntity -> CoreSync.callOptTracking(context, colisEntity.getIdColis()),
                         consThrowable);
     }
 
     /**
-     * Tracking Core
+     * Call the OPT tracking API
+     * For the moment we just call a URL and parse a HTML page.
+     * With the new IPS API soon, we will be able to call a REST API
      *
      * @param context
      * @param trackingNumber
-     * @param sendNotification
      */
-    public static void getTracking(Context context, String trackingNumber, boolean sendNotification) {
+    static void callOptTracking(Context context, String trackingNumber) {
         // Get the Colis from the content provider, if it exists, or create a new one.
         // We will send it at the end.
-        ColisEntity colisFromDb = ColisService.get(context, trackingNumber);
-        if (colisFromDb == null) {
-            colisFromDb = new ColisEntity();
-            colisFromDb.setIdColis(trackingNumber);
+        ColisWithSteps colisWithSteps = ColisWithStepsRepository.getInstance(context).findActiveColisWithStepsByIdColis(trackingNumber);
+        if (colisWithSteps == null) {
+            colisWithSteps = new ColisWithSteps();
+            colisWithSteps.colisEntity.setIdColis(trackingNumber);
         }
-        ColisEntity resultColis = colisFromDb;
+        final ColisWithSteps resultColis = colisWithSteps;
 
         // Call OPT Service
-        RetrofitClient.getTrackingOpt(trackingNumber)
+        RetrofitAfterShipClient.getTrackingOpt(trackingNumber)
                 .subscribe(htmlString -> {
-                            Log.d(TAG, "Réponse reçue lors de l'appel service OPT : " + htmlString);
-                            if (transformHtmlToColisDto(context, trackingNumber, htmlString, sendNotification)) {
+                            ColisRepository repoColis = ColisRepository.getInstance(context);
+                            EtapeRepository repoEtape = EtapeRepository.getInstance(context);
+                            ColisDto colisDto = new ColisDto();
+                            colisDto.setIdColis(trackingNumber);
+                            if (transformHtmlToColisDto(colisDto, htmlString)) {
                                 Log.d(TAG, "Transformation de la réponse OPT OK");
+                                ColisWithSteps anotherColisWithSteps = ColisMapper.convertToEntity(colisDto);
+                                repoColis.insert(anotherColisWithSteps.colisEntity);
+                                repoColis.updateLastUpdateSuccessful(anotherColisWithSteps.colisEntity);
+                                repoEtape.insert(anotherColisWithSteps.etapeEntityList);
                             } else {
                                 Log.e(TAG, "Fail to receive response from OPT service");
                             }
                         },
                         consThrowable,
-                        // Detect courier
-                        () -> RetrofitClient.detectCourier(trackingNumber).retry(2).subscribe(responseDataDetectCourier -> {
-                            Log.d(TAG, "Détection du bon slug.");
-                            if (!responseDataDetectCourier.getCouriers().isEmpty()) {
-                                String slug = responseDataDetectCourier.getCouriers().get(0).getSlug();
-                                resultColis.setSlug(slug);
-
-                                Log.d(TAG, "Slug found for the tracking : " + trackingNumber + ", it's : " + slug);
-
-                                // Post tracking
-                                RetrofitClient.postTracking(trackingNumber)
-                                        .doOnError(throwable0 -> {
-                                            Log.d(TAG, "Post tracking fail, try to get it by get trackings/:slug/:trackingNumber for the tracking : " + trackingNumber);
-                                            callGetTracking(RetrofitClient.getTracking(slug, trackingNumber), resultColis, context);
-                                        })
-                                        .delay(10, SECONDS)
-                                        .subscribe(trackingData -> {
-                                            Log.d(TAG, "Post Tracking Successful, try to get the tracking by get trackings/:id");
-                                            callGetTracking(RetrofitClient.getTracking(trackingData.getId()), resultColis, context);
-                                        }, consThrowable);
-                            } else {
-                                Log.d(TAG, "No courier was found for this tracking number : " + trackingNumber);
-                            }
-                        }, consThrowable));
+                        () -> callDetectCourierAfterShip(context, trackingNumber, resultColis)
+                );
     }
 
     /**
-     * @param context
-     * @param idColis
+     * @param colisDto
      * @param htmlToTransform
-     * @param sendNotification
      * @return
      */
-    private static boolean transformHtmlToColisDto(Context context, String idColis, String htmlToTransform, boolean sendNotification) {
-        ColisDto colisDto = new ColisDto();
-        colisDto.setIdColis(idColis);
+    private static boolean transformHtmlToColisDto(ColisDto colisDto, String htmlToTransform) {
         try {
             switch (HtmlTransformer.getColisFromHtml(htmlToTransform, colisDto)) {
                 case HtmlTransformer.RESULT_SUCCESS:
                     Log.d(TAG, "HtmlTransformer return SUCCESS");
-                    ColisService.saveColisDto(context, colisDto, sendNotification);
                     return true;
                 case HtmlTransformer.RESULT_NO_ITEM_FOUND:
                     Log.d(TAG, "HtmlTransformer return NO ITEM FOUND");
-                    ColisService.updateLastUpdate(context, colisDto.getIdColis(), false);
                     return false;
                 default:
                     return false;
@@ -153,15 +118,74 @@ public class CoreSync {
     }
 
     /**
+     * @param context
      * @param trackingNumber
-     * @return
+     * @param resultColis
      */
-    public static Tracking<SendTrackingData> createTrackingData(String trackingNumber) {
-        Tracking<SendTrackingData> tracking = new Tracking<>();
-        SendTrackingData trackingDetect = new SendTrackingData();
-        trackingDetect.setTrackingNumber(trackingNumber);
-        tracking.setTracking(trackingDetect);
-        return tracking;
+    private static void callDetectCourierAfterShip(Context context, String trackingNumber, ColisWithSteps resultColis) {
+        Log.d(TAG, "Détection du bon slug.");
+        RetrofitAfterShipClient.detectCourier(trackingNumber).subscribe(responseDataDetectCourier -> {
+            if (!responseDataDetectCourier.getCouriers().isEmpty()) {
+                final String slug = responseDataDetectCourier.getCouriers().get(0).getSlug();
+                Log.d(TAG, "Slug found for the tracking : " + trackingNumber + ", it's : " + slug);
+                resultColis.colisEntity.setSlug(slug);
+
+                // Post tracking
+                postAfterShipTracking(context, resultColis, trackingNumber, slug);
+            } else {
+                Log.d(TAG, "No courier was found for this tracking number : " + trackingNumber);
+            }
+        }, consThrowable);
+    }
+
+    /**
+     * Post the Tracking number to the AfterShip API
+     * Response from the AfterShip API could take some time, so we wait 10 seconds
+     *
+     * @param context
+     * @param trackingNumber
+     * @param slug
+     * @param resultColis
+     */
+    private static void postAfterShipTracking(Context context, ColisWithSteps resultColis, String trackingNumber, String slug) {
+        RetrofitAfterShipClient.postTracking(trackingNumber)
+                .doOnError(throwable0 -> {
+                    Log.d(TAG, "Post tracking fail, try to get it by get trackings/:slug/:trackingNumber for the tracking : " + trackingNumber);
+                    callGetTrackingBySlugAndTrackingNumber(context, resultColis, slug, trackingNumber);
+                })
+                .delay(10, SECONDS)
+                .subscribe(trackingData -> {
+                    Log.d(TAG, "Post Tracking Successful, try to get the tracking by get trackings/:id");
+                    callGetTrackingByTrackingId(context, resultColis, trackingData.getId());
+                }, consThrowable);
+    }
+
+    /**
+     * @param slug
+     * @param trackingNumber
+     * @param resultColis
+     * @param context
+     */
+    private static void callGetTrackingBySlugAndTrackingNumber(Context context, ColisWithSteps resultColis, String slug, String trackingNumber) {
+        RetrofitAfterShipClient.getTrackingBySlugAndTrackingNumber(slug, trackingNumber).subscribe(trackingData -> {
+            Log.d(TAG, "TrackingData récupéré : " + trackingData.toString());
+            saveSuccessfulyColis(context, resultColis, trackingData);
+        }, consThrowable);
+    }
+
+
+    /**
+     * Call the AfterShip API to get tracking informations
+     *
+     * @param trackingId
+     * @param resultColis
+     * @param context
+     */
+    private static void callGetTrackingByTrackingId(Context context, ColisWithSteps resultColis, String trackingId) {
+        RetrofitAfterShipClient.getTrackingByTrackingId(trackingId).subscribe(trackingData -> {
+            Log.d(TAG, "TrackingData récupéré : " + trackingData.toString());
+            saveSuccessfulyColis(context, resultColis, trackingData);
+        }, consThrowable);
     }
 
     /**
@@ -170,14 +194,33 @@ public class CoreSync {
      * @param context
      * @param colis
      */
-    public static void deleteTracking(Context context, ColisEntity colis) {
-        if (colis.getSlug() != null && colis.getSlug().length() != 0 && colis.getIdColis() != null && colis.getIdColis().length() != 0) {
-            RetrofitClient.deleteTrackingBySlugAndTrackingNumber(colis.getSlug(), colis.getIdColis())
-                    .subscribe(trackingDelete -> {
-                        Log.d(TAG, "Suppression effective du tracking " + trackingDelete.getId() + " sur l'API AfterShip");
-                        FirebaseService.deleteRemoteColis(colis.getIdColis());
-                        ColisService.realDelete(context, colis.getIdColis());
-                    }, consThrowable);
+    static void deleteAfterShipTracking(Context context, ColisEntity colis) {
+        if (colis.getSlug() != null && colis.getSlug().length() != 0) {
+            if (colis.getIdColis() != null && colis.getIdColis().length() != 0) {
+                RetrofitAfterShipClient.deleteTrackingBySlugAndTrackingNumber(colis.getSlug(), colis.getIdColis())
+                        .subscribe(trackingDelete -> {
+                            Log.d(TAG, "Suppression effective du tracking " + trackingDelete.getId() + " sur l'API AfterShip");
+                            // ToDo Réactiver interaction Firebase
+                            // FirebaseService.deleteRemoteColis(colis.getIdColis());
+                            ColisRepository.getInstance(context).delete(colis.getIdColis());
+                        }, consThrowable);
+            } else {
+                Log.e(TAG, "Can't delete without tracking number");
+            }
+        } else {
+            Log.e(TAG, "Can't delete without slug");
         }
+    }
+
+    /**
+     * @param context
+     * @param resultColis
+     * @param trackingData
+     */
+    private static void saveSuccessfulyColis(Context context, ColisWithSteps resultColis, TrackingData trackingData) {
+        ColisWithSteps colisWithSteps = convertTrackingDataToEntity(resultColis, trackingData);
+        ColisRepository.getInstance(context).insert(colisWithSteps.colisEntity);
+        ColisRepository.getInstance(context).updateLastUpdateSuccessful(colisWithSteps.colisEntity);
+        EtapeRepository.getInstance(context).insert(colisWithSteps.etapeEntityList);
     }
 }

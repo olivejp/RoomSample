@@ -18,6 +18,8 @@ public class Constants {
     public static final String AFTERSHIP_COURIER_EXTENSION = ".svg";
 
 
+    public static final String AFTER_SHIP_KEY = "e1bc990c-5652-4c88-8332-f60188329fe0";
+
     public static final String ENCODING_ISO = "iso8859-1";
     public static final String ENCODING_UTF_8 = "UTF-8";
 

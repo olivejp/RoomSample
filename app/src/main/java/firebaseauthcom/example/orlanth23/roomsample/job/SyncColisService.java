@@ -6,13 +6,15 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Log;
 
 import java.util.List;
 
 import firebaseauthcom.example.orlanth23.roomsample.database.local.entity.ColisEntity;
 import firebaseauthcom.example.orlanth23.roomsample.database.local.repository.ColisRepository;
 
+/**
+ * This class is called by SyncTask or by SyncColisJobCreator
+ */
 public class SyncColisService extends IntentService {
 
     private static final String TAG = SyncColisService.class.getName();
@@ -76,27 +78,25 @@ public class SyncColisService extends IntentService {
     public static void launchSynchroDelete(@NonNull Context context) {
         List<ColisEntity> listColisDeleted = ColisRepository.getInstance(context).getAllColis(false);
         for (ColisEntity colis : listColisDeleted) {
-            CoreSync.deleteTracking(context, colis);
+            CoreSync.deleteAfterShipTracking(context, colis);
         }
     }
 
     /**
      * @param bundle
-     * @param sendNotification
      */
-    private void handleActionSyncColis(Bundle bundle, boolean sendNotification) {
+    private void handleActionSyncColis(Bundle bundle) {
         if (bundle.containsKey(ARG_ID_COLIS)) {
             String idColis = bundle.getString(ARG_ID_COLIS);
-            if (idColis != null) CoreSync.getTracking(this, idColis, sendNotification);
+            if (idColis != null) CoreSync.callOptTracking(this, idColis);
         }
     }
 
     /**
-     * @param sendNotification
+     *
      */
-    private void handleActionSyncAll(boolean sendNotification) {
-        Log.d(TAG, "Lock est bien pris");
-        CoreSync.getAllTracking(this, sendNotification);
+    private void handleActionSyncAll() {
+        CoreSync.callGetAllTracking(this);
     }
 
     @Override
@@ -109,13 +109,13 @@ public class SyncColisService extends IntentService {
                 if (action != null) {
                     switch (action) {
                         case ARG_ACTION_SYNC_COLIS:
-                            handleActionSyncColis(bundle, sendNotification);
+                            handleActionSyncColis(bundle);
                             break;
                         case ARG_ACTION_SYNC_ALL:
-                            handleActionSyncAll(sendNotification);
+                            handleActionSyncAll();
                             break;
                         case ARG_ACTION_SYNC_ALL_FROM_SCHEDULER:
-                            handleActionSyncAll(true);
+                            handleActionSyncAll();
                             break;
                         default:
                             break;

@@ -39,6 +39,7 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation "com.android.support:customtabs:${supportLibraryVersion}"
     implementation "com.android.support:appcompat-v7:${supportLibraryVersion}"
     implementation "com.android.support:recyclerview-v7:${supportLibraryVersion}"
     implementation "com.android.support:design:${supportLibraryVersion}"
@@ -81,6 +82,8 @@ dependencies {
     implementation 'com.caverock:androidsvg:1.2.1'
 
     implementation 'com.evernote:android-job:1.2.0'
+
+    implementation 'org.jsoup:jsoup:1.10.3'
 
     testImplementation 'junit:junit:4.12'
 

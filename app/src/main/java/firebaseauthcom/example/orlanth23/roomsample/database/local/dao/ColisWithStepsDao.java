@@ -27,6 +27,10 @@ public interface ColisWithStepsDao {
     List<ColisWithSteps> getColisWithSteps();
 
     @Transaction
+    @Query("SELECT * FROM colis WHERE idColis = :idColis AND deleted <> 1")
+    ColisWithSteps findActiveColisWithStepsByIdColis(String idColis);
+
+    @Transaction
     @Query("SELECT * FROM colis WHERE deleted <> 1")
     List<ColisWithSteps> getActiveColisWithSteps();
 }

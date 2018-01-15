@@ -5,6 +5,7 @@ import android.content.Context;
 
 import java.util.List;
 
+import firebaseauthcom.example.orlanth23.roomsample.DateConverter;
 import firebaseauthcom.example.orlanth23.roomsample.database.local.OptDatabase;
 import firebaseauthcom.example.orlanth23.roomsample.database.local.dao.ColisDao;
 import firebaseauthcom.example.orlanth23.roomsample.database.local.entity.ColisEntity;
@@ -34,6 +35,23 @@ public class ColisRepository {
     }
 
     public void update(ColisEntity... colisEntities) {
+        new ColisRepositoryTask(colisDao, TypeTask.UPDATE).execute(colisEntities);
+    }
+
+    public void updateLastUpdate(ColisEntity... colisEntities) {
+        Long now = DateConverter.getNowEntity();
+        for (ColisEntity colis : colisEntities) {
+            colis.setLastUpdate(now);
+        }
+        new ColisRepositoryTask(colisDao, TypeTask.UPDATE).execute(colisEntities);
+    }
+
+    public void updateLastUpdateSuccessful(ColisEntity... colisEntities) {
+        Long now = DateConverter.getNowEntity();
+        for (ColisEntity colis : colisEntities) {
+            colis.setLastUpdate(now);
+            colis.setLastUpdateSuccessful(now);
+        }
         new ColisRepositoryTask(colisDao, TypeTask.UPDATE).execute(colisEntities);
     }
 

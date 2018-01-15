@@ -1,4 +1,4 @@
-package firebaseauthcom.example.orlanth23.roomsample.network.retrofit;
+package firebaseauthcom.example.orlanth23.roomsample.network.aftership;
 
 import firebaseauthcom.example.orlanth23.roomsample.job.aftership.ResponseAfterShip;
 import firebaseauthcom.example.orlanth23.roomsample.job.aftership.ResponseDataDetectCourier;
@@ -12,13 +12,12 @@ import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
-import retrofit2.http.Query;
 
 /**
  * Created by orlanth23 on 03/10/2017.
  */
 
-public interface RetrofitCall {
+public interface RetrofitAfterShipCall {
 
     @POST("/v4/couriers/detect")
     Observable<ResponseAfterShip<ResponseDataDetectCourier>> detectCourier(@Body Tracking tracking);
@@ -38,6 +37,4 @@ public interface RetrofitCall {
     @DELETE("/v4/trackings/{slug}/{tracking_number}")
     Observable<ResponseAfterShip<Tracking<TrackingDelete>>> deleteTracking(@Path("slug") String slug, @Path("tracking_number") String trackingNumber);
 
-    @GET("/ipswebtracking/IPSWeb_item_events.asp?Submit=Envoyer")
-    Observable<String> getTrackingOpt(@Query("itemid") String idTracking);
 }

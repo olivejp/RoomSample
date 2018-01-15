@@ -30,6 +30,10 @@ public class ColisWithStepsRepository {
         return INSTANCE;
     }
 
+    public ColisWithSteps findActiveColisWithStepsByIdColis(String idColis) {
+        return this.colisWithStepsDao.findActiveColisWithStepsByIdColis(idColis);
+    }
+
     public LiveData<List<ColisWithSteps>> getAllColisWithSteps() {
         return this.colisWithStepsDao.getLiveColisWithSteps();
     }
