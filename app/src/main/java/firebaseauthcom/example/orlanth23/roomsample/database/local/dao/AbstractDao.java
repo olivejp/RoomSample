@@ -21,6 +21,12 @@ public interface AbstractDao<T> {
     @Update
     void update(T... entities);
 
+    @Update
+    void update(List<T> entities);
+
     @Delete
     void delete(T... entities);
+
+    @Delete
+    void delete(List<T> entities);
 }

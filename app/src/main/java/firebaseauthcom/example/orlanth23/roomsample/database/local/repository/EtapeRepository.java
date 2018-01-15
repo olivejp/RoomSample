@@ -35,6 +35,10 @@ public class EtapeRepository {
         this.etapeDao.update(etapeEntities);
     }
 
+    public void update(List<EtapeEntity> etapeEntities) {
+        this.etapeDao.update(etapeEntities);
+    }
+
     public void insert(EtapeEntity... etapeEntities) {
         this.etapeDao.insert(etapeEntities);
     }
@@ -49,5 +53,19 @@ public class EtapeRepository {
 
     public LiveData<List<EtapeEntity>> getAllEtapeByIdColis(String idColis) {
         return this.etapeDao.liveListEtapeByIdColis(idColis);
+    }
+
+    private boolean exist(EtapeEntity etapeEntity) {
+        return (1 <= this.etapeDao.exist(etapeEntity.getIdColis(), etapeEntity.getOrigine().getValue(), etapeEntity.getDate(), etapeEntity.getDescription()));
+    }
+
+    public void save(List<EtapeEntity> etapeEntities) {
+        for (EtapeEntity etapeEntity : etapeEntities) {
+            if (exist(etapeEntity)) {
+                this.etapeDao.update(etapeEntity);
+            } else {
+                this.etapeDao.insert(etapeEntity);
+            }
+        }
     }
 }

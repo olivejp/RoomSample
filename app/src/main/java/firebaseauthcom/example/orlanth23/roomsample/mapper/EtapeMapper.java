@@ -34,6 +34,7 @@ public class EtapeMapper {
         etapeEntity.setLocalisation(etapeDto.getLocalisation());
         etapeEntity.setStatus(etapeDto.getStatus());
         etapeEntity.setPays(etapeDto.getPays());
+        etapeEntity.setOrigine(EtapeEntity.EtapeOrigine.OPT);
         return etapeEntity;
     }
 
@@ -45,24 +46,26 @@ public class EtapeMapper {
      * @return {@link EtapeEntity}
      */
     static EtapeEntity createEtapeFromCheckpoint(@NonNull String idColis, @NonNull Checkpoint checkpoint) {
-        EtapeEntity etape = new EtapeEntity();
-        etape.setIdColis(idColis);
+        EtapeEntity etapeEntity = new EtapeEntity();
+        etapeEntity.setIdColis(idColis);
         if (checkpoint.getCheckpointTime() != null) {
-            etape.setDate(DateConverter.convertDateAfterShipToEntity(checkpoint.getCheckpointTime()));
+            etapeEntity.setDate(DateConverter.convertDateAfterShipToEntity(checkpoint.getCheckpointTime()));
         } else {
-            etape.setDate(0L);
+            etapeEntity.setDate(0L);
         }
-        etape.setCommentaire("");
-        etape.setLocalisation((checkpoint.getLocation() != null) ? checkpoint.getLocation().toString() : "");
-        etape.setStatus((checkpoint.getTag() != null) ? checkpoint.getTag() : "");
-        etape.setDescription((checkpoint.getMessage() != null) ? checkpoint.getMessage() : "");
-        etape.setPays((checkpoint.getCountryName() != null) ? checkpoint.getCountryName().toString() : "");
-        return etape;
+        etapeEntity.setCommentaire("");
+        etapeEntity.setLocalisation((checkpoint.getLocation() != null) ? checkpoint.getLocation().toString() : "");
+        etapeEntity.setStatus((checkpoint.getTag() != null) ? checkpoint.getTag() : "");
+        etapeEntity.setDescription((checkpoint.getMessage() != null) ? checkpoint.getMessage() : "");
+        etapeEntity.setPays((checkpoint.getCountryName() != null) ? checkpoint.getCountryName().toString() : "");
+        etapeEntity.setOrigine(EtapeEntity.EtapeOrigine.AFTER_SHIP);
+        return etapeEntity;
     }
 
     /**
+     * Return Drawable correponding on the step status
      * @param status
-     * @return
+     * @return {@link android.support.annotation.DrawableRes}
      */
     public static int getStatusDrawable(@NonNull String status) {
         switch (status) {

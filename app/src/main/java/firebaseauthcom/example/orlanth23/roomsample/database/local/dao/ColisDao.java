@@ -14,24 +14,28 @@ import firebaseauthcom.example.orlanth23.roomsample.database.local.entity.ColisE
  */
 @Dao
 public interface ColisDao extends AbstractDao<ColisEntity>{
-    @Query("SELECT * FROM COLIS")
+
+    @Query("SELECT COUNT(*) FROM colis WHERE idColis = :idColis")
+    int exist(String idColis);
+
+    @Query("SELECT * FROM colis")
     List<ColisEntity> listAllColis();
 
-    @Query("SELECT * FROM COLIS WHERE DELETED <> '1'")
+    @Query("SELECT * FROM colis WHERE DELETED <> '1'")
     List<ColisEntity> listColisActifs();
 
-    @Query("SELECT * FROM COLIS WHERE DELETED = '1'")
+    @Query("SELECT * FROM colis WHERE DELETED = '1'")
     List<ColisEntity> listColisSupprimes();
 
-    @Query("SELECT * FROM COLIS")
+    @Query("SELECT * FROM colis")
     LiveData<List<ColisEntity>> liveListAllColis();
 
-    @Query("SELECT * FROM COLIS WHERE DELETED <> '1'")
+    @Query("SELECT * FROM colis WHERE DELETED <> '1'")
     LiveData<List<ColisEntity>> liveListColisActifs();
 
-    @Query("SELECT * FROM COLIS WHERE DELETED = '1'")
+    @Query("SELECT * FROM colis WHERE DELETED = '1'")
     LiveData<List<ColisEntity>> liveListColisSupprimes();
 
-    @Query("SELECT * FROM COLIS WHERE idColis = :idColis")
+    @Query("SELECT * FROM colis WHERE idColis = :idColis")
     ColisEntity findById(String idColis);
 }

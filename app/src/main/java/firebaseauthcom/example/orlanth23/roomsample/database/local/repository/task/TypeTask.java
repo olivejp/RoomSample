@@ -7,6 +7,5 @@ package firebaseauthcom.example.orlanth23.roomsample.database.local.repository.t
 public enum TypeTask {
     DELETE,
     INSERT,
-    UPDATE,
-    UPDATE_LAST_UPDATE
+    UPDATE
 }

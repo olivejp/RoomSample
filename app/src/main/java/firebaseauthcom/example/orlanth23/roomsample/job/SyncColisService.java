@@ -75,10 +75,10 @@ public class SyncColisService extends IntentService {
      *
      * @param context
      */
-    public static void launchSynchroDelete(@NonNull Context context) {
+    public void launchSynchroDelete(@NonNull Context context) {
         List<ColisEntity> listColisDeleted = ColisRepository.getInstance(context).getAllColis(false);
         for (ColisEntity colis : listColisDeleted) {
-            CoreSync.deleteAfterShipTracking(context, colis);
+            CoreSync.getInstance(context, false).deleteAfterShipTracking(colis);
         }
     }
 
@@ -88,15 +88,15 @@ public class SyncColisService extends IntentService {
     private void handleActionSyncColis(Bundle bundle) {
         if (bundle.containsKey(ARG_ID_COLIS)) {
             String idColis = bundle.getString(ARG_ID_COLIS);
-            if (idColis != null) CoreSync.callOptTracking(this, idColis);
+            if (idColis != null) CoreSync.getInstance(this, false).callOptTracking(idColis);
         }
     }
 
     /**
      *
      */
-    private void handleActionSyncAll() {
-        CoreSync.callGetAllTracking(this);
+    private void handleActionSyncAll(boolean sendNotification) {
+        CoreSync.getInstance(this, sendNotification).callGetAllTracking();
     }
 
     @Override
@@ -112,10 +112,10 @@ public class SyncColisService extends IntentService {
                             handleActionSyncColis(bundle);
                             break;
                         case ARG_ACTION_SYNC_ALL:
-                            handleActionSyncAll();
+                            handleActionSyncAll(sendNotification);
                             break;
                         case ARG_ACTION_SYNC_ALL_FROM_SCHEDULER:
-                            handleActionSyncAll();
+                            handleActionSyncAll(sendNotification);
                             break;
                         default:
                             break;

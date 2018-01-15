@@ -26,8 +26,10 @@ public class ColisMapper {
     }
 
     /**
+     * Create a new ColisWithSteps
+     * Fill the ColisEntity with the {@link ColisDto} informations.
      * @param dto
-     * @return
+     * @return {@link ColisWithSteps}
      */
     public static ColisWithSteps convertToEntity(ColisDto dto) {
         Log.d(TAG, "(convertToEntity)");
@@ -44,18 +46,16 @@ public class ColisMapper {
     }
 
     /**
-     * Create a new ColisWithSteps
-     * Fill the ColisEntity with the TrackingData informations.
+     * Fill the ColisWithSteps with the TrackingData informations.
      *
      * @param resultColis
      * @param trackingData
      * @return {@link ColisWithSteps}
      */
-    public static ColisWithSteps convertTrackingDataToEntity(ColisWithSteps resultColis, TrackingData trackingData) {
+    public static ColisWithSteps convertTrackingDataToEntity(final ColisWithSteps resultColis, TrackingData trackingData) {
         Log.d(TAG, "(convertTrackingDataToEntity)");
-        resultColis.colisEntity.setDeleted(0);
-        for (Checkpoint c : trackingData.getCheckpoints()) {
-            EtapeEntity etapeEntity = createEtapeFromCheckpoint(resultColis.colisEntity.getIdColis(), c);
+        for (Checkpoint checkpoint : trackingData.getCheckpoints()) {
+            EtapeEntity etapeEntity = createEtapeFromCheckpoint(resultColis.colisEntity.getIdColis(), checkpoint);
             resultColis.etapeEntityList.add(etapeEntity);
         }
         return resultColis;
