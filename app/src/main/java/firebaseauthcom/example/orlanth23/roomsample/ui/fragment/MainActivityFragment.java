@@ -22,13 +22,14 @@ import firebaseauthcom.example.orlanth23.roomsample.ui.activity.AddColisActivity
 import firebaseauthcom.example.orlanth23.roomsample.ui.activity.viewmodel.MainActivityViewModel;
 import firebaseauthcom.example.orlanth23.roomsample.ui.adapter.ColisAdapter;
 
+import static firebaseauthcom.example.orlanth23.roomsample.ui.activity.MainActivity.TAG_DETAIL_FRAGMENT;
+
 /**
  * Created by orlanth23 on 14/01/2018.
  */
 
 public class MainActivityFragment extends Fragment {
 
-    private static final String TAG_HISTO = "TAG_HISTO";
     @BindView(R.id.recycler_colis_list)
     public RecyclerView colisList;
 
@@ -75,9 +76,9 @@ public class MainActivityFragment extends Fragment {
     private void displayHistorique(boolean twoPane) {
         if (getFragmentManager() != null) {
             if (twoPane) {
-                getFragmentManager().beginTransaction().replace(R.id.frame_detail, new HistoriqueColisFragment(), TAG_HISTO).commit();
+                getFragmentManager().beginTransaction().replace(R.id.frame_detail, new HistoriqueColisFragment(), TAG_DETAIL_FRAGMENT).commit();
             } else {
-                getFragmentManager().beginTransaction().replace(R.id.frame_master, new HistoriqueColisFragment(), TAG_HISTO).addToBackStack(null).commit();
+                getFragmentManager().beginTransaction().replace(R.id.frame_master, new HistoriqueColisFragment(), TAG_DETAIL_FRAGMENT).addToBackStack(null).commit();
             }
         }
     }

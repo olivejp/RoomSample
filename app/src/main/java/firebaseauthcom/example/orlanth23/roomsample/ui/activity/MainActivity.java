@@ -2,6 +2,7 @@ package firebaseauthcom.example.orlanth23.roomsample.ui.activity;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
@@ -11,14 +12,35 @@ import firebaseauthcom.example.orlanth23.roomsample.ui.fragment.MainActivityFrag
 
 public class MainActivity extends AppCompatActivity {
 
+    public static final String TAG_MASTER_FRAGMENT = "TAG_MASTER_FRAGMENT";
+    public static final String TAG_DETAIL_FRAGMENT = "KEY_FRAGMENT_DETAIL";
+
+    private Fragment masterFragment;
+    private Fragment detailFragment;
+    private MainActivityViewModel viewModel;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        MainActivityViewModel viewModel = ViewModelProviders.of(this).get(MainActivityViewModel.class);
+        viewModel = ViewModelProviders.of(this).get(MainActivityViewModel.class);
         setContentView(R.layout.activity_main);
         viewModel.setTwoPane(findViewById(R.id.frame_detail) != null);
 
-        getSupportFragmentManager().beginTransaction().replace(R.id.frame_master, new MainActivityFragment()).commit();
+        // Manage the fragments
+        masterFragment = getSupportFragmentManager().findFragmentByTag(TAG_MASTER_FRAGMENT);
+        if (masterFragment == null) {
+            masterFragment = new MainActivityFragment();
+        }
+        getSupportFragmentManager().beginTransaction().replace(R.id.frame_master, masterFragment, TAG_MASTER_FRAGMENT).commit();
+
+        detailFragment = getSupportFragmentManager().findFragmentByTag(TAG_DETAIL_FRAGMENT);
+        if (detailFragment != null) {
+            if (viewModel.isTwoPane()) {
+                getSupportFragmentManager().beginTransaction().replace(R.id.frame_detail, detailFragment, TAG_DETAIL_FRAGMENT).commit();
+            } else {
+                getSupportFragmentManager().beginTransaction().replace(R.id.frame_master, detailFragment, TAG_DETAIL_FRAGMENT).commit();
+            }
+        }
     }
 
     @Override
