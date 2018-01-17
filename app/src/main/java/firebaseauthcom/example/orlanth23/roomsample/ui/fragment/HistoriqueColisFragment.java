@@ -51,12 +51,10 @@ public class HistoriqueColisFragment extends Fragment {
         EtapeAdapter mEtapeAdapter = new EtapeAdapter();
         mRecyclerView.setAdapter(mEtapeAdapter);
 
-        if (!viewModel.isTwoPane()) {
-            if (appCompatActivity.getSupportActionBar() != null) {
-                appCompatActivity.getSupportActionBar().setHomeButtonEnabled(true);
-                appCompatActivity.getSupportActionBar().setDisplayShowHomeEnabled(true);
-                appCompatActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            }
+        if (!viewModel.isTwoPane() && appCompatActivity.getSupportActionBar() != null) {
+            appCompatActivity.getSupportActionBar().setHomeButtonEnabled(true);
+            appCompatActivity.getSupportActionBar().setDisplayShowHomeEnabled(true);
+            appCompatActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
         ColisWithSteps colisWithSteps = viewModel.getSelectedColis();
@@ -64,7 +62,7 @@ public class HistoriqueColisFragment extends Fragment {
             mEtapeAdapter.setEtapes(colisWithSteps.etapeEntityList);
             boolean isEtapeListEmpty = colisWithSteps.etapeEntityList == null || colisWithSteps.etapeEntityList.isEmpty();
             textObjectNotFound.setVisibility(isEtapeListEmpty ? View.VISIBLE : View.GONE);
-            mRecyclerView.setVisibility(isEtapeListEmpty ? View.GONE : View.GONE);
+            mRecyclerView.setVisibility(isEtapeListEmpty ? View.GONE : View.VISIBLE);
             appCompatActivity.setTitle(colisWithSteps.colisEntity.getIdColis());
         }
 

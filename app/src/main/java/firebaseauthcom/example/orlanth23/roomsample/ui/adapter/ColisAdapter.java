@@ -129,6 +129,7 @@ public class ColisAdapter extends RecyclerView.Adapter<ColisAdapter.ViewHolderCo
             holder.mStepLastDate.setVisibility(View.GONE);
             holder.mStepLastLocalisation.setVisibility(View.GONE);
             holder.mStepLastDescription.setText("Aucune étape pour ce colis");
+            holder.mStepStatus.setImageResource(R.drawable.ic_status_pending);
         }
     }
 

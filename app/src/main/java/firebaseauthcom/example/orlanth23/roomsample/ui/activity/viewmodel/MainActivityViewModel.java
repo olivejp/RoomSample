@@ -11,11 +11,9 @@ import com.bumptech.glide.RequestBuilder;
 import java.util.List;
 
 import firebaseauthcom.example.orlanth23.roomsample.R;
-import firebaseauthcom.example.orlanth23.roomsample.database.local.entity.ColisEntity;
 import firebaseauthcom.example.orlanth23.roomsample.database.local.entity.ColisWithSteps;
-import firebaseauthcom.example.orlanth23.roomsample.database.local.repository.ColisRepository;
 import firebaseauthcom.example.orlanth23.roomsample.database.local.repository.ColisWithStepsRepository;
-import firebaseauthcom.example.orlanth23.roomsample.glide.GlideApp;
+import firebaseauthcom.example.orlanth23.roomsample.ui.glide.GlideApp;
 import firebaseauthcom.example.orlanth23.roomsample.ui.glide.SvgSoftwareLayerSetter;
 
 import static com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade;
@@ -27,17 +25,14 @@ import static com.bumptech.glide.load.resource.drawable.DrawableTransitionOption
 public class MainActivityViewModel extends AndroidViewModel {
 
     private ColisWithStepsRepository colisWithStepsRepository;
-    private ColisRepository colisRepository;
     private LiveData<List<ColisWithSteps>> listColis;
     private RequestBuilder<PictureDrawable> requester;
     private ColisWithSteps colisWithStepsSelected;
     private boolean twoPane;
-    private boolean detailFlow;
 
     public MainActivityViewModel(@NonNull Application application) {
         super(application);
         colisWithStepsRepository = ColisWithStepsRepository.getInstance(application);
-        colisRepository = ColisRepository.getInstance(application);
         listColis = colisWithStepsRepository.getAllColisWithSteps();
         requester = GlideApp.with(application)
                 .as(PictureDrawable.class)
@@ -47,6 +42,11 @@ public class MainActivityViewModel extends AndroidViewModel {
                 .listener(new SvgSoftwareLayerSetter());
     }
 
+    /**
+     * Return True if we have two panes, false otherwise
+     *
+     * @return boolean
+     */
     public boolean isTwoPane() {
         return twoPane;
     }
@@ -55,18 +55,20 @@ public class MainActivityViewModel extends AndroidViewModel {
         this.twoPane = twoPane;
     }
 
-    public boolean isDetailFlow() {
-        return detailFlow;
-    }
-
-    public void setDetailFlow(boolean detailFlow) {
-        this.detailFlow = detailFlow;
-    }
-
+    /**
+     * Record the selected colis
+     *
+     * @param colis
+     */
     public void setSelectedColis(ColisWithSteps colis) {
         this.colisWithStepsSelected = colis;
     }
 
+    /**
+     * Return the selected colis
+     *
+     * @return ColisWithSteps (could be null)
+     */
     public ColisWithSteps getSelectedColis() {
         return this.colisWithStepsSelected;
     }
@@ -75,11 +77,13 @@ public class MainActivityViewModel extends AndroidViewModel {
         return this.requester;
     }
 
+    /**
+     * Return a LiveData containing the List of ALL the colis with their steps in the DB
+     *
+     * @return LiveData<List<ColisWithSteps>>
+     */
     public LiveData<List<ColisWithSteps>> getListColis() {
         return listColis;
     }
 
-    public void insert(ColisEntity colisEntity) {
-        colisRepository.insert(colisEntity);
-    }
 }

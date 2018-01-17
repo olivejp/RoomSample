@@ -6,7 +6,7 @@ import android.support.annotation.DrawableRes;
 
 import com.bumptech.glide.RequestBuilder;
 
-import firebaseauthcom.example.orlanth23.roomsample.glide.GlideApp;
+import firebaseauthcom.example.orlanth23.roomsample.ui.glide.GlideApp;
 import firebaseauthcom.example.orlanth23.roomsample.ui.glide.SvgSoftwareLayerSetter;
 
 import static com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade;

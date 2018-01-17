@@ -32,7 +32,6 @@ public class MainActivityFragment extends Fragment {
     @BindView(R.id.recycler_colis_list)
     public RecyclerView colisList;
 
-    private ColisAdapter colisAdapter;
     private MainActivityViewModel viewModel;
     private AppCompatActivity appCompatActivity;
 
@@ -55,7 +54,7 @@ public class MainActivityFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_main_activity, container, false);
         ButterKnife.bind(this, rootView);
 
-        colisAdapter = new ColisAdapter(viewModel.getGlideRequester(), mOnClickListener);
+        ColisAdapter colisAdapter = new ColisAdapter(viewModel.getGlideRequester(), mOnClickListener);
         colisList.setAdapter(colisAdapter);
 
         viewModel.getListColis().observe(appCompatActivity, colisEntities -> {
