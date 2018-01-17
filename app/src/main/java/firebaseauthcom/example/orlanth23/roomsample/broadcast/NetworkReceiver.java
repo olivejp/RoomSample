@@ -95,7 +95,7 @@ public class NetworkReceiver extends BroadcastReceiver {
      * Static method to know if we get a connection.
      *
      * @param context
-     * @return true if connection exist, false otherwise.
+     * @return true if connection count, false otherwise.
      */
     public static boolean checkConnection(Context context) {
         ConnectivityManager conn = (ConnectivityManager)

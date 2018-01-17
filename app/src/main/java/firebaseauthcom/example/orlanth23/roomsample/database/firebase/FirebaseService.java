@@ -132,8 +132,9 @@ public class FirebaseService {
                         DatabaseReference userReference = FirebaseService.getUsersRef().child(connectedUser.getUid());
                         userReference.addValueEventListener(getFromRemoteValueEventListener);
                     } else {
-                        List<ColisWithSteps> listColis = ColisWithStepsRepository.getInstance(context).getActiveColisWithSteps();
-                        FirebaseService.updateRemoteDatabase(context, listColis);
+                        ColisWithStepsRepository.getInstance(context).getActiveColisWithSteps().subscribe(colisWithSteps ->
+                                FirebaseService.updateRemoteDatabase(context, colisWithSteps)
+                        );
                     }
                 }
             }

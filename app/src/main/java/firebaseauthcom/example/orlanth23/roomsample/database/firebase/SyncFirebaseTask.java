@@ -8,7 +8,6 @@ import com.google.firebase.database.DataSnapshot;
 
 import java.lang.ref.WeakReference;
 
-import firebaseauthcom.example.orlanth23.roomsample.database.local.entity.ColisEntity;
 import firebaseauthcom.example.orlanth23.roomsample.database.local.entity.ColisWithSteps;
 import firebaseauthcom.example.orlanth23.roomsample.database.local.repository.ColisRepository;
 import firebaseauthcom.example.orlanth23.roomsample.database.local.repository.EtapeRepository;
@@ -60,17 +59,18 @@ public class SyncFirebaseTask extends AsyncTask<Void, Void, Void> {
         if (fbColisWithSteps != null) {
             String idColis = fbColisWithSteps.colisEntity.getIdColis();
 
-            ColisEntity colis = repoColis.findById(idColis);
-            if (colis != null) {
-                if (colis.isDeleted()) {
-                    FirebaseService.deleteRemoteColis(idColis);
-                    repoColis.delete(idColis);
+            repoColis.findById(idColis).subscribe(colis -> {
+                if (colis != null) {
+                    if (colis.isDeleted()) {
+                        FirebaseService.deleteRemoteColis(idColis);
+                        repoColis.delete(idColis);
+                    }
+                } else {
+                    // Colis don't count in local DB, we insert it.
+                    repoColis.insert(fbColisWithSteps.colisEntity);
+                    repoEtape.insert(fbColisWithSteps.etapeEntityList);
                 }
-            } else {
-                // Colis don't exist in local DB, we insert it.
-                repoColis.insert(fbColisWithSteps.colisEntity);
-                repoEtape.insert(fbColisWithSteps.etapeEntityList);
-            }
+            });
         }
     }
 }

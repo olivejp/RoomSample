@@ -25,7 +25,7 @@ import static com.bumptech.glide.load.resource.drawable.DrawableTransitionOption
 public class MainActivityViewModel extends AndroidViewModel {
 
     private ColisWithStepsRepository colisWithStepsRepository;
-    private LiveData<List<ColisWithSteps>> listColis;
+    private LiveData<List<ColisWithSteps>> liveListActiveColis;
     private RequestBuilder<PictureDrawable> requester;
     private ColisWithSteps colisWithStepsSelected;
     private boolean twoPane;
@@ -33,7 +33,7 @@ public class MainActivityViewModel extends AndroidViewModel {
     public MainActivityViewModel(@NonNull Application application) {
         super(application);
         colisWithStepsRepository = ColisWithStepsRepository.getInstance(application);
-        listColis = colisWithStepsRepository.getAllColisWithSteps();
+        liveListActiveColis = colisWithStepsRepository.getAllActiveColisWithSteps();
         requester = GlideApp.with(application)
                 .as(PictureDrawable.class)
                 .placeholder(R.drawable.ic_archive_grey_900_48dp)
@@ -82,8 +82,8 @@ public class MainActivityViewModel extends AndroidViewModel {
      *
      * @return LiveData<List<ColisWithSteps>>
      */
-    public LiveData<List<ColisWithSteps>> getListColis() {
-        return listColis;
+    public LiveData<List<ColisWithSteps>> getLiveListActiveColis() {
+        return liveListActiveColis;
     }
 
 }

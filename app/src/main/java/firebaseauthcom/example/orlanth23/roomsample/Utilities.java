@@ -2,10 +2,15 @@ package firebaseauthcom.example.orlanth23.roomsample;
 
 import android.app.Activity;
 import android.content.Context;
+import android.os.Bundle;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.app.FragmentManager;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+
+import firebaseauthcom.example.orlanth23.roomsample.ui.NoticeDialogFragment;
 
 /**
  * Created by orlanth23 on 13/08/2017.
@@ -62,4 +67,23 @@ public class Utilities {
                 return R.drawable.ic_status_pending;
         }
     }
+    /**
+     * @param fragmentManager Get from the context
+     * @param message         The message to be send
+     * @param type            From NoticeDialogFragment
+     * @param img             From NoticeDialogFragment
+     * @param tag             A text to be a tag
+     */
+    public static void sendDialogByFragmentManager(FragmentManager fragmentManager, String message, int type, int img, @Nullable String tag, @Nullable Bundle bundlePar, NoticeDialogFragment.NoticeDialogListener listener) {
+        NoticeDialogFragment dialogErreur = new NoticeDialogFragment();
+        Bundle bundle = new Bundle();
+        bundle.putString(NoticeDialogFragment.P_MESSAGE, message);
+        bundle.putInt(NoticeDialogFragment.P_TYPE, type);
+        bundle.putInt(NoticeDialogFragment.P_IMG, img);
+        bundle.putBundle(NoticeDialogFragment.P_BUNDLE, bundlePar);
+        dialogErreur.setListener(listener);
+        dialogErreur.setArguments(bundle);
+        dialogErreur.show(fragmentManager, tag);
+    }
+
 }

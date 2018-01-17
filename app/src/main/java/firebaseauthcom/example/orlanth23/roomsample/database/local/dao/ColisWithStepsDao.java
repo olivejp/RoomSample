@@ -8,6 +8,7 @@ import android.arch.persistence.room.Transaction;
 import java.util.List;
 
 import firebaseauthcom.example.orlanth23.roomsample.database.local.entity.ColisWithSteps;
+import io.reactivex.Maybe;
 
 /**
  * Created by orlanth23 on 12/01/2018.
@@ -15,22 +16,14 @@ import firebaseauthcom.example.orlanth23.roomsample.database.local.entity.ColisW
 @Dao
 public interface ColisWithStepsDao {
     @Transaction
-    @Query("SELECT * FROM colis")
-    LiveData<List<ColisWithSteps>> getLiveColisWithSteps();
-
-    @Transaction
     @Query("SELECT * FROM colis WHERE deleted <> 1")
     LiveData<List<ColisWithSteps>> getLiveActiveColisWithSteps();
 
     @Transaction
-    @Query("SELECT * FROM colis")
-    List<ColisWithSteps> getColisWithSteps();
-
-    @Transaction
     @Query("SELECT * FROM colis WHERE idColis = :idColis AND deleted <> 1")
-    ColisWithSteps findActiveColisWithStepsByIdColis(String idColis);
+    Maybe<ColisWithSteps> findMaybeActiveColisWithStepsByIdColis(String idColis);
 
     @Transaction
     @Query("SELECT * FROM colis WHERE deleted <> 1")
-    List<ColisWithSteps> getActiveColisWithSteps();
+    Maybe<List<ColisWithSteps>> getMaybeActiveColisWithSteps();
 }

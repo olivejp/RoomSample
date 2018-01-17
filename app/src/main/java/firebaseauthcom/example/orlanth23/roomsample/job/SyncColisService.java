@@ -7,8 +7,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import java.util.List;
-
 import firebaseauthcom.example.orlanth23.roomsample.database.local.entity.ColisEntity;
 import firebaseauthcom.example.orlanth23.roomsample.database.local.repository.ColisRepository;
 
@@ -75,11 +73,13 @@ public class SyncColisService extends IntentService {
      *
      * @param context
      */
-    public void launchSynchroDelete(@NonNull Context context) {
-        List<ColisEntity> listColisDeleted = ColisRepository.getInstance(context).getAllColis(false);
-        for (ColisEntity colis : listColisDeleted) {
-            CoreSync.getInstance(context, false).deleteAfterShipTracking(colis);
-        }
+    public static void launchSynchroDelete(@NonNull Context context) {
+        ColisRepository.getInstance(context).getAllColis(false).subscribe(listColisDeleted -> {
+            for (ColisEntity colis : listColisDeleted) {
+                CoreSync.getInstance(context, false).deleteAfterShipTracking(colis);
+            }
+        });
+
     }
 
     /**

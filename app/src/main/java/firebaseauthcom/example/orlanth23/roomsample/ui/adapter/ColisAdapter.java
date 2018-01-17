@@ -153,7 +153,7 @@ public class ColisAdapter extends RecyclerView.Adapter<ColisAdapter.ViewHolderCo
         return colisEntities == null ? 0 : colisEntities.size();
     }
 
-    class ViewHolderColisAdapter extends RecyclerView.ViewHolder {
+    public class ViewHolderColisAdapter extends RecyclerView.ViewHolder {
 
         @BindView(R.id.step_id_colis)
         TextView mIdColis;
@@ -191,6 +191,14 @@ public class ColisAdapter extends RecyclerView.Adapter<ColisAdapter.ViewHolderCo
             super(view);
             ButterKnife.bind(this, view);
             mConstraintDetailColisLayout.setOnClickListener(onClickListener);
+        }
+
+        public ConstraintLayout getmConstraintDetailColisLayout() {
+            return mConstraintDetailColisLayout;
+        }
+
+        public ColisWithSteps getColisWithSteps() {
+            return colisWithSteps;
         }
     }
 }

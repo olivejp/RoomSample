@@ -54,6 +54,7 @@ public class ColisMapper {
      */
     public static ColisWithSteps convertTrackingDataToEntity(final ColisWithSteps resultColis, TrackingData trackingData) {
         Log.d(TAG, "(convertTrackingDataToEntity)");
+        resultColis.colisEntity.setAfterShipId(trackingData.getId());
         for (Checkpoint checkpoint : trackingData.getCheckpoints()) {
             EtapeEntity etapeEntity = createEtapeFromCheckpoint(resultColis.colisEntity.getIdColis(), checkpoint);
             resultColis.etapeEntityList.add(etapeEntity);

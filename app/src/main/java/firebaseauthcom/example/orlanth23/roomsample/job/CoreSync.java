@@ -4,7 +4,6 @@ import android.content.Context;
 import android.util.Log;
 
 import java.lang.ref.WeakReference;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import firebaseauthcom.example.orlanth23.roomsample.NotificationSender;
@@ -20,6 +19,7 @@ import firebaseauthcom.example.orlanth23.roomsample.mapper.ColisMapper;
 import firebaseauthcom.example.orlanth23.roomsample.network.aftership.RetrofitAfterShipClient;
 import io.reactivex.Observable;
 import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 
 import static firebaseauthcom.example.orlanth23.roomsample.mapper.ColisMapper.convertTrackingDataToEntity;
 import static java.util.concurrent.TimeUnit.SECONDS;
@@ -58,13 +58,18 @@ class CoreSync {
      * L'interval de temps nous permet de ne pas saturer le réseau avec des requêtes quand on a trop de colis dans la DB.
      */
     void callGetAllTracking() {
-        List<ColisEntity> listColis = ColisRepository.getInstance(contextWeakReference.get()).getAllColis(true);
-        Observable.zip(
-                Observable.interval(10, TimeUnit.SECONDS),
-                Observable.just(listColis).flatMapIterable(colisEntities -> colisEntities),
-                (aLong, colisEntity) -> colisEntity)
-                .subscribe(colisEntity -> callOptTracking(colisEntity.getIdColis()),
-                        consThrowable);
+        ColisRepository.getInstance(contextWeakReference.get()).getAllColis(true)
+                .subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.io())
+                .subscribe(listColis ->
+                        Observable.zip(
+                                Observable.interval(10, TimeUnit.SECONDS),
+                                Observable.just(listColis).flatMapIterable(colisEntities -> colisEntities),
+                                (aLong, colisEntity) -> colisEntity)
+                                .subscribe(colisEntity -> callOptTracking(colisEntity.getIdColis()),
+                                        consThrowable)
+                );
+
     }
 
     /**
@@ -121,7 +126,6 @@ class CoreSync {
     }
 
     /**
-     *
      * @param resultColis
      * @param trackingNumber
      */
@@ -199,23 +203,24 @@ class CoreSync {
         if (colis.getSlug() != null && colis.getSlug().length() != 0) {
             if (colis.getIdColis() != null && colis.getIdColis().length() != 0) {
                 RetrofitAfterShipClient.deleteTrackingBySlugAndTrackingNumber(colis.getSlug(), colis.getIdColis())
-                        .subscribe(trackingDelete -> {
-                            Log.d(TAG, "Suppression effective du tracking " + trackingDelete.getId() + " sur l'API AfterShip");
-                            // ToDo Réactiver interaction Firebase
-                            // FirebaseService.deleteRemoteColis(colis.getIdColis());
-                            ColisRepository.getInstance(contextWeakReference.get()).delete(colis.getIdColis());
-                        }, consThrowable);
+                        .subscribe(trackingDelete ->
+                                        Log.d(TAG, "Suppression effective du tracking " + trackingDelete.getId() + " sur l'API AfterShip")
+                                , consThrowable, () -> {
+                                    ColisRepository.getInstance(contextWeakReference.get()).delete(colis.getIdColis());
+                                    // ToDo Réactiver interaction Firebase
+                                    // FirebaseService.deleteRemoteColis(colis.getIdColis());
+                                });
             } else {
-                Log.e(TAG, "Can't delete without tracking number");
+                Log.e(TAG, "Can't markAsDeleted without tracking number");
             }
         } else {
-            Log.e(TAG, "Can't delete without slug");
+            Log.e(TAG, "Can't markAsDeleted without slug");
         }
     }
 
     /**
      * Find the record in DB.
-     * If exist :
+     * If count :
      * - Update only the steps.
      * If not :
      * - Insert the new colis
@@ -226,17 +231,19 @@ class CoreSync {
      */
     private void saveSuccessfulColis(ColisWithSteps resultColis) {
         Context context = contextWeakReference.get();
-        ColisWithSteps colisFromDb = ColisWithStepsRepository.getInstance(context).findActiveColisWithStepsByIdColis(resultColis.colisEntity.getIdColis());
-        if (colisFromDb != null) {
-            if (resultColis.etapeEntityList.size() > colisFromDb.etapeEntityList.size()) {
-                if (sendNotification){
-                    NotificationSender.sendNotification(context, context.getString(R.string.app_name), resultColis.colisEntity.getIdColis()+ " a été mis à jour.", R.drawable.ic_archive_white_48dp);
-                }
-            }
-        } else {
-            ColisRepository.getInstance(context).save(resultColis.colisEntity);
-        }
-        EtapeRepository.getInstance(context).save(resultColis.etapeEntityList);
-        ColisRepository.getInstance(context).updateLastSuccessfulUpdate(resultColis.colisEntity);
+        ColisWithStepsRepository.getInstance(context).findActiveColisWithStepsByIdColis(resultColis.colisEntity.getIdColis())
+                .subscribe(colisWithSteps -> {
+                    if (colisWithSteps != null) {
+                        if (resultColis.etapeEntityList.size() > colisWithSteps.etapeEntityList.size()) {
+                            if (sendNotification) {
+                                NotificationSender.sendNotification(context, context.getString(R.string.app_name), resultColis.colisEntity.getIdColis() + " a été mis à jour.", R.drawable.ic_archive_white_48dp);
+                            }
+                        }
+                    } else {
+                        ColisRepository.getInstance(context).save(resultColis.colisEntity);
+                    }
+                    EtapeRepository.getInstance(context).save(resultColis.etapeEntityList);
+                    ColisRepository.getInstance(context).updateLastSuccessfulUpdate(resultColis.colisEntity);
+                });
     }
 }

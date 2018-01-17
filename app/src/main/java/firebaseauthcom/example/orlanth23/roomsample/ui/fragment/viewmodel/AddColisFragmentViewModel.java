@@ -20,7 +20,7 @@ public class AddColisFragmentViewModel extends AndroidViewModel {
         colisRepository = ColisRepository.getInstance(application);
     }
 
-    public void insertColis(ColisEntity colisEntity) {
-        colisRepository.insert(colisEntity);
+    public void saveColis(ColisEntity colisEntity) {
+        colisRepository.save(colisEntity);
     }
 }

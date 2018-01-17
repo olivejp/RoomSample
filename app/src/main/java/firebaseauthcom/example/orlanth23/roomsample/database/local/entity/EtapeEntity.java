@@ -43,8 +43,8 @@ public class EtapeEntity implements Parcelable {
     }
 
     @NonNull
-    @PrimaryKey
-    private String idEtapeAcheminement;
+    @PrimaryKey(autoGenerate = true)
+    private Integer idEtapeAcheminement;
     private String idColis;
     private Long date;
     private String pays;
@@ -60,7 +60,7 @@ public class EtapeEntity implements Parcelable {
     }
 
     @Ignore
-    public EtapeEntity(@NonNull String idEtapeAcheminement, String idColis, Long date, String pays, String localisation, String description, String commentaire, String status, EtapeOrigine origine) {
+    public EtapeEntity(@NonNull Integer idEtapeAcheminement, String idColis, Long date, String pays, String localisation, String description, String commentaire, String status, EtapeOrigine origine) {
         this.idEtapeAcheminement = idEtapeAcheminement;
         this.idColis = idColis;
         this.date = date;
@@ -73,11 +73,11 @@ public class EtapeEntity implements Parcelable {
     }
 
     @NonNull
-    public String getIdEtapeAcheminement() {
+    public Integer getIdEtapeAcheminement() {
         return idEtapeAcheminement;
     }
 
-    public void setIdEtapeAcheminement(@NonNull String idEtapeAcheminement) {
+    public void setIdEtapeAcheminement(@NonNull Integer idEtapeAcheminement) {
         this.idEtapeAcheminement = idEtapeAcheminement;
     }
 
@@ -152,7 +152,7 @@ public class EtapeEntity implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(this.idEtapeAcheminement);
+        dest.writeInt(this.idEtapeAcheminement);
         dest.writeString(this.idColis);
         dest.writeValue(this.date);
         dest.writeString(this.pays);
@@ -164,7 +164,7 @@ public class EtapeEntity implements Parcelable {
     }
 
     protected EtapeEntity(Parcel in) {
-        this.idEtapeAcheminement = in.readString();
+        this.idEtapeAcheminement = in.readInt();
         this.idColis = in.readString();
         this.date = (Long) in.readValue(Long.class.getClassLoader());
         this.pays = in.readString();

@@ -22,6 +22,8 @@ public class ColisEntity implements Parcelable {
     private Long lastUpdateSuccessful;
     private Integer deleted;
     private String slug;
+    private Integer fbLinked;
+    private String afterShipId;
 
     public ColisEntity() {
     }
@@ -87,6 +89,22 @@ public class ColisEntity implements Parcelable {
         return DateConverter.convertDateEntityToUi(lastUpdate);
     }
 
+    public Integer getFbLinked() {
+        return fbLinked;
+    }
+
+    public void setFbLinked(Integer fbLinked) {
+        this.fbLinked = fbLinked;
+    }
+
+    public String getAfterShipId() {
+        return afterShipId;
+    }
+
+    public void setAfterShipId(String afterShipId) {
+        this.afterShipId = afterShipId;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -100,6 +118,8 @@ public class ColisEntity implements Parcelable {
         dest.writeValue(this.lastUpdateSuccessful);
         dest.writeValue(this.deleted);
         dest.writeString(this.slug);
+        dest.writeValue(this.fbLinked);
+        dest.writeString(this.afterShipId);
     }
 
     protected ColisEntity(Parcel in) {
@@ -109,6 +129,8 @@ public class ColisEntity implements Parcelable {
         this.lastUpdateSuccessful = (Long) in.readValue(Long.class.getClassLoader());
         this.deleted = (Integer) in.readValue(Integer.class.getClassLoader());
         this.slug = in.readString();
+        this.fbLinked = (Integer) in.readValue(Integer.class.getClassLoader());
+        this.afterShipId = in.readString();
     }
 
     public static final Creator<ColisEntity> CREATOR = new Creator<ColisEntity>() {

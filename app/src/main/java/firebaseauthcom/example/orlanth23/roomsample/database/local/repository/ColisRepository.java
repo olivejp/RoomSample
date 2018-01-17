@@ -1,16 +1,19 @@
 package firebaseauthcom.example.orlanth23.roomsample.database.local.repository;
 
-import android.arch.lifecycle.LiveData;
 import android.content.Context;
 
 import java.util.List;
 
 import firebaseauthcom.example.orlanth23.roomsample.DateConverter;
-import firebaseauthcom.example.orlanth23.roomsample.database.local.OptDatabase;
+import firebaseauthcom.example.orlanth23.roomsample.database.local.ColisDatabase;
+import firebaseauthcom.example.orlanth23.roomsample.database.local.ColisDatabase;
 import firebaseauthcom.example.orlanth23.roomsample.database.local.dao.ColisDao;
 import firebaseauthcom.example.orlanth23.roomsample.database.local.entity.ColisEntity;
 import firebaseauthcom.example.orlanth23.roomsample.database.local.repository.task.ColisRepositoryTask;
 import firebaseauthcom.example.orlanth23.roomsample.database.local.repository.task.TypeTask;
+import io.reactivex.Maybe;
+import io.reactivex.Single;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by orlanth23 on 11/01/2018.
@@ -23,7 +26,7 @@ public class ColisRepository {
     private ColisDao colisDao;
 
     private ColisRepository(Context context) {
-        OptDatabase db = OptDatabase.getInstance(context);
+        ColisDatabase db = ColisDatabase.getInstance(context);
         this.colisDao = db.colisDao();
     }
 
@@ -35,14 +38,6 @@ public class ColisRepository {
     }
 
     public void update(ColisEntity... colisEntities) {
-        new ColisRepositoryTask(colisDao, TypeTask.UPDATE).execute(colisEntities);
-    }
-
-    public void updateLastUpdate(ColisEntity... colisEntities) {
-        Long now = DateConverter.getNowEntity();
-        for (ColisEntity colis : colisEntities) {
-            colis.setLastUpdate(now);
-        }
         new ColisRepositoryTask(colisDao, TypeTask.UPDATE).execute(colisEntities);
     }
 
@@ -59,45 +54,74 @@ public class ColisRepository {
         new ColisRepositoryTask(colisDao, TypeTask.INSERT).execute(colisEntities);
     }
 
-    public void delete(ColisEntity... colisEntities) {
-        new ColisRepositoryTask(colisDao, TypeTask.DELETE).execute(colisEntities);
-    }
-
-    public void delete(String idColis) {
-        new ColisRepositoryTask(colisDao, TypeTask.DELETE).execute(findById(idColis));
-    }
-
-    public LiveData<List<ColisEntity>> getLiveAllColis(boolean active) {
-        if (active) {
-            return this.colisDao.liveListColisActifs();
-        } else {
-            return this.colisDao.liveListColisSupprimes();
-        }
-    }
-
-    public List<ColisEntity> getAllColis(boolean active) {
-        if (active) {
-            return this.colisDao.listColisActifs();
-        } else {
-            return this.colisDao.listColisSupprimes();
-        }
-    }
-
-    public boolean exist(String idColis) {
-        return (1 <= this.colisDao.exist(idColis));
-    }
-
-    public void save(ColisEntity... colisEntities) {
-        for (ColisEntity colisEntity : colisEntities) {
-            if (exist(colisEntity.getIdColis())) {
-                this.colisDao.update(colisEntity);
+    /**
+     * If the colis has a link with Firebase, we pass the tag deleted to '1'
+     * If the colis has a AfterShip Id, we pass the tag deleted to '1'
+     * Otherwise we just delete the colis from the DB.
+     * We have to wait a connection to delete the record in AfterShip or in Firebase.
+     *
+     * @param colisEntities to delete or to mark as deleted. They will be deleted in the SyncColisService.
+     */
+    public void markAsDeleted(ColisEntity... colisEntities) {
+        for (ColisEntity colis : colisEntities) {
+            if ((colis.getFbLinked() == null || colis.getFbLinked() == 0) && (colis.getAfterShipId() == null || colis.getAfterShipId().isEmpty())) {
+                new ColisRepositoryTask(colisDao, TypeTask.DELETE).execute(colis);
             } else {
-                this.colisDao.insert(colisEntity);
+                colis.setDeleted(1);
+                update(colis);
             }
         }
+
     }
 
-    public ColisEntity findById(String idColis) {
+    /**
+     * Delete the colis with the idColis from the database
+     *
+     * @param idColis
+     */
+    public void delete(String idColis) {
+        findById(idColis)
+                .subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.io())
+                .subscribe(colisEntity ->
+                        new ColisRepositoryTask(colisDao, TypeTask.DELETE).execute(colisEntity)
+                );
+    }
+
+    public Maybe<List<ColisEntity>> getAllColis(boolean active) {
+        if (active) {
+            return this.colisDao.listMaybeColisActifs();
+        } else {
+            return this.colisDao.listMaybeColisSupprimes();
+        }
+    }
+
+    public Maybe<Integer> count(String idColis) {
+        return this.colisDao.exist(idColis);
+    }
+
+    /**
+     * Check if the idColis exist in the DB.
+     * If it exist we just update, otherwise insert.
+     *
+     * @param colisEntities to save (update or insert)
+     */
+    public void save(ColisEntity... colisEntities) {
+        for (ColisEntity colisEntity : colisEntities) {
+            count(colisEntity.getIdColis())
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(Schedulers.io())
+                    .subscribe(count -> {
+                        if (count > 0) {
+                            update(colisEntity);
+                        } else {
+                            insert(colisEntity);
+                        }
+                    });
+        }
+    }
+
+    public Single<ColisEntity> findById(String idColis) {
         return this.colisDao.findById(idColis);
     }
 }

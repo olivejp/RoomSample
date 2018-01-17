@@ -1,12 +1,13 @@
 package firebaseauthcom.example.orlanth23.roomsample.database.local.dao;
 
-import android.arch.lifecycle.LiveData;
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Query;
 
 import java.util.List;
 
 import firebaseauthcom.example.orlanth23.roomsample.database.local.entity.ColisEntity;
+import io.reactivex.Maybe;
+import io.reactivex.Single;
 
 
 /**
@@ -16,26 +17,14 @@ import firebaseauthcom.example.orlanth23.roomsample.database.local.entity.ColisE
 public interface ColisDao extends AbstractDao<ColisEntity>{
 
     @Query("SELECT COUNT(*) FROM colis WHERE idColis = :idColis")
-    int exist(String idColis);
-
-    @Query("SELECT * FROM colis")
-    List<ColisEntity> listAllColis();
+    Maybe<Integer> exist(String idColis);
 
     @Query("SELECT * FROM colis WHERE DELETED <> '1'")
-    List<ColisEntity> listColisActifs();
+    Maybe<List<ColisEntity>> listMaybeColisActifs();
 
     @Query("SELECT * FROM colis WHERE DELETED = '1'")
-    List<ColisEntity> listColisSupprimes();
-
-    @Query("SELECT * FROM colis")
-    LiveData<List<ColisEntity>> liveListAllColis();
-
-    @Query("SELECT * FROM colis WHERE DELETED <> '1'")
-    LiveData<List<ColisEntity>> liveListColisActifs();
-
-    @Query("SELECT * FROM colis WHERE DELETED = '1'")
-    LiveData<List<ColisEntity>> liveListColisSupprimes();
+    Maybe<List<ColisEntity>> listMaybeColisSupprimes();
 
     @Query("SELECT * FROM colis WHERE idColis = :idColis")
-    ColisEntity findById(String idColis);
+    Single<ColisEntity> findById(String idColis);
 }
