@@ -8,16 +8,19 @@ import android.view.MenuItem;
 
 import firebaseauthcom.example.orlanth23.roomsample.R;
 import firebaseauthcom.example.orlanth23.roomsample.ui.activity.viewmodel.MainActivityViewModel;
+import firebaseauthcom.example.orlanth23.roomsample.ui.fragment.HistoriqueColisFragment;
 import firebaseauthcom.example.orlanth23.roomsample.ui.fragment.MainActivityFragment;
 
 public class MainActivity extends AppCompatActivity {
 
     public static final String TAG_MASTER_FRAGMENT = "TAG_MASTER_FRAGMENT";
     public static final String TAG_DETAIL_FRAGMENT = "KEY_FRAGMENT_DETAIL";
+    public static final String KEY_LAST_TWO_PANE = "KEY_LAST_TWO_PANE";
 
     private Fragment masterFragment;
     private Fragment detailFragment;
     private MainActivityViewModel viewModel;
+    private boolean lastTwoPane;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,6 +28,10 @@ public class MainActivity extends AppCompatActivity {
         viewModel = ViewModelProviders.of(this).get(MainActivityViewModel.class);
         setContentView(R.layout.activity_main);
         viewModel.setTwoPane(findViewById(R.id.frame_detail) != null);
+
+        if (savedInstanceState != null && savedInstanceState.containsKey(KEY_LAST_TWO_PANE)) {
+            viewModel.setLastTwoPane(savedInstanceState.getBoolean(KEY_LAST_TWO_PANE));
+        }
 
         // Manage the fragments
         masterFragment = getSupportFragmentManager().findFragmentByTag(TAG_MASTER_FRAGMENT);
@@ -35,10 +42,11 @@ public class MainActivity extends AppCompatActivity {
 
         detailFragment = getSupportFragmentManager().findFragmentByTag(TAG_DETAIL_FRAGMENT);
         if (detailFragment != null) {
+            getSupportFragmentManager().beginTransaction().remove(detailFragment).commit();
             if (viewModel.isTwoPane()) {
-                getSupportFragmentManager().beginTransaction().replace(R.id.frame_detail, detailFragment, TAG_DETAIL_FRAGMENT).commit();
+                getSupportFragmentManager().beginTransaction().replace(R.id.frame_detail, new HistoriqueColisFragment(), TAG_DETAIL_FRAGMENT).commit();
             } else {
-                getSupportFragmentManager().beginTransaction().replace(R.id.frame_master, detailFragment, TAG_DETAIL_FRAGMENT).commit();
+                getSupportFragmentManager().beginTransaction().replace(R.id.frame_master, new HistoriqueColisFragment(), TAG_DETAIL_FRAGMENT).addToBackStack(null).commit();
             }
         }
     }
@@ -64,5 +72,11 @@ public class MainActivity extends AppCompatActivity {
         } else {
             super.onBackPressed();
         }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(KEY_LAST_TWO_PANE, viewModel.isTwoPane());
     }
 }
