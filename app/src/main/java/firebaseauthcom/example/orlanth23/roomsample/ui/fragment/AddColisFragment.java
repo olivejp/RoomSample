@@ -4,6 +4,7 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +17,8 @@ import butterknife.OnClick;
 import firebaseauthcom.example.orlanth23.roomsample.R;
 import firebaseauthcom.example.orlanth23.roomsample.Utilities;
 import firebaseauthcom.example.orlanth23.roomsample.database.local.entity.ColisEntity;
+import firebaseauthcom.example.orlanth23.roomsample.database.local.repository.ColisRepository;
+import firebaseauthcom.example.orlanth23.roomsample.job.SyncTask;
 import firebaseauthcom.example.orlanth23.roomsample.ui.fragment.viewmodel.AddColisFragmentViewModel;
 
 public class AddColisFragment extends Fragment {
@@ -34,20 +37,27 @@ public class AddColisFragment extends Fragment {
 
     @OnClick(R.id.fab_add_colis)
     public void addColisCallbackListener(View v) {
+        Utilities.hideKeyboard(getActivity());
         if (!editIdParcel.getText().toString().isEmpty()) {
-            Utilities.hideKeyboard(getActivity());
-            ColisEntity colisEntity = new ColisEntity();
-            colisEntity.setIdColis(editIdParcel.getText().toString().toUpperCase());
-            colisEntity.setDescription((editDescriptionParcel.getText() != null) ? editDescriptionParcel.getText().toString() : null);
-            colisEntity.setDeleted(0);
-            viewModel.insertColis(colisEntity);
-            getActivity().finish();
-        }
-    }
+            String idColis = editIdParcel.getText().toString();
+            if (ColisRepository.getInstance(getContext()).exist(idColis)) {
+                Snackbar.make(v, String.format("Le colis %s est déjà suivi", idColis), Snackbar.LENGTH_LONG).show();
+            } else {
+                ColisEntity colisEntity = new ColisEntity();
+                colisEntity.setIdColis(idColis);
+                colisEntity.setDescription((editDescriptionParcel.getText() != null) ? editDescriptionParcel.getText().toString() : null);
+                colisEntity.setDeleted(0);
+                viewModel.insertColis(colisEntity);
 
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
+                // Snackbar to say that we follow this new item
+                Snackbar.make(v, String.format("%s ajouté au suivi", idColis), Snackbar.LENGTH_LONG).show();
+
+                // Launch asyncTask to query the server
+                new SyncTask(getContext(), idColis).execute();
+
+                getActivity().finish();
+            }
+        }
     }
 
     @Override
