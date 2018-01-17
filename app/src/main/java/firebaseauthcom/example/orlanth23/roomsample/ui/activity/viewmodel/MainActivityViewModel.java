@@ -29,7 +29,6 @@ public class MainActivityViewModel extends AndroidViewModel {
     private RequestBuilder<PictureDrawable> requester;
     private ColisWithSteps colisWithStepsSelected;
     private boolean twoPane;
-    private boolean lastTwoPane;
 
     public MainActivityViewModel(@NonNull Application application) {
         super(application);
@@ -54,19 +53,6 @@ public class MainActivityViewModel extends AndroidViewModel {
 
     public void setTwoPane(boolean twoPane) {
         this.twoPane = twoPane;
-    }
-
-    /**
-     * Return True if we had two panes, false otherwise
-     *
-     * @return boolean
-     */
-    public boolean wasTwoPane() {
-        return lastTwoPane;
-    }
-
-    public void setLastTwoPane(boolean wasTwoPane) {
-        this.lastTwoPane = wasTwoPane;
     }
 
     /**

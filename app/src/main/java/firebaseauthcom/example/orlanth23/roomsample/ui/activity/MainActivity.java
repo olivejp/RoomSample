@@ -14,13 +14,11 @@ import firebaseauthcom.example.orlanth23.roomsample.ui.fragment.MainActivityFrag
 public class MainActivity extends AppCompatActivity {
 
     public static final String TAG_MASTER_FRAGMENT = "TAG_MASTER_FRAGMENT";
-    public static final String TAG_DETAIL_FRAGMENT = "KEY_FRAGMENT_DETAIL";
-    public static final String KEY_LAST_TWO_PANE = "KEY_LAST_TWO_PANE";
+    public static final String TAG_DETAIL_FRAGMENT = "TAG_DETAIL_FRAGMENT";
 
     private Fragment masterFragment;
     private Fragment detailFragment;
     private MainActivityViewModel viewModel;
-    private boolean lastTwoPane;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,16 +27,13 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         viewModel.setTwoPane(findViewById(R.id.frame_detail) != null);
 
-        if (savedInstanceState != null && savedInstanceState.containsKey(KEY_LAST_TWO_PANE)) {
-            viewModel.setLastTwoPane(savedInstanceState.getBoolean(KEY_LAST_TWO_PANE));
-        }
-
         // Manage the fragments
         masterFragment = getSupportFragmentManager().findFragmentByTag(TAG_MASTER_FRAGMENT);
         if (masterFragment == null) {
             masterFragment = new MainActivityFragment();
         }
         getSupportFragmentManager().beginTransaction().replace(R.id.frame_master, masterFragment, TAG_MASTER_FRAGMENT).commit();
+
 
         detailFragment = getSupportFragmentManager().findFragmentByTag(TAG_DETAIL_FRAGMENT);
         if (detailFragment != null) {
@@ -74,9 +69,4 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putBoolean(KEY_LAST_TWO_PANE, viewModel.isTwoPane());
-    }
 }
