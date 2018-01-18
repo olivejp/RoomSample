@@ -9,7 +9,6 @@ import android.view.MenuItem;
 import firebaseauthcom.example.orlanth23.roomsample.R;
 import firebaseauthcom.example.orlanth23.roomsample.database.local.entity.ColisEntity;
 import firebaseauthcom.example.orlanth23.roomsample.database.local.repository.ColisRepository;
-import firebaseauthcom.example.orlanth23.roomsample.job.SyncColisService;
 import firebaseauthcom.example.orlanth23.roomsample.ui.NoticeDialogFragment;
 import firebaseauthcom.example.orlanth23.roomsample.ui.activity.viewmodel.MainActivityViewModel;
 import firebaseauthcom.example.orlanth23.roomsample.ui.fragment.HistoriqueColisFragment;

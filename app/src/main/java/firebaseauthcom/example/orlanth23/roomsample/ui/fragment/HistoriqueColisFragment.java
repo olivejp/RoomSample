@@ -15,10 +15,8 @@ import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import firebaseauthcom.example.orlanth23.roomsample.R;
-import firebaseauthcom.example.orlanth23.roomsample.database.local.entity.ColisWithSteps;
 import firebaseauthcom.example.orlanth23.roomsample.ui.activity.viewmodel.MainActivityViewModel;
 import firebaseauthcom.example.orlanth23.roomsample.ui.adapter.EtapeAdapter;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 
 
 public class HistoriqueColisFragment extends Fragment {
@@ -60,19 +58,16 @@ public class HistoriqueColisFragment extends Fragment {
         }
 
         // Populate the adapter with the steps from the colis
-        ColisWithSteps colisWithSteps = viewModel.getSelectedColis();
-        if (colisWithSteps != null) {
-            String idColis = viewModel.getSelectedColis().colisEntity.getIdColis();
-            viewModel.getListStepsOrderedByIdColis(idColis)
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(etapeEntities -> {
-                        mEtapeAdapter.setEtapes(etapeEntities);
-                        boolean isEtapeListEmpty = etapeEntities == null || etapeEntities.isEmpty();
-                        textObjectNotFound.setVisibility(isEtapeListEmpty ? View.VISIBLE : View.GONE);
-                        mRecyclerView.setVisibility(isEtapeListEmpty ? View.GONE : View.VISIBLE);
-                        appCompatActivity.setTitle(idColis);
-                    });
-        }
+        viewModel.getSelectedColis().observe(this, colisWithSteps -> {
+            if (colisWithSteps != null) {
+                mEtapeAdapter.setEtapes(colisWithSteps.stepEntityList);
+                boolean isEtapeListEmpty = colisWithSteps.stepEntityList == null || colisWithSteps.stepEntityList.isEmpty();
+                textObjectNotFound.setVisibility(isEtapeListEmpty ? View.VISIBLE : View.GONE);
+                mRecyclerView.setVisibility(isEtapeListEmpty ? View.GONE : View.VISIBLE);
+                appCompatActivity.setTitle(colisWithSteps.colisEntity.getIdColis());
+            }
+        });
+
 
         return rootView;
     }

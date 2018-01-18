@@ -7,7 +7,6 @@ import java.util.List;
 
 import firebaseauthcom.example.orlanth23.roomsample.DateConverter;
 import firebaseauthcom.example.orlanth23.roomsample.database.local.ColisDatabase;
-import firebaseauthcom.example.orlanth23.roomsample.database.local.ColisDatabase;
 import firebaseauthcom.example.orlanth23.roomsample.database.local.dao.ColisDao;
 import firebaseauthcom.example.orlanth23.roomsample.database.local.entity.ColisEntity;
 import firebaseauthcom.example.orlanth23.roomsample.database.local.repository.task.ColisRepositoryTask;
@@ -98,12 +97,12 @@ public class ColisRepository {
     }
 
     public Maybe<Integer> count(String idColis) {
-        return this.colisDao.exist(idColis);
+        return this.colisDao.count(idColis);
     }
 
     /**
-     * Check if the idColis exist in the DB.
-     * If it exist we just update, otherwise insert.
+     * Check if the idColis count in the DB.
+     * If it count we just update, otherwise insert.
      *
      * @param colisEntities to save (update or insert)
      */
@@ -119,6 +118,14 @@ public class ColisRepository {
                             insert(colisEntity);
                         }
                     });
+        }
+    }
+
+    public LiveData<List<ColisEntity>> getLiveAllColis(boolean active){
+        if (active) {
+            return this.colisDao.listLiveColisActifs();
+        }else{
+            return this.colisDao.listLiveColisSupprimes();
         }
     }
 

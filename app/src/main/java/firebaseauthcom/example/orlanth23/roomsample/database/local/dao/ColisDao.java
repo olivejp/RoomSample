@@ -18,7 +18,7 @@ import io.reactivex.Single;
 public interface ColisDao extends AbstractDao<ColisEntity>{
 
     @Query("SELECT COUNT(*) FROM colis WHERE idColis = :idColis")
-    Maybe<Integer> exist(String idColis);
+    Maybe<Integer> count(String idColis);
 
     @Query("SELECT * FROM colis WHERE DELETED <> '1'")
     Maybe<List<ColisEntity>> listMaybeColisActifs();

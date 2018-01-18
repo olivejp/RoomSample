@@ -9,7 +9,6 @@ import android.support.annotation.Nullable;
 
 import firebaseauthcom.example.orlanth23.roomsample.database.local.entity.ColisEntity;
 import firebaseauthcom.example.orlanth23.roomsample.database.local.repository.ColisRepository;
-import io.reactivex.Scheduler;
 import io.reactivex.schedulers.Schedulers;
 
 /**
@@ -79,6 +78,7 @@ public class SyncColisService extends IntentService {
         ColisRepository.getInstance(context)
                 .getAllColis(false)
                 .subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.io())
                 .subscribe(listColisDeleted -> {
             for (ColisEntity colis : listColisDeleted) {
                 CoreSync.getInstance(context, false).deleteAfterShipTracking(colis);

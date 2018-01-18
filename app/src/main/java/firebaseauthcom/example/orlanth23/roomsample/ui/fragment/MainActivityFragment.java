@@ -21,7 +21,6 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import firebaseauthcom.example.orlanth23.roomsample.R;
 import firebaseauthcom.example.orlanth23.roomsample.Utilities;
-import firebaseauthcom.example.orlanth23.roomsample.database.local.entity.ColisEntity;
 import firebaseauthcom.example.orlanth23.roomsample.database.local.entity.ColisWithSteps;
 import firebaseauthcom.example.orlanth23.roomsample.ui.NoticeDialogFragment;
 import firebaseauthcom.example.orlanth23.roomsample.ui.RecyclerItemTouchHelper;
@@ -48,6 +47,10 @@ public class MainActivityFragment extends Fragment implements RecyclerItemTouchH
     private MainActivityViewModel viewModel;
     private AppCompatActivity appCompatActivity;
     private NoticeDialogFragment.NoticeDialogListener noticeDialogListener;
+    private ColisAdapter colisAdapter;
+    private RecyclerView.ItemDecoration itemDecoration;
+    private RecyclerItemTouchHelper recyclerItemTouchHelper = new RecyclerItemTouchHelper(0, ItemTouchHelper.LEFT, this);
+    private ItemTouchHelper itemTouchHelper = new ItemTouchHelper(recyclerItemTouchHelper);
 
     /**
      * mOnClickListener use in the Adapter to display the {@link HistoriqueColisFragment}
@@ -69,26 +72,30 @@ public class MainActivityFragment extends Fragment implements RecyclerItemTouchH
         }
     }
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        viewModel = ViewModelProviders.of(appCompatActivity).get(MainActivityViewModel.class);
+        itemDecoration = new DividerItemDecoration(appCompatActivity, DividerItemDecoration.VERTICAL);
+
+        // Initialize adapter
+        colisAdapter = new ColisAdapter(viewModel.getGlideRequester(), mOnClickListener);
+
+        // Retrieve data from the ViewModel to populate the adapter
+        viewModel.getLiveListActiveColis().observe(appCompatActivity, colisAdapter::setColisList);
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         // View creation
-        viewModel = ViewModelProviders.of(appCompatActivity).get(MainActivityViewModel.class);
         View rootView = inflater.inflate(R.layout.fragment_main_activity, container, false);
         ButterKnife.bind(this, rootView);
 
-        // Initialize adapter
-        ColisAdapter colisAdapter = new ColisAdapter(viewModel.getGlideRequester(), mOnClickListener);
-        recyclerViewColisList.setAdapter(colisAdapter);
-        recyclerViewColisList.addItemDecoration(new DividerItemDecoration(appCompatActivity, DividerItemDecoration.VERTICAL));
-
         // Add Swipe to the recycler view
-        ItemTouchHelper.SimpleCallback itemTouchHelperCallback = new RecyclerItemTouchHelper(0, ItemTouchHelper.LEFT, this);
-        new ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(recyclerViewColisList);
-
-        // Retrieve data from the ViewModel to populate the adapter
-        viewModel.getLiveListActiveColis().observe(appCompatActivity, colisAdapter::setColisList);
-
+        recyclerViewColisList.setAdapter(colisAdapter);
+        recyclerViewColisList.addItemDecoration(itemDecoration);
+        itemTouchHelper.attachToRecyclerView(recyclerViewColisList);
         return rootView;
     }
 

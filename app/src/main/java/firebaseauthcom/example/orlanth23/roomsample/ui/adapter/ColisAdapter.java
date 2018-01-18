@@ -143,7 +143,6 @@ public class ColisAdapter extends RecyclerView.Adapter<ColisAdapter.ViewHolderCo
         if (list != null && !list.isEmpty()) {
             lastEtape = list.get(list.size() - 1);
         }
-
         bindColis(holder, colis);
         bindEtape(holder, lastEtape);
     }

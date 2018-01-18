@@ -15,9 +15,6 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import firebaseauthcom.example.orlanth23.roomsample.R;
 import firebaseauthcom.example.orlanth23.roomsample.Utilities;
-import firebaseauthcom.example.orlanth23.roomsample.database.local.entity.ColisEntity;
-import firebaseauthcom.example.orlanth23.roomsample.database.local.repository.ColisRepository;
-import firebaseauthcom.example.orlanth23.roomsample.job.SyncTask;
 import firebaseauthcom.example.orlanth23.roomsample.ui.fragment.viewmodel.AddColisFragmentViewModel;
 
 public class AddColisFragment extends Fragment {
@@ -36,34 +33,28 @@ public class AddColisFragment extends Fragment {
 
     @OnClick(R.id.fab_add_colis)
     public void addColisCallbackListener(View v) {
+        // On cache le clavier
         Utilities.hideKeyboard(getActivity());
+
         if (!editIdParcel.getText().toString().isEmpty()) {
             String idColis = editIdParcel.getText().toString();
+            String description = (editDescriptionParcel.getText() != null) ? editDescriptionParcel.getText().toString() : null;
 
-            ColisRepository.getInstance(getContext()).findById(idColis).subscribe(colisFromDb -> {
-                if (colisFromDb.isDeleted()) {
-                    colisFromDb.setDeleted(0);
-                    viewModel.saveColis(colisFromDb);
+            viewModel.findById(idColis).subscribe(colisEntity -> {
+                if (colisEntity.isDeleted()) {
+                    viewModel.deleteColis(idColis);
+                    callVmToCreateColis(idColis, description);
                 } else {
                     Snackbar.make(v, String.format("Le colis %s est déjà suivi", idColis), Snackbar.LENGTH_LONG).show();
                 }
-                getActivity().finish();
-            }, throwable -> {
-                ColisEntity colisEntity = new ColisEntity();
-                colisEntity.setIdColis(idColis);
-                colisEntity.setDescription((editDescriptionParcel.getText() != null) ? editDescriptionParcel.getText().toString() : null);
-                colisEntity.setDeleted(0);
-                viewModel.saveColis(colisEntity);
-
-                // Snackbar to say that we follow this new item
-                Snackbar.make(v, String.format("%s ajouté au suivi", idColis), Snackbar.LENGTH_LONG).show();
-
-                // Launch asyncTask to query the server
-                new SyncTask(getContext(), idColis).execute();
-
-                getActivity().finish();
-            });
+            }, throwable -> callVmToCreateColis(idColis, description));
         }
+    }
+
+    private void callVmToCreateColis(String idColis, String description) {
+        viewModel.saveColis(idColis, description);
+        viewModel.syncColis(idColis);
+        getActivity().finish();
     }
 
     @Override

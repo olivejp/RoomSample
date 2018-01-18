@@ -1,16 +1,14 @@
 package firebaseauthcom.example.orlanth23.roomsample.database.local.repository;
 
-import android.arch.lifecycle.LiveData;
 import android.content.Context;
 
 import java.util.List;
 
 import firebaseauthcom.example.orlanth23.roomsample.database.local.ColisDatabase;
-import firebaseauthcom.example.orlanth23.roomsample.database.local.ColisDatabase;
 import firebaseauthcom.example.orlanth23.roomsample.database.local.dao.ColisWithStepsDao;
 import firebaseauthcom.example.orlanth23.roomsample.database.local.entity.ColisWithSteps;
+import io.reactivex.Flowable;
 import io.reactivex.Maybe;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
 /**
@@ -39,13 +37,15 @@ public class ColisWithStepsRepository {
                 .subscribeOn(Schedulers.io());
     }
 
-    public LiveData<List<ColisWithSteps>> getAllActiveColisWithSteps() {
-        return this.colisWithStepsDao.getLiveActiveColisWithSteps();
-    }
-
     public Maybe<List<ColisWithSteps>> getActiveColisWithSteps() {
         return this.colisWithStepsDao.getMaybeActiveColisWithSteps()
-                .observeOn(AndroidSchedulers.mainThread())
+                .observeOn(Schedulers.io())
+                .subscribeOn(Schedulers.io());
+    }
+
+    public Flowable<List<ColisWithSteps>> getActiveFlowableColisWithSteps() {
+        return this.colisWithStepsDao.getFlowableActiveColisWithSteps()
+                .observeOn(Schedulers.io())
                 .subscribeOn(Schedulers.io());
     }
 }
