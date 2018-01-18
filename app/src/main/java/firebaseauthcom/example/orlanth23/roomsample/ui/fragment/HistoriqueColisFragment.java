@@ -18,6 +18,7 @@ import firebaseauthcom.example.orlanth23.roomsample.R;
 import firebaseauthcom.example.orlanth23.roomsample.database.local.entity.ColisWithSteps;
 import firebaseauthcom.example.orlanth23.roomsample.ui.activity.viewmodel.MainActivityViewModel;
 import firebaseauthcom.example.orlanth23.roomsample.ui.adapter.EtapeAdapter;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 
 
 public class HistoriqueColisFragment extends Fragment {
@@ -51,19 +52,26 @@ public class HistoriqueColisFragment extends Fragment {
         EtapeAdapter mEtapeAdapter = new EtapeAdapter();
         mRecyclerView.setAdapter(mEtapeAdapter);
 
+        // Manage the back button in the navigation bar
         if (!viewModel.isTwoPane() && appCompatActivity.getSupportActionBar() != null) {
             appCompatActivity.getSupportActionBar().setHomeButtonEnabled(true);
             appCompatActivity.getSupportActionBar().setDisplayShowHomeEnabled(true);
             appCompatActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
+        // Populate the adapter with the steps from the colis
         ColisWithSteps colisWithSteps = viewModel.getSelectedColis();
         if (colisWithSteps != null) {
-            mEtapeAdapter.setEtapes(colisWithSteps.etapeEntityList);
-            boolean isEtapeListEmpty = colisWithSteps.etapeEntityList == null || colisWithSteps.etapeEntityList.isEmpty();
-            textObjectNotFound.setVisibility(isEtapeListEmpty ? View.VISIBLE : View.GONE);
-            mRecyclerView.setVisibility(isEtapeListEmpty ? View.GONE : View.VISIBLE);
-            appCompatActivity.setTitle(colisWithSteps.colisEntity.getIdColis());
+            String idColis = viewModel.getSelectedColis().colisEntity.getIdColis();
+            viewModel.getListStepsOrderedByIdColis(idColis)
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(etapeEntities -> {
+                        mEtapeAdapter.setEtapes(etapeEntities);
+                        boolean isEtapeListEmpty = etapeEntities == null || etapeEntities.isEmpty();
+                        textObjectNotFound.setVisibility(isEtapeListEmpty ? View.VISIBLE : View.GONE);
+                        mRecyclerView.setVisibility(isEtapeListEmpty ? View.GONE : View.VISIBLE);
+                        appCompatActivity.setTitle(idColis);
+                    });
         }
 
         return rootView;
