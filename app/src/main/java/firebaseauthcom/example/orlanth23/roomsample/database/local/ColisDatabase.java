@@ -15,7 +15,7 @@ import firebaseauthcom.example.orlanth23.roomsample.database.local.entity.StepEn
  * Created by orlanth23 on 01/07/2017.
  */
 
-@Database(version = 28, entities = {ColisEntity.class, StepEntity.class})
+@Database(version = 29, entities = {ColisEntity.class, StepEntity.class})
 public abstract class ColisDatabase extends RoomDatabase {
     private static ColisDatabase INSTANCE;
 

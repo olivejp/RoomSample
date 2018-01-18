@@ -38,6 +38,8 @@ public class AddColisFragmentViewModel extends AndroidViewModel {
         colisEntity.setIdColis(idColis);
         colisEntity.setDescription(description);
         colisEntity.setDeleted(0);
+        colisEntity.setSyncLockDate(0L);
+        colisEntity.setSyncLock(0L);
         colisRepository.insert(colisEntity);
     }
 

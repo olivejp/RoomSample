@@ -24,6 +24,8 @@ public class ColisEntity implements Parcelable {
     private String slug;
     private Integer fbLinked;
     private String afterShipId;
+    private Long syncLock;
+    private Long syncLockDate;
 
     public ColisEntity() {
     }
@@ -105,6 +107,23 @@ public class ColisEntity implements Parcelable {
         this.afterShipId = afterShipId;
     }
 
+    public Long getSyncLock() {
+        return syncLock;
+    }
+
+    public void setSyncLock(Long syncLock) {
+        this.syncLock = syncLock;
+    }
+
+    public Long getSyncLockDate() {
+        return syncLockDate;
+    }
+
+    public void setSyncLockDate(Long syncLockDate) {
+        this.syncLockDate = syncLockDate;
+    }
+
+
     @Override
     public int describeContents() {
         return 0;
@@ -120,6 +139,8 @@ public class ColisEntity implements Parcelable {
         dest.writeString(this.slug);
         dest.writeValue(this.fbLinked);
         dest.writeString(this.afterShipId);
+        dest.writeValue(this.syncLock);
+        dest.writeValue(this.syncLockDate);
     }
 
     protected ColisEntity(Parcel in) {
@@ -131,6 +152,8 @@ public class ColisEntity implements Parcelable {
         this.slug = in.readString();
         this.fbLinked = (Integer) in.readValue(Integer.class.getClassLoader());
         this.afterShipId = in.readString();
+        this.syncLock = (Long) in.readValue(Long.class.getClassLoader());
+        this.syncLockDate = (Long) in.readValue(Long.class.getClassLoader());
     }
 
     public static final Creator<ColisEntity> CREATOR = new Creator<ColisEntity>() {

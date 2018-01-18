@@ -4,6 +4,7 @@ import android.arch.lifecycle.LiveData;
 import android.content.Context;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import firebaseauthcom.example.orlanth23.roomsample.DateConverter;
 import firebaseauthcom.example.orlanth23.roomsample.database.local.ColisDatabase;
@@ -54,24 +55,50 @@ public class ColisRepository {
         new ColisRepositoryTask(colisDao, TypeTask.INSERT).execute(colisEntities);
     }
 
+    public Single<AtomicBoolean> getLock(ColisEntity colisEntity) {
+        return isLocked(colisEntity).map(isLocked -> {
+            // Si la date de sync date de plus de une minute on peut relancer le lock
+            if ((isLocked == null || !isLocked.get()) || (colisEntity.getSyncLockDate() != null && DateConverter.howLongFromNowLong(colisEntity.getSyncLockDate()) > 60 * 1000)) {
+                colisEntity.setSyncLock(1L);
+                colisEntity.setSyncLockDate(DateConverter.getNowEntity());
+                colisDao.update(colisEntity);
+                return new AtomicBoolean(true);
+            } else {
+                return new AtomicBoolean(false);
+            }
+        });
+    }
+
+    public void unlock(ColisEntity colisEntity) {
+        if (colisEntity.getIdColis() != null) {
+            colisEntity.setSyncLock(0L);
+            colisEntity.setSyncLockDate(0L);
+            colisDao.update(colisEntity);
+        }
+    }
+
+    private Single<AtomicBoolean> isLocked(ColisEntity colisEntity) {
+        return colisDao.findById(colisEntity.getIdColis())
+                .map(colisEntity1 -> new AtomicBoolean(colisEntity1.getSyncLock() != null && colisEntity1.getSyncLock() != 0));
+    }
+
     /**
      * If the colis has a link with Firebase, we pass the tag deleted to '1'
      * If the colis has a AfterShip Id, we pass the tag deleted to '1'
      * Otherwise we just delete the colis from the DB.
      * We have to wait a connection to delete the record in AfterShip or in Firebase.
      *
-     * @param colisEntities to delete or to mark as deleted. They will be deleted in the SyncColisService.
+     * @param colis to delete or to mark as deleted. They will be deleted in the SyncColisService.
      */
-    public void markAsDeleted(ColisEntity... colisEntities) {
-        for (ColisEntity colis : colisEntities) {
-            if ((colis.getFbLinked() == null || colis.getFbLinked() == 0) && (colis.getAfterShipId() == null || colis.getAfterShipId().isEmpty())) {
-                new ColisRepositoryTask(colisDao, TypeTask.DELETE).execute(colis);
-            } else {
-                colis.setDeleted(1);
-                update(colis);
-            }
+    public boolean markAsDeleted(ColisEntity colis) {
+        if ((colis.getFbLinked() == null || colis.getFbLinked() == 0) && (colis.getAfterShipId() == null || colis.getAfterShipId().isEmpty())) {
+            new ColisRepositoryTask(colisDao, TypeTask.DELETE).execute(colis);
+            return true;
+        } else {
+            colis.setDeleted(1);
+            update(colis);
+            return false;
         }
-
     }
 
     /**
@@ -121,10 +148,10 @@ public class ColisRepository {
         }
     }
 
-    public LiveData<List<ColisEntity>> getLiveAllColis(boolean active){
+    public LiveData<List<ColisEntity>> getLiveAllColis(boolean active) {
         if (active) {
             return this.colisDao.listLiveColisActifs();
-        }else{
+        } else {
             return this.colisDao.listLiveColisSupprimes();
         }
     }

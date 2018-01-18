@@ -108,6 +108,24 @@ public class DateConverter {
     }
 
     /**
+     *
+     * @param dateEntity
+     * @return la différence entre maintenant et la date passée en paramètre en format Entity
+     */
+    public static Long howLongFromNowLong(Long dateEntity) {
+        if (dateEntity != null) {
+            try {
+                Date nowDate = simpleDtoDateFormat.parse(String.valueOf(getNowDto()));
+                Date myDate = simpleEntityDateFormat.parse(String.valueOf(dateEntity));
+                return Math.abs(nowDate.getTime() - myDate.getTime());
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
+
+    /**
      * @param dateDto
      * @return
      */

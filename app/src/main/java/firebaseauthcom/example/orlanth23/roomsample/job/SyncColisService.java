@@ -80,10 +80,10 @@ public class SyncColisService extends IntentService {
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.io())
                 .subscribe(listColisDeleted -> {
-            for (ColisEntity colis : listColisDeleted) {
-                CoreSync.getInstance(context, false).deleteAfterShipTracking(colis);
-            }
-        });
+                    for (ColisEntity colis : listColisDeleted) {
+                        CoreSync.getInstance(context, false).deleteAfterShipTracking(colis);
+                    }
+                });
 
     }
 
@@ -93,7 +93,9 @@ public class SyncColisService extends IntentService {
     private void handleActionSyncColis(Bundle bundle) {
         if (bundle.containsKey(ARG_ID_COLIS)) {
             String idColis = bundle.getString(ARG_ID_COLIS);
-            if (idColis != null) CoreSync.getInstance(this, false).callOptTracking(idColis);
+            ColisRepository.getInstance(this).findById(idColis).subscribe(colisEntity -> {
+                if (idColis != null) CoreSync.getInstance(this, false).callOptTracking(colisEntity);
+            });
         }
     }
 

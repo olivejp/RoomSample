@@ -6,13 +6,17 @@ import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.graphics.drawable.PictureDrawable;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.bumptech.glide.RequestBuilder;
 
 import java.util.List;
 
 import firebaseauthcom.example.orlanth23.roomsample.R;
+import firebaseauthcom.example.orlanth23.roomsample.broadcast.NetworkReceiver;
+import firebaseauthcom.example.orlanth23.roomsample.database.local.entity.ColisEntity;
 import firebaseauthcom.example.orlanth23.roomsample.database.local.entity.ColisWithSteps;
+import firebaseauthcom.example.orlanth23.roomsample.database.local.repository.ColisRepository;
 import firebaseauthcom.example.orlanth23.roomsample.database.local.repository.ColisWithStepsRepository;
 import firebaseauthcom.example.orlanth23.roomsample.job.SyncTask;
 import firebaseauthcom.example.orlanth23.roomsample.ui.glide.GlideApp;
@@ -85,7 +89,29 @@ public class MainActivityViewModel extends AndroidViewModel {
         return this.colisWithStepsList;
     }
 
-    public void launchSynchroDelete() {
-        new SyncTask(getApplication(), SyncTask.TypeSyncTask.DELETE, null).execute();
+    private void launchSyncTask(SyncTask.TypeSyncTask type, @Nullable String idColis) {
+        new SyncTask(getApplication(), type, idColis).execute();
+    }
+
+    /**
+     * Tag the colis to deleted = 1 if it had a link to Firebase or AfterShip
+     * Delete it from the DB otherwise
+     *
+     * @param colisEntity
+     */
+    public void markAsDeleted(ColisEntity colisEntity) {
+        if (!ColisRepository.getInstance(getApplication()).markAsDeleted(colisEntity)) {
+            launchSyncTask(SyncTask.TypeSyncTask.DELETE, null);
+        }
+    }
+
+    public void refresh() {
+        if (NetworkReceiver.checkConnection(getApplication())) {
+            if (colisWithStepsSelected.getValue() != null) {
+                launchSyncTask(SyncTask.TypeSyncTask.SOLO, colisWithStepsSelected.getValue().colisEntity.getIdColis());
+            } else {
+                launchSyncTask(SyncTask.TypeSyncTask.ALL, null);
+            }
+        }
     }
 }

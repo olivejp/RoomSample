@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.RecyclerView;
@@ -34,7 +35,7 @@ import static firebaseauthcom.example.orlanth23.roomsample.ui.activity.MainActiv
  * Created by orlanth23 on 14/01/2018.
  */
 
-public class MainActivityFragment extends Fragment implements RecyclerItemTouchHelper.RecyclerItemTouchHelperListener {
+public class MainActivityFragment extends Fragment implements RecyclerItemTouchHelper.RecyclerItemTouchHelperListener, SwipeRefreshLayout.OnRefreshListener {
 
     public static final String TAG = MainActivityFragment.class.getName();
     public static final String ARG_NOTICE_BUNDLE_COLIS = "ARG_NOTICE_BUNDLE_COLIS";
@@ -43,6 +44,9 @@ public class MainActivityFragment extends Fragment implements RecyclerItemTouchH
 
     @BindView(R.id.recycler_colis_list)
     public RecyclerView recyclerViewColisList;
+
+    @BindView(R.id.swipeRefreshLayout)
+    public SwipeRefreshLayout swipeRefreshLayout;
 
     private MainActivityViewModel viewModel;
     private AppCompatActivity appCompatActivity;
@@ -88,9 +92,14 @@ public class MainActivityFragment extends Fragment implements RecyclerItemTouchH
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        viewModel.setSelectedColis(null);
+
         // View creation
         View rootView = inflater.inflate(R.layout.fragment_main_activity, container, false);
         ButterKnife.bind(this, rootView);
+
+        // Add OnRefreshListener to the recyclerView
+        swipeRefreshLayout.setOnRefreshListener(this);
 
         // Add Swipe to the recycler view
         recyclerViewColisList.setAdapter(colisAdapter);
@@ -144,5 +153,11 @@ public class MainActivityFragment extends Fragment implements RecyclerItemTouchH
                     bundle,
                     noticeDialogListener);
         }
+    }
+
+    @Override
+    public void onRefresh() {
+        viewModel.refresh();
+        swipeRefreshLayout.setRefreshing(true);
     }
 }
