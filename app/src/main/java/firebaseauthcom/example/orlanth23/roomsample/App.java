@@ -35,6 +35,5 @@ public class App extends Application {
 
         // Lancement d'une synchro dès le début du programme
         SyncColisJob.launchImmediateJob();
-
     }
 }

@@ -12,9 +12,10 @@ import java.util.List;
 
 import firebaseauthcom.example.orlanth23.roomsample.R;
 import firebaseauthcom.example.orlanth23.roomsample.database.local.entity.ColisWithSteps;
-import firebaseauthcom.example.orlanth23.roomsample.database.local.entity.EtapeEntity;
+import firebaseauthcom.example.orlanth23.roomsample.database.local.entity.StepEntity;
 import firebaseauthcom.example.orlanth23.roomsample.database.local.repository.ColisWithStepsRepository;
-import firebaseauthcom.example.orlanth23.roomsample.database.local.repository.EtapeRepository;
+import firebaseauthcom.example.orlanth23.roomsample.database.local.repository.StepRepository;
+import firebaseauthcom.example.orlanth23.roomsample.job.SyncColisService;
 import firebaseauthcom.example.orlanth23.roomsample.ui.glide.GlideApp;
 import firebaseauthcom.example.orlanth23.roomsample.ui.glide.SvgSoftwareLayerSetter;
 import io.reactivex.Flowable;
@@ -28,8 +29,7 @@ import static com.bumptech.glide.load.resource.drawable.DrawableTransitionOption
 public class MainActivityViewModel extends AndroidViewModel {
 
     private ColisWithStepsRepository colisWithStepsRepository;
-    private EtapeRepository etapeRepository;
-    private LiveData<List<ColisWithSteps>> liveListActiveColis;
+    private StepRepository stepRepository;
     private RequestBuilder<PictureDrawable> requester;
     private ColisWithSteps colisWithStepsSelected;
     private boolean twoPane;
@@ -37,8 +37,7 @@ public class MainActivityViewModel extends AndroidViewModel {
     public MainActivityViewModel(@NonNull Application application) {
         super(application);
         colisWithStepsRepository = ColisWithStepsRepository.getInstance(application);
-        etapeRepository = EtapeRepository.getInstance(application);
-        liveListActiveColis = colisWithStepsRepository.getAllActiveColisWithSteps();
+        stepRepository = StepRepository.getInstance(application);
         requester = GlideApp.with(application)
                 .as(PictureDrawable.class)
                 .placeholder(R.drawable.ic_archive_grey_900_48dp)
@@ -88,10 +87,14 @@ public class MainActivityViewModel extends AndroidViewModel {
      * @return LiveData<List<ColisWithSteps>>
      */
     public LiveData<List<ColisWithSteps>> getLiveListActiveColis() {
-        return liveListActiveColis;
+        return this.colisWithStepsRepository.getAllActiveColisWithSteps();
     }
 
-    public Flowable<List<EtapeEntity>> getListStepsOrderedByIdColis(String idColis) {
-        return etapeRepository.flowableListStepsOrderedByIdColis(idColis);
+    public Flowable<List<StepEntity>> getListStepsOrderedByIdColis(String idColis) {
+        return stepRepository.flowableListStepsOrderedByIdColis(idColis);
+    }
+
+    public void launchSynchroDelete() {
+        SyncColisService.launchSynchroDelete(getApplication());
     }
 }

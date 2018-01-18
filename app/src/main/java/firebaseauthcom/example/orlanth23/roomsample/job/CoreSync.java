@@ -12,7 +12,7 @@ import firebaseauthcom.example.orlanth23.roomsample.database.local.entity.ColisE
 import firebaseauthcom.example.orlanth23.roomsample.database.local.entity.ColisWithSteps;
 import firebaseauthcom.example.orlanth23.roomsample.database.local.repository.ColisRepository;
 import firebaseauthcom.example.orlanth23.roomsample.database.local.repository.ColisWithStepsRepository;
-import firebaseauthcom.example.orlanth23.roomsample.database.local.repository.EtapeRepository;
+import firebaseauthcom.example.orlanth23.roomsample.database.local.repository.StepRepository;
 import firebaseauthcom.example.orlanth23.roomsample.job.opt.ColisDto;
 import firebaseauthcom.example.orlanth23.roomsample.job.opt.HtmlTransformer;
 import firebaseauthcom.example.orlanth23.roomsample.mapper.ColisMapper;
@@ -90,13 +90,15 @@ class CoreSync {
                 .subscribe(htmlString -> {
                             ColisDto colisDto = new ColisDto();
                             colisDto.setIdColis(trackingNumber);
+                            ColisWithSteps resultColis;
                             if (transformHtmlToColisDto(colisDto, htmlString)) {
                                 Log.d(TAG, "Transformation de la réponse OPT OK");
-                                ColisWithSteps resultColis = ColisMapper.convertToActiveEntity(colisDto);
-                                callDetectCourierAfterShip(resultColis, trackingNumber);
+                                resultColis = ColisMapper.convertToActiveEntity(colisDto);
                             } else {
                                 Log.e(TAG, "Fail to receive response from OPT service");
+                                resultColis = new ColisWithSteps();
                             }
+                            callDetectCourierAfterShip(resultColis, trackingNumber);
                         },
                         consThrowable
                 );
@@ -234,7 +236,7 @@ class CoreSync {
         ColisWithStepsRepository.getInstance(context).findActiveColisWithStepsByIdColis(resultColis.colisEntity.getIdColis())
                 .subscribe(colisWithSteps -> {
                     if (colisWithSteps != null) {
-                        if (resultColis.etapeEntityList.size() > colisWithSteps.etapeEntityList.size()) {
+                        if (resultColis.stepEntityList.size() > colisWithSteps.stepEntityList.size()) {
                             if (sendNotification) {
                                 NotificationSender.sendNotification(context, context.getString(R.string.app_name), resultColis.colisEntity.getIdColis() + " a été mis à jour.", R.drawable.ic_archive_white_48dp);
                             }
@@ -242,7 +244,7 @@ class CoreSync {
                     } else {
                         ColisRepository.getInstance(context).save(resultColis.colisEntity);
                     }
-                    EtapeRepository.getInstance(context).save(resultColis.etapeEntityList);
+                    StepRepository.getInstance(context).save(resultColis.stepEntityList);
                     ColisRepository.getInstance(context).updateLastSuccessfulUpdate(resultColis.colisEntity);
                 });
     }

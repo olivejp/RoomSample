@@ -18,7 +18,7 @@ import butterknife.ButterKnife;
 import firebaseauthcom.example.orlanth23.roomsample.DateConverter;
 import firebaseauthcom.example.orlanth23.roomsample.R;
 import firebaseauthcom.example.orlanth23.roomsample.Utilities;
-import firebaseauthcom.example.orlanth23.roomsample.database.local.entity.EtapeEntity;
+import firebaseauthcom.example.orlanth23.roomsample.database.local.entity.StepEntity;
 
 /**
  * Created by orlanth23 on 05/10/2017.
@@ -26,13 +26,13 @@ import firebaseauthcom.example.orlanth23.roomsample.database.local.entity.EtapeE
 
 public class EtapeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private List<EtapeEntity> mEtapes;
+    private List<StepEntity> mEtapes;
 
     public EtapeAdapter() {
         mEtapes = new ArrayList<>();
     }
 
-    public void setEtapes(final List<EtapeEntity> etapes) {
+    public void setEtapes(final List<StepEntity> etapes) {
         if (mEtapes == null) {
             mEtapes = etapes;
             notifyItemRangeInserted(0, etapes.size());
@@ -55,8 +55,8 @@ public class EtapeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
                 @Override
                 public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
-                    EtapeEntity newEtape = etapes.get(newItemPosition);
-                    EtapeEntity oldEtape = mEtapes.get(oldItemPosition);
+                    StepEntity newEtape = etapes.get(newItemPosition);
+                    StepEntity oldEtape = mEtapes.get(oldItemPosition);
                     return Objects.equals(newEtape.getIdEtapeAcheminement(), oldEtape.getIdEtapeAcheminement())
                             && Objects.equals(newEtape.getIdColis(), oldEtape.getIdColis())
                             && Objects.equals(newEtape.getDate(), oldEtape.getDate())
@@ -126,7 +126,7 @@ public class EtapeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         @BindView(R.id.img_step_line)
         CardView mStepLine;
 
-        EtapeEntity etape;
+        StepEntity etape;
 
         ViewHolderEtape(View view) {
             super(view);

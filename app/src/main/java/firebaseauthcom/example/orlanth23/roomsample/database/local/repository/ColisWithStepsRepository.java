@@ -36,9 +36,7 @@ public class ColisWithStepsRepository {
 
     public Maybe<ColisWithSteps> findActiveColisWithStepsByIdColis(String idColis) {
         return this.colisWithStepsDao.findMaybeActiveColisWithStepsByIdColis(idColis)
-                .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io());
-
     }
 
     public LiveData<List<ColisWithSteps>> getAllActiveColisWithSteps() {

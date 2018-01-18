@@ -1,5 +1,6 @@
 package firebaseauthcom.example.orlanth23.roomsample.database.local.repository;
 
+import android.arch.lifecycle.LiveData;
 import android.content.Context;
 
 import java.util.List;
@@ -30,7 +31,7 @@ public class ColisRepository {
         this.colisDao = db.colisDao();
     }
 
-    public synchronized static ColisRepository getInstance(Context context) {
+    public static synchronized ColisRepository getInstance(Context context) {
         if (INSTANCE == null) {
             INSTANCE = new ColisRepository(context);
         }

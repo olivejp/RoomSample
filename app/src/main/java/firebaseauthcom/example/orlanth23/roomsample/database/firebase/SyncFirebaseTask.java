@@ -10,7 +10,7 @@ import java.lang.ref.WeakReference;
 
 import firebaseauthcom.example.orlanth23.roomsample.database.local.entity.ColisWithSteps;
 import firebaseauthcom.example.orlanth23.roomsample.database.local.repository.ColisRepository;
-import firebaseauthcom.example.orlanth23.roomsample.database.local.repository.EtapeRepository;
+import firebaseauthcom.example.orlanth23.roomsample.database.local.repository.StepRepository;
 
 
 /**
@@ -22,14 +22,14 @@ public class SyncFirebaseTask extends AsyncTask<Void, Void, Void> {
     private WeakReference<Context> context;
     private DataSnapshot dataSnapshot;
     private ColisRepository repoColis;
-    private EtapeRepository repoEtape;
+    private StepRepository repoEtape;
 
 
     SyncFirebaseTask(Context context, DataSnapshot dataSnapshot) {
         if (context != null) {
             this.context = new WeakReference<>(context);
             repoColis = ColisRepository.getInstance(context);
-            repoEtape = EtapeRepository.getInstance(context);
+            repoEtape = StepRepository.getInstance(context);
         }
         this.dataSnapshot = dataSnapshot;
     }
@@ -68,7 +68,7 @@ public class SyncFirebaseTask extends AsyncTask<Void, Void, Void> {
                 } else {
                     // Colis don't count in local DB, we insert it.
                     repoColis.insert(fbColisWithSteps.colisEntity);
-                    repoEtape.insert(fbColisWithSteps.etapeEntityList);
+                    repoEtape.insert(fbColisWithSteps.stepEntityList);
                 }
             });
         }

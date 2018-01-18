@@ -9,6 +9,8 @@ import android.support.annotation.Nullable;
 
 import firebaseauthcom.example.orlanth23.roomsample.database.local.entity.ColisEntity;
 import firebaseauthcom.example.orlanth23.roomsample.database.local.repository.ColisRepository;
+import io.reactivex.Scheduler;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * This class is called by SyncTask or by SyncColisJobCreator
@@ -69,12 +71,15 @@ public class SyncColisService extends IntentService {
     }
 
     /**
-     * Lecture de tous les colis deleted dans la base de données pour suppression dans l'API AfterShip.
+     * Lecture de tous les colis deleted dans la base de données pour suppression dans l'API AfterShip et dans FireBase
      *
      * @param context
      */
     public static void launchSynchroDelete(@NonNull Context context) {
-        ColisRepository.getInstance(context).getAllColis(false).subscribe(listColisDeleted -> {
+        ColisRepository.getInstance(context)
+                .getAllColis(false)
+                .subscribeOn(Schedulers.io())
+                .subscribe(listColisDeleted -> {
             for (ColisEntity colis : listColisDeleted) {
                 CoreSync.getInstance(context, false).deleteAfterShipTracking(colis);
             }

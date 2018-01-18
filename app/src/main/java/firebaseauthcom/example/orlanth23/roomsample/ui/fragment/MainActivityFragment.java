@@ -8,6 +8,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
@@ -20,6 +21,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import firebaseauthcom.example.orlanth23.roomsample.R;
 import firebaseauthcom.example.orlanth23.roomsample.Utilities;
+import firebaseauthcom.example.orlanth23.roomsample.database.local.entity.ColisEntity;
 import firebaseauthcom.example.orlanth23.roomsample.database.local.entity.ColisWithSteps;
 import firebaseauthcom.example.orlanth23.roomsample.ui.NoticeDialogFragment;
 import firebaseauthcom.example.orlanth23.roomsample.ui.RecyclerItemTouchHelper;
@@ -38,7 +40,7 @@ public class MainActivityFragment extends Fragment implements RecyclerItemTouchH
     public static final String TAG = MainActivityFragment.class.getName();
     public static final String ARG_NOTICE_BUNDLE_COLIS = "ARG_NOTICE_BUNDLE_COLIS";
     public static final String ARG_NOTICE_BUNDLE_POSITION = "ARG_NOTICE_BUNDLE_POSITION";
-    private static final String DIALOG_TAG_DELETE = "DIALOG_TAG_DELETE";
+    public static final String DIALOG_TAG_DELETE = "DIALOG_TAG_DELETE";
 
     @BindView(R.id.recycler_colis_list)
     public RecyclerView recyclerViewColisList;
@@ -78,6 +80,7 @@ public class MainActivityFragment extends Fragment implements RecyclerItemTouchH
         // Initialize adapter
         ColisAdapter colisAdapter = new ColisAdapter(viewModel.getGlideRequester(), mOnClickListener);
         recyclerViewColisList.setAdapter(colisAdapter);
+        recyclerViewColisList.addItemDecoration(new DividerItemDecoration(appCompatActivity, DividerItemDecoration.VERTICAL));
 
         // Add Swipe to the recycler view
         ItemTouchHelper.SimpleCallback itemTouchHelperCallback = new RecyclerItemTouchHelper(0, ItemTouchHelper.LEFT, this);

@@ -9,14 +9,16 @@ import android.view.MenuItem;
 import firebaseauthcom.example.orlanth23.roomsample.R;
 import firebaseauthcom.example.orlanth23.roomsample.database.local.entity.ColisEntity;
 import firebaseauthcom.example.orlanth23.roomsample.database.local.repository.ColisRepository;
+import firebaseauthcom.example.orlanth23.roomsample.job.SyncColisService;
 import firebaseauthcom.example.orlanth23.roomsample.ui.NoticeDialogFragment;
 import firebaseauthcom.example.orlanth23.roomsample.ui.activity.viewmodel.MainActivityViewModel;
 import firebaseauthcom.example.orlanth23.roomsample.ui.fragment.HistoriqueColisFragment;
 import firebaseauthcom.example.orlanth23.roomsample.ui.fragment.MainActivityFragment;
 
 import static firebaseauthcom.example.orlanth23.roomsample.ui.fragment.MainActivityFragment.ARG_NOTICE_BUNDLE_COLIS;
+import static firebaseauthcom.example.orlanth23.roomsample.ui.fragment.MainActivityFragment.DIALOG_TAG_DELETE;
 
-public class MainActivity extends AppCompatActivity implements NoticeDialogFragment.NoticeDialogListener{
+public class MainActivity extends AppCompatActivity implements NoticeDialogFragment.NoticeDialogListener {
 
     public static final String TAG_MASTER_FRAGMENT = "TAG_MASTER_FRAGMENT";
     public static final String TAG_DETAIL_FRAGMENT = "TAG_DETAIL_FRAGMENT";
@@ -38,7 +40,6 @@ public class MainActivity extends AppCompatActivity implements NoticeDialogFragm
             masterFragment = new MainActivityFragment();
         }
         getSupportFragmentManager().beginTransaction().replace(R.id.frame_master, masterFragment, TAG_MASTER_FRAGMENT).commit();
-
 
         detailFragment = getSupportFragmentManager().findFragmentByTag(TAG_DETAIL_FRAGMENT);
         if (detailFragment != null) {
@@ -76,15 +77,19 @@ public class MainActivity extends AppCompatActivity implements NoticeDialogFragm
 
     @Override
     public void onDialogPositiveClick(NoticeDialogFragment dialog) {
-        // Récupération du bundle qu'on a envoyé au NoticeDialogFragment
-        if (dialog.getBundle() != null && dialog.getBundle().containsKey(ARG_NOTICE_BUNDLE_COLIS)) {
+        if (dialog.getTag() != null && dialog.getTag().equals(DIALOG_TAG_DELETE)) {
+            // Récupération du bundle qu'on a envoyé au NoticeDialogFragment
+            if (dialog.getBundle() != null && dialog.getBundle().containsKey(ARG_NOTICE_BUNDLE_COLIS)) {
 
-            // Récupération du colis présent dans le bundle
-            ColisEntity colisEntity = dialog.getBundle().getParcelable(ARG_NOTICE_BUNDLE_COLIS);
-            if (colisEntity != null) {
+                // Récupération du colis présent dans le bundle
+                ColisEntity colisEntity = dialog.getBundle().getParcelable(ARG_NOTICE_BUNDLE_COLIS);
+                if (colisEntity != null) {
 
-                // Mise à jour du colis dans la Db pour le passer à Deleted
-                ColisRepository.getInstance(getApplicationContext()).markAsDeleted(colisEntity);
+                    // Mise à jour du colis dans la Db pour le passer à Deleted et appel du service de synchro pour suppression
+                    // dans les autres services AfterShip et Firebase
+                    ColisRepository.getInstance(getApplicationContext()).markAsDeleted(colisEntity);
+                    viewModel.launchSynchroDelete();
+                }
             }
         }
     }

@@ -15,10 +15,10 @@ public class ColisWithSteps {
     public ColisEntity colisEntity;
 
     @Relation(parentColumn = "idColis", entityColumn = "idColis")
-    public List<EtapeEntity> etapeEntityList;
+    public List<StepEntity> stepEntityList;
 
     public ColisWithSteps() {
         this.colisEntity = new ColisEntity();
-        this.etapeEntityList = new ArrayList<>();
+        this.stepEntityList = new ArrayList<>();
     }
 }

@@ -38,7 +38,7 @@ import firebaseauthcom.example.orlanth23.roomsample.R;
 import firebaseauthcom.example.orlanth23.roomsample.Utilities;
 import firebaseauthcom.example.orlanth23.roomsample.database.local.entity.ColisEntity;
 import firebaseauthcom.example.orlanth23.roomsample.database.local.entity.ColisWithSteps;
-import firebaseauthcom.example.orlanth23.roomsample.database.local.entity.EtapeEntity;
+import firebaseauthcom.example.orlanth23.roomsample.database.local.entity.StepEntity;
 
 public class ColisAdapter extends RecyclerView.Adapter<ColisAdapter.ViewHolderColisAdapter> {
 
@@ -115,7 +115,7 @@ public class ColisAdapter extends RecyclerView.Adapter<ColisAdapter.ViewHolderCo
         }
     }
 
-    private void bindEtape(ViewHolderColisAdapter holder, EtapeEntity etape) {
+    private void bindEtape(ViewHolderColisAdapter holder, StepEntity etape) {
         if (etape != null) {
             holder.mStepLastDate.setText(DateConverter.convertDateEntityToUi(etape.getDate()));
             holder.mStepLastLocalisation.setText(etape.getLocalisation());
@@ -138,8 +138,8 @@ public class ColisAdapter extends RecyclerView.Adapter<ColisAdapter.ViewHolderCo
         holder.colisWithSteps = colisEntities.get(position);
         holder.mConstraintDetailColisLayout.setTag(holder.colisWithSteps);
         ColisEntity colis = holder.colisWithSteps.colisEntity;
-        List<EtapeEntity> list = holder.colisWithSteps.etapeEntityList;
-        EtapeEntity lastEtape = null;
+        List<StepEntity> list = holder.colisWithSteps.stepEntityList;
+        StepEntity lastEtape = null;
         if (list != null && !list.isEmpty()) {
             lastEtape = list.get(list.size() - 1);
         }

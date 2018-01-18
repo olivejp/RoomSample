@@ -2,8 +2,11 @@ package firebaseauthcom.example.orlanth23.roomsample.database.local.entity;
 
 import android.arch.persistence.room.TypeConverter;
 
-import static firebaseauthcom.example.orlanth23.roomsample.database.local.entity.EtapeEntity.EtapeOrigine.AFTER_SHIP;
-import static firebaseauthcom.example.orlanth23.roomsample.database.local.entity.EtapeEntity.EtapeOrigine.OPT;
+import firebaseauthcom.example.orlanth23.roomsample.database.local.StepOrigine;
+
+import static firebaseauthcom.example.orlanth23.roomsample.database.local.StepOrigine.AFTER_SHIP;
+import static firebaseauthcom.example.orlanth23.roomsample.database.local.StepOrigine.OPT;
+
 
 /**
  * Created by orlanth23 on 10/01/2018.
@@ -11,7 +14,7 @@ import static firebaseauthcom.example.orlanth23.roomsample.database.local.entity
 
 public class OrigineConverter {
     @TypeConverter
-    public static EtapeEntity.EtapeOrigine getValue(String value) {
+    public static StepOrigine getValue(String value) {
         if (value.equals(AFTER_SHIP.getValue())) {
             return AFTER_SHIP;
         } else if (value.equals(OPT.getValue())) {
@@ -22,7 +25,7 @@ public class OrigineConverter {
     }
 
     @TypeConverter
-    public static String toValue(EtapeEntity.EtapeOrigine origine) {
+    public static String toValue(StepOrigine origine) {
         return origine.getValue();
     }
 }

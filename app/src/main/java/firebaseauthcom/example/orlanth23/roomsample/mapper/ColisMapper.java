@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import firebaseauthcom.example.orlanth23.roomsample.database.local.entity.ColisWithSteps;
-import firebaseauthcom.example.orlanth23.roomsample.database.local.entity.EtapeEntity;
+import firebaseauthcom.example.orlanth23.roomsample.database.local.entity.StepEntity;
 import firebaseauthcom.example.orlanth23.roomsample.job.aftership.Checkpoint;
 import firebaseauthcom.example.orlanth23.roomsample.job.aftership.TrackingData;
 import firebaseauthcom.example.orlanth23.roomsample.job.opt.ColisDto;
@@ -37,11 +37,11 @@ public class ColisMapper {
         colis.colisEntity.setIdColis(dto.getIdColis());
         colis.colisEntity.setDeleted(0);
         if (dto.getEtapeDtoArrayList() != null && !dto.getEtapeDtoArrayList().isEmpty()) {
-            List<EtapeEntity> listEtapeEntity = new ArrayList<>();
+            List<StepEntity> listStepEntity = new ArrayList<>();
             for (EtapeDto etapeDto : dto.getEtapeDtoArrayList()) {
-                listEtapeEntity.add(EtapeMapper.convertToEntity(dto.getIdColis(), etapeDto));
+                listStepEntity.add(EtapeMapper.convertToEntity(dto.getIdColis(), etapeDto));
             }
-            colis.etapeEntityList = listEtapeEntity;
+            colis.stepEntityList = listStepEntity;
         }
         return colis;
     }
@@ -57,8 +57,8 @@ public class ColisMapper {
         Log.d(TAG, "(convertTrackingDataToEntity)");
         resultColis.colisEntity.setAfterShipId(trackingData.getId());
         for (Checkpoint checkpoint : trackingData.getCheckpoints()) {
-            EtapeEntity etapeEntity = createEtapeFromCheckpoint(resultColis.colisEntity.getIdColis(), checkpoint);
-            resultColis.etapeEntityList.add(etapeEntity);
+            StepEntity stepEntity = createEtapeFromCheckpoint(resultColis.colisEntity.getIdColis(), checkpoint);
+            resultColis.stepEntityList.add(stepEntity);
         }
         return resultColis;
     }

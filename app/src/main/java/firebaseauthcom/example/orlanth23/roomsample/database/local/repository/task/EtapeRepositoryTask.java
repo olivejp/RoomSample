@@ -2,34 +2,34 @@ package firebaseauthcom.example.orlanth23.roomsample.database.local.repository.t
 
 import android.os.AsyncTask;
 
-import firebaseauthcom.example.orlanth23.roomsample.database.local.dao.EtapeDao;
-import firebaseauthcom.example.orlanth23.roomsample.database.local.entity.EtapeEntity;
+import firebaseauthcom.example.orlanth23.roomsample.database.local.dao.StepDao;
+import firebaseauthcom.example.orlanth23.roomsample.database.local.entity.StepEntity;
 
 /**
  * Created by orlanth23 on 11/01/2018.
  */
 
-public class EtapeRepositoryTask extends AsyncTask<EtapeEntity, Void, Void> {
+public class EtapeRepositoryTask extends AsyncTask<StepEntity, Void, Void> {
 
     private TypeTask typeTask;
-    private EtapeDao etapeDao;
+    private StepDao stepDao;
 
-    public EtapeRepositoryTask(EtapeDao etapeDao, TypeTask typeTask) {
+    public EtapeRepositoryTask(StepDao stepDao, TypeTask typeTask) {
         this.typeTask = typeTask;
-        this.etapeDao = etapeDao;
+        this.stepDao = stepDao;
     }
 
     @Override
-    protected Void doInBackground(EtapeEntity... etapeEntities) {
+    protected Void doInBackground(StepEntity... etapeEntities) {
         switch (this.typeTask) {
             case DELETE:
-                etapeDao.delete(etapeEntities);
+                stepDao.delete(etapeEntities);
                 break;
             case INSERT:
-                etapeDao.insert(etapeEntities);
+                stepDao.insert(etapeEntities);
                 break;
             case UPDATE:
-                etapeDao.update(etapeEntities);
+                stepDao.update(etapeEntities);
                 break;
         }
         return null;
