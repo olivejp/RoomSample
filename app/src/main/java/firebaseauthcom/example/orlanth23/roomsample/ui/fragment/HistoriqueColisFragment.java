@@ -4,6 +4,7 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
@@ -27,7 +28,9 @@ public class HistoriqueColisFragment extends Fragment {
     @BindView(R.id.text_object_not_found)
     TextView textObjectNotFound;
 
+    private MainActivityViewModel viewModel;
     private AppCompatActivity appCompatActivity;
+    private EtapeAdapter etapeAdapter;
 
     public HistoriqueColisFragment() {
         // Required empty public constructor
@@ -40,15 +43,19 @@ public class HistoriqueColisFragment extends Fragment {
     }
 
     @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        viewModel = ViewModelProviders.of(appCompatActivity).get(MainActivityViewModel.class);
+        etapeAdapter = new EtapeAdapter();
+    }
+
+    @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_historique_colis, container, false);
         ButterKnife.bind(this, rootView);
 
-        MainActivityViewModel viewModel = ViewModelProviders.of(appCompatActivity).get(MainActivityViewModel.class);
-
-        EtapeAdapter mEtapeAdapter = new EtapeAdapter();
-        mRecyclerView.setAdapter(mEtapeAdapter);
+        mRecyclerView.setAdapter(etapeAdapter);
 
         // Manage the back button in the navigation bar
         if (!viewModel.isTwoPane() && appCompatActivity.getSupportActionBar() != null) {
@@ -60,7 +67,7 @@ public class HistoriqueColisFragment extends Fragment {
         // Populate the adapter with the steps from the colis
         viewModel.getSelectedColis().observe(this, colisWithSteps -> {
             if (colisWithSteps != null) {
-                mEtapeAdapter.setEtapes(colisWithSteps.stepEntityList);
+                etapeAdapter.setEtapes(colisWithSteps.stepEntityList);
                 boolean isEtapeListEmpty = colisWithSteps.stepEntityList == null || colisWithSteps.stepEntityList.isEmpty();
                 textObjectNotFound.setVisibility(isEtapeListEmpty ? View.VISIBLE : View.GONE);
                 mRecyclerView.setVisibility(isEtapeListEmpty ? View.GONE : View.VISIBLE);

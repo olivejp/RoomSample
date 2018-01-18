@@ -1,6 +1,5 @@
 package firebaseauthcom.example.orlanth23.roomsample.database.local.dao;
 
-import android.arch.lifecycle.LiveData;
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Query;
 import android.arch.persistence.room.Transaction;
@@ -16,10 +15,6 @@ import io.reactivex.Maybe;
  */
 @Dao
 public interface ColisWithStepsDao {
-    @Transaction
-    @Query("SELECT * FROM colis WHERE deleted <> 1")
-    LiveData<List<ColisWithSteps>> getLiveActiveColisWithSteps();
-
     @Transaction
     @Query("SELECT * FROM colis WHERE idColis = :idColis AND deleted <> 1")
     Maybe<ColisWithSteps> findMaybeActiveColisWithStepsByIdColis(String idColis);
