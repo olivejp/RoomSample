@@ -47,6 +47,9 @@ public class MainActivityFragment extends Fragment implements RecyclerItemTouchH
     private AppCompatActivity appCompatActivity;
     private NoticeDialogFragment.NoticeDialogListener noticeDialogListener;
 
+    /**
+     * mOnClickListener use in the Adapter to display the {@link HistoriqueColisFragment}
+     */
     private View.OnClickListener mOnClickListener = (View v) -> {
         ColisWithSteps colis = (ColisWithSteps) v.getTag();
         viewModel.setSelectedColis(colis);
@@ -86,12 +89,22 @@ public class MainActivityFragment extends Fragment implements RecyclerItemTouchH
         return rootView;
     }
 
+    /**
+     * Call the Activity to add a new Colis
+     *
+     * @param v
+     */
     @OnClick(R.id.fab_add_colis)
     public void addColis(View v) {
         Intent intent = new Intent(getContext(), AddColisActivity.class);
         startActivity(intent);
     }
 
+    /**
+     * Depending on the parameter twoPane we display the HistoriqueColisFragment in a different frame
+     *
+     * @param twoPane
+     */
     private void displayHistorique(boolean twoPane) {
         if (getFragmentManager() != null) {
             if (twoPane) {

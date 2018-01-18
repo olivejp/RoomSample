@@ -12,9 +12,12 @@ import java.util.List;
 
 import firebaseauthcom.example.orlanth23.roomsample.R;
 import firebaseauthcom.example.orlanth23.roomsample.database.local.entity.ColisWithSteps;
+import firebaseauthcom.example.orlanth23.roomsample.database.local.entity.EtapeEntity;
 import firebaseauthcom.example.orlanth23.roomsample.database.local.repository.ColisWithStepsRepository;
+import firebaseauthcom.example.orlanth23.roomsample.database.local.repository.EtapeRepository;
 import firebaseauthcom.example.orlanth23.roomsample.ui.glide.GlideApp;
 import firebaseauthcom.example.orlanth23.roomsample.ui.glide.SvgSoftwareLayerSetter;
+import io.reactivex.Flowable;
 
 import static com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade;
 
@@ -25,6 +28,7 @@ import static com.bumptech.glide.load.resource.drawable.DrawableTransitionOption
 public class MainActivityViewModel extends AndroidViewModel {
 
     private ColisWithStepsRepository colisWithStepsRepository;
+    private EtapeRepository etapeRepository;
     private LiveData<List<ColisWithSteps>> liveListActiveColis;
     private RequestBuilder<PictureDrawable> requester;
     private ColisWithSteps colisWithStepsSelected;
@@ -33,6 +37,7 @@ public class MainActivityViewModel extends AndroidViewModel {
     public MainActivityViewModel(@NonNull Application application) {
         super(application);
         colisWithStepsRepository = ColisWithStepsRepository.getInstance(application);
+        etapeRepository = EtapeRepository.getInstance(application);
         liveListActiveColis = colisWithStepsRepository.getAllActiveColisWithSteps();
         requester = GlideApp.with(application)
                 .as(PictureDrawable.class)
@@ -86,4 +91,7 @@ public class MainActivityViewModel extends AndroidViewModel {
         return liveListActiveColis;
     }
 
+    public Flowable<List<EtapeEntity>> getListStepsOrderedByIdColis(String idColis) {
+        return etapeRepository.flowableListStepsOrderedByIdColis(idColis);
+    }
 }

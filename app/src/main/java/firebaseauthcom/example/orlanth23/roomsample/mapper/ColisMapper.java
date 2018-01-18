@@ -31,10 +31,11 @@ public class ColisMapper {
      * @param dto
      * @return {@link ColisWithSteps}
      */
-    public static ColisWithSteps convertToEntity(ColisDto dto) {
-        Log.d(TAG, "(convertToEntity)");
+    public static ColisWithSteps convertToActiveEntity(ColisDto dto) {
+        Log.d(TAG, "(convertToActiveEntity)");
         ColisWithSteps colis = new ColisWithSteps();
         colis.colisEntity.setIdColis(dto.getIdColis());
+        colis.colisEntity.setDeleted(0);
         if (dto.getEtapeDtoArrayList() != null && !dto.getEtapeDtoArrayList().isEmpty()) {
             List<EtapeEntity> listEtapeEntity = new ArrayList<>();
             for (EtapeDto etapeDto : dto.getEtapeDtoArrayList()) {

@@ -3,7 +3,10 @@ package firebaseauthcom.example.orlanth23.roomsample.database.local.dao;
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Query;
 
+import java.util.List;
+
 import firebaseauthcom.example.orlanth23.roomsample.database.local.entity.EtapeEntity;
+import io.reactivex.Flowable;
 import io.reactivex.Maybe;
 
 
@@ -14,5 +17,8 @@ import io.reactivex.Maybe;
 public interface EtapeDao extends AbstractDao<EtapeEntity>{
     @Query("SELECT COUNT(*) FROM  etape WHERE idColis = :idColis AND origine = :origine AND date = :date AND description = :description")
     Maybe<Integer> exist(String idColis, String origine, Long date, String description);
+
+    @Query("SELECT * FROM etape WHERE idColis = :idColis ORDER BY date, idEtapeAcheminement")
+    Flowable<List<EtapeEntity>> flowableListStepsOrderedByIdColis(String idColis);
 }
 

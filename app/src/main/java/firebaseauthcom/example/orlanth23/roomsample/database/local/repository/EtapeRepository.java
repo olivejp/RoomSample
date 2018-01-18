@@ -5,10 +5,10 @@ import android.content.Context;
 import java.util.List;
 
 import firebaseauthcom.example.orlanth23.roomsample.database.local.ColisDatabase;
-import firebaseauthcom.example.orlanth23.roomsample.database.local.ColisDatabase;
 import firebaseauthcom.example.orlanth23.roomsample.database.local.dao.EtapeDao;
 import firebaseauthcom.example.orlanth23.roomsample.database.local.entity.EtapeEntity;
 import firebaseauthcom.example.orlanth23.roomsample.database.local.repository.task.EtapeRepositoryTask;
+import io.reactivex.Flowable;
 import io.reactivex.Maybe;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
@@ -37,6 +37,10 @@ public class EtapeRepository {
             INSTANCE = new EtapeRepository(context);
         }
         return INSTANCE;
+    }
+
+    public Flowable<List<EtapeEntity>> flowableListStepsOrderedByIdColis(String idColis){
+        return this.etapeDao.flowableListStepsOrderedByIdColis(idColis);
     }
 
     public void insert(EtapeEntity... etapeEntities) {

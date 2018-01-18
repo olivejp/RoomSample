@@ -57,6 +57,7 @@ public class EtapeEntity implements Parcelable {
     public EtapeOrigine origine;
 
     public EtapeEntity() {
+        // Do Nothing
     }
 
     @Ignore

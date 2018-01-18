@@ -92,7 +92,7 @@ class CoreSync {
                             colisDto.setIdColis(trackingNumber);
                             if (transformHtmlToColisDto(colisDto, htmlString)) {
                                 Log.d(TAG, "Transformation de la réponse OPT OK");
-                                ColisWithSteps resultColis = ColisMapper.convertToEntity(colisDto);
+                                ColisWithSteps resultColis = ColisMapper.convertToActiveEntity(colisDto);
                                 callDetectCourierAfterShip(resultColis, trackingNumber);
                             } else {
                                 Log.e(TAG, "Fail to receive response from OPT service");

@@ -14,8 +14,7 @@ public class ColisWithSteps {
     @Embedded
     public ColisEntity colisEntity;
 
-    @Relation(parentColumn = "idColis",
-            entityColumn = "idColis")
+    @Relation(parentColumn = "idColis", entityColumn = "idColis")
     public List<EtapeEntity> etapeEntityList;
 
     public ColisWithSteps() {
