@@ -1,10 +1,8 @@
 package firebaseauthcom.example.orlanth23.roomsample.database.local.repository;
 
-import android.arch.lifecycle.LiveData;
 import android.content.Context;
 
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import firebaseauthcom.example.orlanth23.roomsample.DateConverter;
 import firebaseauthcom.example.orlanth23.roomsample.database.local.ColisDatabase;
@@ -53,33 +51,6 @@ public class ColisRepository {
 
     public void insert(ColisEntity... colisEntities) {
         new ColisRepositoryTask(colisDao, TypeTask.INSERT).execute(colisEntities);
-    }
-
-    public Single<AtomicBoolean> getLock(ColisEntity colisEntity) {
-        return isLocked(colisEntity).map(isLocked -> {
-            // Si la date de sync date de plus de une minute on peut relancer le lock
-            if ((isLocked == null || !isLocked.get()) || (colisEntity.getSyncLockDate() != null && DateConverter.howLongFromNowLong(colisEntity.getSyncLockDate()) > 60 * 1000)) {
-                colisEntity.setSyncLock(1L);
-                colisEntity.setSyncLockDate(DateConverter.getNowEntity());
-                colisDao.update(colisEntity);
-                return new AtomicBoolean(true);
-            } else {
-                return new AtomicBoolean(false);
-            }
-        });
-    }
-
-    public void unlock(ColisEntity colisEntity) {
-        if (colisEntity.getIdColis() != null) {
-            colisEntity.setSyncLock(0L);
-            colisEntity.setSyncLockDate(0L);
-            colisDao.update(colisEntity);
-        }
-    }
-
-    private Single<AtomicBoolean> isLocked(ColisEntity colisEntity) {
-        return colisDao.findById(colisEntity.getIdColis())
-                .map(colisEntity1 -> new AtomicBoolean(colisEntity1.getSyncLock() != null && colisEntity1.getSyncLock() != 0));
     }
 
     /**
@@ -145,14 +116,6 @@ public class ColisRepository {
                             insert(colisEntity);
                         }
                     });
-        }
-    }
-
-    public LiveData<List<ColisEntity>> getLiveAllColis(boolean active) {
-        if (active) {
-            return this.colisDao.listLiveColisActifs();
-        } else {
-            return this.colisDao.listLiveColisSupprimes();
         }
     }
 

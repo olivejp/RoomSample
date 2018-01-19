@@ -20,6 +20,7 @@ import android.graphics.drawable.PictureDrawable;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -171,6 +172,12 @@ public class ColisAdapter extends RecyclerView.Adapter<ColisAdapter.ViewHolderCo
 
         @BindView(R.id.constraint_detail_colis_layout)
         ConstraintLayout mConstraintDetailColisLayout;
+
+        @BindView(R.id.constraint_delete_layout)
+        ConstraintLayout mConstraintDeleteLayout;
+
+        @BindView(R.id.constraint_delivered_layout)
+        ConstraintLayout mConstraintDeliveredLayout;
 
         @BindView(R.id.step_last_update)
         TextView mStepLastUpdate;

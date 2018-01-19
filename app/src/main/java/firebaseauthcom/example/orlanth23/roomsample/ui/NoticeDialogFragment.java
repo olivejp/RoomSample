@@ -26,6 +26,7 @@ public class NoticeDialogFragment extends DialogFragment {
     public static final String P_TYPE = "type";
     public static final String P_IMG = "image";
     public static final String P_BUNDLE = "mBundle";
+    public static final String P_IMG_ID_RES = "img_id_ressource";
 
     public static final int TYPE_BOUTON_YESNO = 10;
     public static final int TYPE_BOUTON_OK = 20;
@@ -99,6 +100,7 @@ public class NoticeDialogFragment extends DialogFragment {
 
         Integer typeBouton = null;
         Integer typeImage = null;
+        int idResource = 0;
         TextView textview;
 
         // Récupération des arguments
@@ -116,24 +118,31 @@ public class NoticeDialogFragment extends DialogFragment {
             if (getArguments().containsKey(P_BUNDLE)) {
                 mBundle = getArguments().getBundle(P_BUNDLE);
             }
+            if (getArguments().containsKey(P_IMG_ID_RES)) {
+                idResource = getArguments().getInt(P_IMG_ID_RES);
+            }
         }
 
         // Gestion de l'image à afficher en haut de la fenêtre
         ImageView imgView = view.findViewById(R.id.imageDialog);
-        if (typeImage != null) {
-            switch (typeImage) {
-                case TYPE_IMAGE_CAUTION:
-                    imgView.setImageResource(R.drawable.ic_warning_white_48dp);
-                    break;
-                case TYPE_IMAGE_ERROR:
-                    imgView.setImageResource(R.drawable.ic_error_white_48dp);
-                    break;
-                case TYPE_IMAGE_INFORMATION:
-                    imgView.setImageResource(R.drawable.ic_announcement_white_48dp);
-                    break;
-                default:
-                    imgView.setImageResource(R.drawable.ic_announcement_white_48dp);
-                    break;
+        if (idResource != 0) {
+            imgView.setImageResource(idResource);
+        } else {
+            if (typeImage != null) {
+                switch (typeImage) {
+                    case TYPE_IMAGE_CAUTION:
+                        imgView.setImageResource(R.drawable.ic_warning_white_48dp);
+                        break;
+                    case TYPE_IMAGE_ERROR:
+                        imgView.setImageResource(R.drawable.ic_error_white_48dp);
+                        break;
+                    case TYPE_IMAGE_INFORMATION:
+                        imgView.setImageResource(R.drawable.ic_announcement_white_48dp);
+                        break;
+                    default:
+                        imgView.setImageResource(R.drawable.ic_announcement_white_48dp);
+                        break;
+                }
             }
         }
 

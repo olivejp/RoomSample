@@ -13,9 +13,10 @@ import firebaseauthcom.example.orlanth23.roomsample.ui.adapter.ColisAdapter;
  */
 
 public class RecyclerItemTouchHelper extends ItemTouchHelper.SimpleCallback {
-    private RecyclerItemTouchHelperListener listener;
 
-    public RecyclerItemTouchHelper(int dragDirs, int swipeDirs, RecyclerItemTouchHelperListener listener) {
+    private SwipeListener listener;
+
+    public RecyclerItemTouchHelper(int dragDirs, int swipeDirs, SwipeListener listener) {
         super(dragDirs, swipeDirs);
         this.listener = listener;
     }
@@ -23,6 +24,11 @@ public class RecyclerItemTouchHelper extends ItemTouchHelper.SimpleCallback {
     @Override
     public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
         return true;
+    }
+
+    @Override
+    public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+        listener.onSwipe(viewHolder, direction);
     }
 
     @Override
@@ -37,9 +43,7 @@ public class RecyclerItemTouchHelper extends ItemTouchHelper.SimpleCallback {
     public void onChildDrawOver(Canvas c, RecyclerView recyclerView,
                                 RecyclerView.ViewHolder viewHolder, float dX, float dY,
                                 int actionState, boolean isCurrentlyActive) {
-        final View foregroundView = ((ColisAdapter.ViewHolderColisAdapter) viewHolder).getmConstraintDetailColisLayout();
-        getDefaultUIUtil().onDrawOver(c, recyclerView, foregroundView, dX, dY,
-                actionState, isCurrentlyActive);
+        getDefaultUIUtil().onDrawOver(c, recyclerView, viewHolder.itemView, dX, dY, actionState, isCurrentlyActive);
     }
 
     @Override
@@ -53,22 +57,18 @@ public class RecyclerItemTouchHelper extends ItemTouchHelper.SimpleCallback {
                             RecyclerView.ViewHolder viewHolder, float dX, float dY,
                             int actionState, boolean isCurrentlyActive) {
         final View foregroundView = ((ColisAdapter.ViewHolderColisAdapter) viewHolder).getmConstraintDetailColisLayout();
-
-        getDefaultUIUtil().onDraw(c, recyclerView, foregroundView, dX, dY,
-                actionState, isCurrentlyActive);
+        int middle = (foregroundView.getWidth() / 2);
+        float mouvementX = dX;
+        if (dX > 0) {
+            if (dX >= middle) mouvementX = middle;
+        } else {
+            middle = middle * -1;
+            if (dX < middle) mouvementX = middle;
+        }
+        getDefaultUIUtil().onDraw(c, recyclerView, foregroundView, mouvementX, dY, actionState, isCurrentlyActive);
     }
 
-    @Override
-    public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
-        listener.onSwiped(viewHolder, direction, viewHolder.getAdapterPosition());
-    }
-
-    @Override
-    public int convertToAbsoluteDirection(int flags, int layoutDirection) {
-        return super.convertToAbsoluteDirection(flags, layoutDirection);
-    }
-
-    public interface RecyclerItemTouchHelperListener {
-        void onSwiped(RecyclerView.ViewHolder viewHolder, int direction, int position);
+    public interface SwipeListener {
+        void onSwipe(RecyclerView.ViewHolder view, int direction);
     }
 }

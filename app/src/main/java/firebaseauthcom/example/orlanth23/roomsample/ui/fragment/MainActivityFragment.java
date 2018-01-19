@@ -23,6 +23,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import firebaseauthcom.example.orlanth23.roomsample.R;
 import firebaseauthcom.example.orlanth23.roomsample.Utilities;
+import firebaseauthcom.example.orlanth23.roomsample.database.local.entity.ColisEntity;
 import firebaseauthcom.example.orlanth23.roomsample.database.local.entity.ColisWithSteps;
 import firebaseauthcom.example.orlanth23.roomsample.ui.NoticeDialogFragment;
 import firebaseauthcom.example.orlanth23.roomsample.ui.RecyclerItemTouchHelper;
@@ -36,12 +37,12 @@ import static firebaseauthcom.example.orlanth23.roomsample.ui.activity.MainActiv
  * Created by orlanth23 on 14/01/2018.
  */
 
-public class MainActivityFragment extends Fragment implements RecyclerItemTouchHelper.RecyclerItemTouchHelperListener, SwipeRefreshLayout.OnRefreshListener {
+public class MainActivityFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, RecyclerItemTouchHelper.SwipeListener {
 
     public static final String TAG = MainActivityFragment.class.getName();
     public static final String ARG_NOTICE_BUNDLE_COLIS = "ARG_NOTICE_BUNDLE_COLIS";
-    public static final String ARG_NOTICE_BUNDLE_POSITION = "ARG_NOTICE_BUNDLE_POSITION";
     public static final String DIALOG_TAG_DELETE = "DIALOG_TAG_DELETE";
+    public static final String DIALOG_TAG_DELIVERED = "DIALOG_TAG_DELIVERED";
 
     @BindView(R.id.recycler_colis_list)
     public RecyclerView recyclerViewColisList;
@@ -54,14 +55,14 @@ public class MainActivityFragment extends Fragment implements RecyclerItemTouchH
     private NoticeDialogFragment.NoticeDialogListener noticeDialogListener;
     private ColisAdapter colisAdapter;
     private RecyclerView.ItemDecoration itemDecoration;
-    private RecyclerItemTouchHelper recyclerItemTouchHelper = new RecyclerItemTouchHelper(0, ItemTouchHelper.LEFT, this);
+    private RecyclerItemTouchHelper recyclerItemTouchHelper = new RecyclerItemTouchHelper(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT, this);
     private ItemTouchHelper itemTouchHelper = new ItemTouchHelper(recyclerItemTouchHelper);
     private final Handler refreshTimeDelayHandler = new Handler();
 
     /**
-     * mOnClickListener use in the Adapter to display the {@link HistoriqueColisFragment}
+     * onClickDisplay use in the Adapter to display the {@link HistoriqueColisFragment}
      */
-    private View.OnClickListener mOnClickListener = (View v) -> {
+    private View.OnClickListener onClickDisplay = (View v) -> {
         ColisWithSteps colis = (ColisWithSteps) v.getTag();
         viewModel.setSelectedColis(colis);
         displayHistorique(viewModel.isTwoPane());
@@ -85,7 +86,7 @@ public class MainActivityFragment extends Fragment implements RecyclerItemTouchH
         itemDecoration = new DividerItemDecoration(appCompatActivity, DividerItemDecoration.VERTICAL);
 
         // Initialize adapter
-        colisAdapter = new ColisAdapter(viewModel.getGlideRequester(), mOnClickListener);
+        colisAdapter = new ColisAdapter(viewModel.getGlideRequester(), onClickDisplay);
 
         // Retrieve data from the ViewModel to populate the adapter
         viewModel.getLiveListActiveColis().observe(appCompatActivity, colisAdapter::setColisList);
@@ -100,13 +101,18 @@ public class MainActivityFragment extends Fragment implements RecyclerItemTouchH
         View rootView = inflater.inflate(R.layout.fragment_main_activity, container, false);
         ButterKnife.bind(this, rootView);
 
+        // Attach adapter to the recyclerView
+        recyclerViewColisList.setAdapter(colisAdapter);
+
         // Add OnRefreshListener to the recyclerView
         swipeRefreshLayout.setOnRefreshListener(this);
 
         // Add Swipe to the recycler view
-        recyclerViewColisList.setAdapter(colisAdapter);
-        recyclerViewColisList.addItemDecoration(itemDecoration);
         itemTouchHelper.attachToRecyclerView(recyclerViewColisList);
+
+        // Add itemDecorator to the recycler view
+        recyclerViewColisList.addItemDecoration(itemDecoration);
+
         return rootView;
     }
 
@@ -137,30 +143,43 @@ public class MainActivityFragment extends Fragment implements RecyclerItemTouchH
     }
 
     @Override
-    public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction, int position) {
-        if (viewHolder instanceof ColisAdapter.ViewHolderColisAdapter) {
-            ColisAdapter.ViewHolderColisAdapter r = (ColisAdapter.ViewHolderColisAdapter) viewHolder;
-
-            // Création d'un bundle dans lequel on va passer nos items
-            Bundle bundle = new Bundle();
-            bundle.putParcelable(ARG_NOTICE_BUNDLE_COLIS, r.getColisWithSteps().colisEntity);
-            bundle.putInt(ARG_NOTICE_BUNDLE_POSITION, position);
-
-            // Appel d'un fragment qui va demander à l'utilisateur s'il est sûr de vouloir supprimer le colis.
-            Utilities.sendDialogByFragmentManager(getFragmentManager(),
-                    String.format("Etes-vous sûr de vouloir supprimer le colis %s ?", r.getColisWithSteps().colisEntity.getIdColis()),
-                    NoticeDialogFragment.TYPE_BOUTON_YESNO,
-                    NoticeDialogFragment.TYPE_IMAGE_INFORMATION,
-                    DIALOG_TAG_DELETE,
-                    bundle,
-                    noticeDialogListener);
-        }
-    }
-
-    @Override
     public void onRefresh() {
         viewModel.refresh();
         swipeRefreshLayout.setRefreshing(true);
         refreshTimeDelayHandler.postDelayed(() -> swipeRefreshLayout.setRefreshing(false), 5000);
+    }
+
+    @Override
+    public void onSwipe(RecyclerView.ViewHolder viewHolder, int direction) {
+        try {
+            ColisAdapter.ViewHolderColisAdapter viewHolderColisAdapter = (ColisAdapter.ViewHolderColisAdapter) viewHolder;
+            ColisWithSteps colis = viewHolderColisAdapter.getColisWithSteps();
+
+            // Création d'un bundle dans lequel on va passer nos items
+            Bundle bundle = new Bundle();
+            bundle.putParcelable(ARG_NOTICE_BUNDLE_COLIS, colis.colisEntity);
+
+            if (direction == ItemTouchHelper.LEFT) {
+                // Appel d'un fragment qui va demander à l'utilisateur s'il est sûr de vouloir supprimer le colis.
+                Utilities.sendDialogByFragmentManagerWithRes(getFragmentManager(),
+                        String.format("Supprimer le colis %s ?", colis.colisEntity.getIdColis()),
+                        NoticeDialogFragment.TYPE_BOUTON_YESNO,
+                        R.drawable.ic_delete_grey_900_24dp,
+                        DIALOG_TAG_DELETE,
+                        bundle,
+                        noticeDialogListener);
+            } else {
+                // Appel d'un fragment qui va demander à l'utilisateur s'il est sûr de vouloir délivrer le colis.
+                Utilities.sendDialogByFragmentManagerWithRes(getFragmentManager(),
+                        String.format("Marquer comme délivré le colis %s ?", colis.colisEntity.getIdColis()),
+                        NoticeDialogFragment.TYPE_BOUTON_YESNO,
+                        R.drawable.ic_check_circle_grey_900_48dp,
+                        DIALOG_TAG_DELIVERED,
+                        bundle,
+                        noticeDialogListener);
+            }
+        } catch (ClassCastException e) {
+            Log.e(TAG, "La vue doit contenir un ColisEntity comme Tag");
+        }
     }
 }
