@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">RoomSample</string>
     <string name="tag_fragment_search_colis">TAG_FRAGMENT_SEARCH_COLIS</string>
+    <string name="fb_login_protocol_scheme">fb132298410733463</string>
 </resources>

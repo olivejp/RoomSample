@@ -16,8 +16,10 @@ import firebaseauthcom.example.orlanth23.roomsample.R;
 import firebaseauthcom.example.orlanth23.roomsample.broadcast.NetworkReceiver;
 import firebaseauthcom.example.orlanth23.roomsample.database.local.entity.ColisEntity;
 import firebaseauthcom.example.orlanth23.roomsample.database.local.entity.ColisWithSteps;
+import firebaseauthcom.example.orlanth23.roomsample.database.local.entity.StepEntity;
 import firebaseauthcom.example.orlanth23.roomsample.database.local.repository.ColisRepository;
 import firebaseauthcom.example.orlanth23.roomsample.database.local.repository.ColisWithStepsRepository;
+import firebaseauthcom.example.orlanth23.roomsample.database.local.repository.StepRepository;
 import firebaseauthcom.example.orlanth23.roomsample.job.SyncTask;
 import firebaseauthcom.example.orlanth23.roomsample.ui.glide.GlideApp;
 import firebaseauthcom.example.orlanth23.roomsample.ui.glide.SvgSoftwareLayerSetter;
@@ -29,14 +31,17 @@ import firebaseauthcom.example.orlanth23.roomsample.ui.glide.SvgSoftwareLayerSet
 public class MainActivityViewModel extends AndroidViewModel {
 
     private ColisWithStepsRepository colisWithStepsRepository;
+    private StepRepository stepRepository;
     private RequestBuilder<PictureDrawable> requester;
     private MutableLiveData<ColisWithSteps> colisWithStepsSelected = new MutableLiveData<>();
     private MutableLiveData<List<ColisWithSteps>> colisWithStepsList = new MutableLiveData<>();
+    private String idColisSelected;
     private boolean twoPane;
 
     public MainActivityViewModel(@NonNull Application application) {
         super(application);
         colisWithStepsRepository = ColisWithStepsRepository.getInstance(application);
+        stepRepository = StepRepository.getInstance(application);
         colisWithStepsRepository.getActiveFlowableColisWithSteps().subscribe(colisWithSteps -> colisWithStepsList.postValue(colisWithSteps));
         requester = GlideApp.with(application)
                 .as(PictureDrawable.class)
@@ -65,15 +70,17 @@ public class MainActivityViewModel extends AndroidViewModel {
      */
     public void setSelectedColis(ColisWithSteps colis) {
         colisWithStepsSelected.postValue(colis);
+        if (colis != null && colis.colisEntity != null) {
+            idColisSelected = colis.colisEntity.getIdColis();
+        }
     }
 
-    /**
-     * Return the selected colis
-     *
-     * @return ColisWithSteps (could be null)
-     */
-    public LiveData<ColisWithSteps> getSelectedColis() {
-        return colisWithStepsSelected;
+    public String getSelectedIdColis() {
+        return idColisSelected;
+    }
+
+    public LiveData<List<StepEntity>> liveListStepsOrderedByIdColis(String idColis) {
+        return stepRepository.liveListStepsOrderedByIdColis(idColis);
     }
 
     public RequestBuilder<PictureDrawable> getGlideRequester() {

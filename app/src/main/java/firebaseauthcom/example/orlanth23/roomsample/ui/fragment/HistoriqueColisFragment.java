@@ -57,6 +57,9 @@ public class HistoriqueColisFragment extends Fragment {
 
         mRecyclerView.setAdapter(etapeAdapter);
 
+        // Change title
+        appCompatActivity.setTitle(viewModel.getSelectedIdColis());
+
         // Manage the back button in the navigation bar
         if (!viewModel.isTwoPane() && appCompatActivity.getSupportActionBar() != null) {
             appCompatActivity.getSupportActionBar().setHomeButtonEnabled(true);
@@ -65,16 +68,12 @@ public class HistoriqueColisFragment extends Fragment {
         }
 
         // Populate the adapter with the steps from the colis
-        viewModel.getSelectedColis().observe(this, colisWithSteps -> {
-            if (colisWithSteps != null) {
-                etapeAdapter.setEtapes(colisWithSteps.stepEntityList);
-                boolean isEtapeListEmpty = colisWithSteps.stepEntityList == null || colisWithSteps.stepEntityList.isEmpty();
-                textObjectNotFound.setVisibility(isEtapeListEmpty ? View.VISIBLE : View.GONE);
-                mRecyclerView.setVisibility(isEtapeListEmpty ? View.GONE : View.VISIBLE);
-                appCompatActivity.setTitle(colisWithSteps.colisEntity.getIdColis());
-            }
+        viewModel.liveListStepsOrderedByIdColis(viewModel.getSelectedIdColis()).observe(this, stepEntities -> {
+            etapeAdapter.setEtapes(stepEntities);
+            boolean isEtapeListEmpty = stepEntities == null || stepEntities.isEmpty();
+            textObjectNotFound.setVisibility(isEtapeListEmpty ? View.VISIBLE : View.GONE);
+            mRecyclerView.setVisibility(isEtapeListEmpty ? View.GONE : View.VISIBLE);
         });
-
 
         return rootView;
     }

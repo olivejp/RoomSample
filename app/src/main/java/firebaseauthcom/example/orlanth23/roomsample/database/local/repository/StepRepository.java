@@ -1,5 +1,6 @@
 package firebaseauthcom.example.orlanth23.roomsample.database.local.repository;
 
+import android.arch.lifecycle.LiveData;
 import android.content.Context;
 
 import java.util.List;
@@ -8,7 +9,6 @@ import firebaseauthcom.example.orlanth23.roomsample.database.local.ColisDatabase
 import firebaseauthcom.example.orlanth23.roomsample.database.local.dao.StepDao;
 import firebaseauthcom.example.orlanth23.roomsample.database.local.entity.StepEntity;
 import firebaseauthcom.example.orlanth23.roomsample.database.local.repository.task.EtapeRepositoryTask;
-import io.reactivex.Flowable;
 import io.reactivex.Maybe;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
@@ -39,8 +39,8 @@ public class StepRepository {
         return INSTANCE;
     }
 
-    public Flowable<List<StepEntity>> flowableListStepsOrderedByIdColis(String idColis) {
-        return this.stepDao.flowableListStepsOrderedByIdColis(idColis);
+    public LiveData<List<StepEntity>> liveListStepsOrderedByIdColis(String idColis) {
+        return this.stepDao.liveListStepsOrderedByIdColis(idColis);
     }
 
     public void insert(StepEntity... stepEntities) {

@@ -31,9 +31,6 @@ public interface RetrofitAfterShipCall {
     @GET("/v4/trackings/{slug}/{tracking_number}")
     Observable<ResponseAfterShip<Tracking<TrackingData>>> getTracking(@Path("slug") String slug, @Path("tracking_number") String trackingNumber);
 
-    @DELETE("/v4/trackings/{id_tracking}")
-    Observable<ResponseAfterShip<Tracking<TrackingDelete>>> deleteTracking(@Path("id_tracking") String idTracking);
-
     @DELETE("/v4/trackings/{slug}/{tracking_number}")
     Observable<ResponseAfterShip<Tracking<TrackingDelete>>> deleteTracking(@Path("slug") String slug, @Path("tracking_number") String trackingNumber);
 
