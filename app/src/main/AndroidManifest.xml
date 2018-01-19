@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="firebaseauthcom.example.orlanth23.roomsample">
 
+    <uses-feature android:name="android.hardware.camera" />
+    <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission
         android:name="android.permission.INTERNET"
         android:required="true" />
@@ -33,6 +35,8 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.activity.MainActivity" />
         </activity>
+        <activity android:name=".barcodreader.BarcodeCaptureActivity"
+            android:label="Read Barcode"/>
 
         <service
             android:name=".job.SyncColisService"

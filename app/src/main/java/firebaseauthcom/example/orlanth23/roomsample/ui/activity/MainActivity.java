@@ -15,6 +15,7 @@ import firebaseauthcom.example.orlanth23.roomsample.ui.fragment.MainActivityFrag
 
 import static firebaseauthcom.example.orlanth23.roomsample.ui.fragment.MainActivityFragment.ARG_NOTICE_BUNDLE_COLIS;
 import static firebaseauthcom.example.orlanth23.roomsample.ui.fragment.MainActivityFragment.DIALOG_TAG_DELETE;
+import static firebaseauthcom.example.orlanth23.roomsample.ui.fragment.MainActivityFragment.DIALOG_TAG_DELIVERED;
 
 public class MainActivity extends AppCompatActivity implements NoticeDialogFragment.NoticeDialogListener {
 
@@ -80,6 +81,14 @@ public class MainActivity extends AppCompatActivity implements NoticeDialogFragm
                 ColisEntity colisEntity = dialog.getBundle().getParcelable(ARG_NOTICE_BUNDLE_COLIS);
                 if (colisEntity != null) {
                     viewModel.markAsDeleted(colisEntity);
+                }
+            }
+        }
+        if (dialog.getTag() != null && dialog.getTag().equals(DIALOG_TAG_DELIVERED)) {
+            if (dialog.getBundle() != null && dialog.getBundle().containsKey(ARG_NOTICE_BUNDLE_COLIS)) {
+                ColisEntity colisEntity = dialog.getBundle().getParcelable(ARG_NOTICE_BUNDLE_COLIS);
+                if (colisEntity != null) {
+                    viewModel.markAsDelivered(colisEntity);
                 }
             }
         }

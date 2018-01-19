@@ -20,7 +20,6 @@ import android.graphics.drawable.PictureDrawable;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -116,21 +115,28 @@ public class ColisAdapter extends RecyclerView.Adapter<ColisAdapter.ViewHolderCo
         }
     }
 
-    private void bindEtape(ViewHolderColisAdapter holder, StepEntity etape) {
-        if (etape != null) {
-            holder.mStepLastDate.setText(DateConverter.convertDateEntityToUi(etape.getDate()));
-            holder.mStepLastLocalisation.setText(etape.getLocalisation());
-            holder.mStepLastDescription.setText(etape.getDescription());
-            if (etape.getStatus() != null) {
-                holder.mStepStatus.setImageResource(Utilities.getStatusDrawable(etape.getStatus()));
-            } else {
-                holder.mStepStatus.setImageResource(R.drawable.ic_status_pending);
-            }
+    private void bindEtape(ViewHolderColisAdapter holder, StepEntity step) {
+        if (step != null) {
+            holder.mStepLastDate.setText(DateConverter.convertDateEntityToUi(step.getDate()));
+            holder.mStepLastLocalisation.setText(step.getLocalisation());
+            holder.mStepLastDescription.setText(step.getDescription());
         } else {
             holder.mStepLastDate.setVisibility(View.GONE);
             holder.mStepLastLocalisation.setVisibility(View.GONE);
             holder.mStepLastDescription.setText("Aucune étape pour ce colis");
-            holder.mStepStatus.setImageResource(R.drawable.ic_status_pending);
+        }
+    }
+
+    private void bindImageStatus(ViewHolderColisAdapter holder, ColisEntity colisEntity, StepEntity stepEntity) {
+        holder.mStepStatus.setImageResource(R.drawable.ic_status_pending);
+        if (colisEntity.isDelivered()) {
+            holder.mStepStatus.setImageResource(Utilities.getStatusDrawable("Delivered"));
+        } else {
+            if (stepEntity != null && stepEntity.getStatus() != null) {
+                holder.mStepStatus.setImageResource(Utilities.getStatusDrawable(stepEntity.getStatus()));
+            } else {
+                holder.mStepStatus.setImageResource(R.drawable.ic_status_pending);
+            }
         }
     }
 
@@ -146,6 +152,7 @@ public class ColisAdapter extends RecyclerView.Adapter<ColisAdapter.ViewHolderCo
         }
         bindColis(holder, colis);
         bindEtape(holder, lastEtape);
+        bindImageStatus(holder, colis, lastEtape);
     }
 
     @Override
@@ -172,12 +179,6 @@ public class ColisAdapter extends RecyclerView.Adapter<ColisAdapter.ViewHolderCo
 
         @BindView(R.id.constraint_detail_colis_layout)
         ConstraintLayout mConstraintDetailColisLayout;
-
-        @BindView(R.id.constraint_delete_layout)
-        ConstraintLayout mConstraintDeleteLayout;
-
-        @BindView(R.id.constraint_delivered_layout)
-        ConstraintLayout mConstraintDeliveredLayout;
 
         @BindView(R.id.step_last_update)
         TextView mStepLastUpdate;

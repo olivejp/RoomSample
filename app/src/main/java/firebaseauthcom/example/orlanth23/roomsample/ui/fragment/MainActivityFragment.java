@@ -23,7 +23,6 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import firebaseauthcom.example.orlanth23.roomsample.R;
 import firebaseauthcom.example.orlanth23.roomsample.Utilities;
-import firebaseauthcom.example.orlanth23.roomsample.database.local.entity.ColisEntity;
 import firebaseauthcom.example.orlanth23.roomsample.database.local.entity.ColisWithSteps;
 import firebaseauthcom.example.orlanth23.roomsample.ui.NoticeDialogFragment;
 import firebaseauthcom.example.orlanth23.roomsample.ui.RecyclerItemTouchHelper;
@@ -169,14 +168,16 @@ public class MainActivityFragment extends Fragment implements SwipeRefreshLayout
                         bundle,
                         noticeDialogListener);
             } else {
-                // Appel d'un fragment qui va demander à l'utilisateur s'il est sûr de vouloir délivrer le colis.
-                Utilities.sendDialogByFragmentManagerWithRes(getFragmentManager(),
-                        String.format("Marquer comme délivré le colis %s ?", colis.colisEntity.getIdColis()),
-                        NoticeDialogFragment.TYPE_BOUTON_YESNO,
-                        R.drawable.ic_check_circle_grey_900_48dp,
-                        DIALOG_TAG_DELIVERED,
-                        bundle,
-                        noticeDialogListener);
+                if (!colis.colisEntity.isDelivered()) {
+                    // Appel d'un fragment qui va demander à l'utilisateur s'il est sûr de vouloir délivrer le colis.
+                    Utilities.sendDialogByFragmentManagerWithRes(getFragmentManager(),
+                            String.format("Marquer comme délivré le colis %s ?", colis.colisEntity.getIdColis()),
+                            NoticeDialogFragment.TYPE_BOUTON_YESNO,
+                            R.drawable.ic_check_circle_grey_900_48dp,
+                            DIALOG_TAG_DELIVERED,
+                            bundle,
+                            noticeDialogListener);
+                }
             }
         } catch (ClassCastException e) {
             Log.e(TAG, "La vue doit contenir un ColisEntity comme Tag");

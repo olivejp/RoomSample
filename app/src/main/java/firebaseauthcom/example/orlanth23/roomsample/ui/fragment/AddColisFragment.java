@@ -1,10 +1,14 @@
 package firebaseauthcom.example.orlanth23.roomsample.ui.fragment;
 
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,12 +19,17 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import firebaseauthcom.example.orlanth23.roomsample.R;
 import firebaseauthcom.example.orlanth23.roomsample.Utilities;
+import firebaseauthcom.example.orlanth23.roomsample.barcodreader.BarcodeCaptureActivity;
 import firebaseauthcom.example.orlanth23.roomsample.ui.fragment.viewmodel.AddColisFragmentViewModel;
+
+import static firebaseauthcom.example.orlanth23.roomsample.ui.activity.AddColisActivity.RC_BARCODE_CAPTURE;
 
 public class AddColisFragment extends Fragment {
 
-    private AddColisFragmentViewModel viewModel;
+    public static final String ARG_ID_COLIS = "ARG_ID_COLIS";
 
+    private AddColisFragmentViewModel viewModel;
+    private AppCompatActivity appCompatActivity;
     @BindView(R.id.edit_id_parcel)
     EditText editIdParcel;
 
@@ -29,6 +38,30 @@ public class AddColisFragment extends Fragment {
 
     public AddColisFragment() {
         // Required empty public constructor
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        appCompatActivity = (AppCompatActivity) context;
+    }
+
+    public static AddColisFragment getInstance(@Nullable String idColis) {
+        AddColisFragment addColisFragment = new AddColisFragment();
+        if (idColis != null) {
+            Bundle args = new Bundle();
+            args.putString(ARG_ID_COLIS, idColis);
+            addColisFragment.setArguments(args);
+        }
+        return addColisFragment;
+    }
+
+    @OnClick(R.id.img_scan)
+    public void launchScanner(View v) {
+        Intent intent = new Intent(getActivity(), BarcodeCaptureActivity.class);
+        intent.putExtra(BarcodeCaptureActivity.AutoFocus, true);
+        intent.putExtra(BarcodeCaptureActivity.UseFlash, false);
+        startActivityForResult(intent, RC_BARCODE_CAPTURE);
     }
 
     @OnClick(R.id.fab_add_colis)
@@ -58,11 +91,20 @@ public class AddColisFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle
-            savedInstanceState) {
-        viewModel = ViewModelProviders.of(this).get(AddColisFragmentViewModel.class);
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        viewModel = ViewModelProviders.of(appCompatActivity).get(AddColisFragmentViewModel.class);
+    }
+
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_add_colis, container, false);
         ButterKnife.bind(this, rootView);
+        viewModel.getIdColis().observe(getActivity(), s -> {
+            if (s != null) {
+                editIdParcel.setText(s);
+            }
+        });
         return rootView;
     }
 }

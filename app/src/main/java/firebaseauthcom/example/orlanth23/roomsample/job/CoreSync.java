@@ -59,7 +59,7 @@ class CoreSync {
      * L'interval de temps nous permet de ne pas saturer le réseau avec des requêtes quand on a trop de colis dans la DB.
      */
     void callGetAllTracking() {
-        ColisRepository.getInstance(contextWeakReference.get()).getAllColis(true)
+        ColisRepository.getInstance(contextWeakReference.get()).getAllActiveAndNonDeliveredColis()
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.io())
                 .subscribe(listColis ->

@@ -44,8 +44,6 @@ public class ColisWithStepsRepository {
     }
 
     public Flowable<List<ColisWithSteps>> getActiveFlowableColisWithSteps() {
-        return this.colisWithStepsDao.getFlowableActiveColisWithSteps()
-                .observeOn(Schedulers.io())
-                .subscribeOn(Schedulers.io());
+        return this.colisWithStepsDao.getFlowableActiveColisWithSteps();
     }
 }

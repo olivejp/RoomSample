@@ -2,4 +2,8 @@
     <string name="app_name">RoomSample</string>
     <string name="tag_fragment_search_colis">TAG_FRAGMENT_SEARCH_COLIS</string>
     <string name="fb_login_protocol_scheme">fb132298410733463</string>
+    <string name="ok">OK</string>
+    <string name="permission_camera_rationale">L\'accès à la caméra est nécessaire pour lire le code barre</string>
+    <string name="low_storage_error">Les dépendances du détecteur de visage ne peuvent pas être téléchargés à cause d\'un manque d'espace</string>
+    <string name="no_camera_permission">Cette application nécessite l\'accès à la caméra pour fonctionner.</string>
 </resources>

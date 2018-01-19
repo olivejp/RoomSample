@@ -1,6 +1,5 @@
 package firebaseauthcom.example.orlanth23.roomsample.database.local.dao;
 
-import android.arch.lifecycle.LiveData;
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Query;
 
@@ -26,12 +25,9 @@ public interface ColisDao extends AbstractDao<ColisEntity>{
     @Query("SELECT * FROM colis WHERE DELETED = '1'")
     Maybe<List<ColisEntity>> listMaybeColisSupprimes();
 
-    @Query("SELECT * FROM colis WHERE DELETED <> '1'")
-    LiveData<List<ColisEntity>> listLiveColisActifs();
-
-    @Query("SELECT * FROM colis WHERE DELETED = '1'")
-    LiveData<List<ColisEntity>> listLiveColisSupprimes();
-
     @Query("SELECT * FROM colis WHERE idColis = :idColis")
     Single<ColisEntity> findById(String idColis);
+
+    @Query("SELECT * FROM colis WHERE DELETED <> '1' AND DELIVERED <> '1'")
+    Maybe<List<ColisEntity>> listMaybeColisActifsAndNotDelivered();
 }

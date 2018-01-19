@@ -24,6 +24,7 @@ public class ColisEntity implements Parcelable {
     private String slug;
     private Integer fbLinked;
     private String afterShipId;
+    private Integer delivered;
 
     public ColisEntity() {
     }
@@ -105,6 +106,17 @@ public class ColisEntity implements Parcelable {
         this.afterShipId = afterShipId;
     }
 
+    public Integer getDelivered() {
+        return delivered;
+    }
+
+    public boolean isDelivered() {
+        return (delivered != null && delivered == 1);
+    }
+
+    public void setDelivered(Integer delivered) {
+        this.delivered = delivered;
+    }
 
     @Override
     public int describeContents() {
@@ -121,6 +133,7 @@ public class ColisEntity implements Parcelable {
         dest.writeString(this.slug);
         dest.writeValue(this.fbLinked);
         dest.writeString(this.afterShipId);
+        dest.writeValue(this.delivered);
     }
 
     protected ColisEntity(Parcel in) {
@@ -132,6 +145,7 @@ public class ColisEntity implements Parcelable {
         this.slug = in.readString();
         this.fbLinked = (Integer) in.readValue(Integer.class.getClassLoader());
         this.afterShipId = in.readString();
+        this.delivered = (Integer) in.readValue(Integer.class.getClassLoader());
     }
 
     public static final Creator<ColisEntity> CREATOR = new Creator<ColisEntity>() {

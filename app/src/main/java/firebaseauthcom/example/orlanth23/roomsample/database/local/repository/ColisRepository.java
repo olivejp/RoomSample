@@ -40,6 +40,13 @@ public class ColisRepository {
         new ColisRepositoryTask(colisDao, TypeTask.UPDATE).execute(colisEntities);
     }
 
+    public void markAsDelivered(ColisEntity... colisEntities) {
+        for (ColisEntity colis : colisEntities) {
+            colis.setDelivered(1);
+        }
+        new ColisRepositoryTask(colisDao, TypeTask.UPDATE).execute(colisEntities);
+    }
+
     public void updateLastSuccessfulUpdate(ColisEntity... colisEntities) {
         Long now = DateConverter.getNowEntity();
         for (ColisEntity colis : colisEntities) {
@@ -93,6 +100,11 @@ public class ColisRepository {
             return this.colisDao.listMaybeColisSupprimes();
         }
     }
+
+    public Maybe<List<ColisEntity>> getAllActiveAndNonDeliveredColis() {
+        return this.colisDao.listMaybeColisActifsAndNotDelivered();
+    }
+
 
     public Maybe<Integer> count(String idColis) {
         return this.colisDao.count(idColis);

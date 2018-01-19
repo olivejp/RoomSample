@@ -23,6 +23,8 @@ import firebaseauthcom.example.orlanth23.roomsample.database.local.repository.St
 import firebaseauthcom.example.orlanth23.roomsample.job.SyncTask;
 import firebaseauthcom.example.orlanth23.roomsample.ui.glide.GlideApp;
 import firebaseauthcom.example.orlanth23.roomsample.ui.glide.SvgSoftwareLayerSetter;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by orlanth23 on 11/01/2018.
@@ -31,6 +33,7 @@ import firebaseauthcom.example.orlanth23.roomsample.ui.glide.SvgSoftwareLayerSet
 public class MainActivityViewModel extends AndroidViewModel {
 
     private ColisWithStepsRepository colisWithStepsRepository;
+    private ColisRepository colisRepository;
     private StepRepository stepRepository;
     private RequestBuilder<PictureDrawable> requester;
     private MutableLiveData<ColisWithSteps> colisWithStepsSelected = new MutableLiveData<>();
@@ -41,8 +44,12 @@ public class MainActivityViewModel extends AndroidViewModel {
     public MainActivityViewModel(@NonNull Application application) {
         super(application);
         colisWithStepsRepository = ColisWithStepsRepository.getInstance(application);
+        colisRepository = ColisRepository.getInstance(application);
         stepRepository = StepRepository.getInstance(application);
-        colisWithStepsRepository.getActiveFlowableColisWithSteps().subscribe(colisWithSteps -> colisWithStepsList.postValue(colisWithSteps));
+        colisWithStepsRepository.getActiveFlowableColisWithSteps()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(colisWithSteps -> colisWithStepsList.postValue(colisWithSteps));
         requester = GlideApp.with(application)
                 .as(PictureDrawable.class)
                 .placeholder(R.drawable.ic_archive_grey_900_48dp)
@@ -110,6 +117,10 @@ public class MainActivityViewModel extends AndroidViewModel {
         if (!ColisRepository.getInstance(getApplication()).markAsDeleted(colisEntity)) {
             launchSyncTask(SyncTask.TypeSyncTask.DELETE, null);
         }
+    }
+
+    public void markAsDelivered(ColisEntity colisEntity) {
+        colisRepository.markAsDelivered(colisEntity);
     }
 
     public void refresh() {
