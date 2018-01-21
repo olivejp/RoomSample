@@ -7,7 +7,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 import com.google.android.gms.common.api.CommonStatusCodes;
-import com.google.android.gms.vision.barcode.Barcode;
 
 import firebaseauthcom.example.orlanth23.roomsample.R;
 import firebaseauthcom.example.orlanth23.roomsample.barcodreader.BarcodeCaptureActivity;
@@ -33,9 +32,9 @@ public class AddColisActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == CommonStatusCodes.SUCCESS) {
             if (data != null) {
-                Barcode barcode = data.getParcelableExtra(BarcodeCaptureActivity.BarcodeObject);
-                viewModel.setIdColis(barcode.displayValue);
-                Log.d("TAG", "Code barre récupéré = " + barcode.displayValue);
+                String codeBarResult = data.getParcelableExtra(BarcodeCaptureActivity.BarcodeString);
+                viewModel.setIdColis(codeBarResult);
+                Log.d("TAG", "Code barre récupéré = " + codeBarResult);
             } else {
                 Log.d("TAG", "Aucun barre code récupérer");
             }

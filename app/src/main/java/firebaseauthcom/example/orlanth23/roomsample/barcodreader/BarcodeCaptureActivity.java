@@ -36,6 +36,8 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -47,6 +49,9 @@ import com.google.android.gms.vision.barcode.BarcodeDetector;
 
 import java.io.IOException;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 import firebaseauthcom.example.orlanth23.roomsample.R;
 import firebaseauthcom.example.orlanth23.roomsample.barcodreader.camera.CameraSource;
 import firebaseauthcom.example.orlanth23.roomsample.barcodreader.camera.CameraSourcePreview;
@@ -69,7 +74,7 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
     // constants used to pass extra data in the intent
     public static final String AutoFocus = "AutoFocus";
     public static final String UseFlash = "UseFlash";
-    public static final String BarcodeObject = "Barcode";
+    public static final String BarcodeString = "Barcode";
 
     private CameraSource mCameraSource;
     private CameraSourcePreview mPreview;
@@ -79,6 +84,13 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
     private ScaleGestureDetector scaleGestureDetector;
     private GestureDetector gestureDetector;
 
+    @BindView(R.id.text_barcode)
+    TextView textBarcode;
+
+    @BindView(R.id.button_record)
+    Button buttonRecord;
+
+
     /**
      * Initializes the UI and creates the detector pipeline.
      */
@@ -86,6 +98,8 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
         setContentView(R.layout.barcode_capture);
+
+        ButterKnife.bind(this);
 
         mPreview = findViewById(R.id.preview);
         mGraphicOverlay = findViewById(R.id.graphicOverlay);
@@ -113,7 +127,7 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
      * sending the request.
      */
     private void requestCameraPermission() {
-        Log.w(TAG, "Camera permission is not granted. Requesting permission");
+        Log.w(TAG, "L'application n'a pas le droit d'accéder à la caméra. Requête de permission");
 
         final String[] permissions = new String[]{Manifest.permission.CAMERA};
 
@@ -138,9 +152,7 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
     @Override
     public boolean onTouchEvent(MotionEvent e) {
         boolean b = scaleGestureDetector.onTouchEvent(e);
-
         boolean c = gestureDetector.onTouchEvent(e);
-
         return b || c || super.onTouchEvent(e);
     }
 
@@ -275,11 +287,7 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
         Log.e(TAG, "Permission not granted: results len = " + grantResults.length +
                 " Result code = " + (grantResults.length > 0 ? grantResults[0] : "(empty)"));
 
-        DialogInterface.OnClickListener listener = new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                finish();
-            }
-        };
+        DialogInterface.OnClickListener listener = (dialog, id) -> finish();
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Multitracker sample")
@@ -349,7 +357,7 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
 
         if (best != null) {
             Intent data = new Intent();
-            data.putExtra(BarcodeObject, best);
+            data.putExtra(BarcodeString, best);
             setResult(CommonStatusCodes.SUCCESS, data);
             finish();
             return true;
@@ -420,6 +428,17 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
 
     @Override
     public void onBarcodeDetected(Barcode barcode) {
-        //do something with barcode data returned
+        textBarcode.setText(barcode.displayValue);
+    }
+
+    @OnClick(R.id.button_record)
+    public void onClickRecord(View v) {
+        if (textBarcode.getText() != null && !textBarcode.getText().toString().isEmpty()) {
+            String codeBarResult = textBarcode.getText().toString();
+            Intent data = new Intent();
+            data.putExtra(BarcodeString, codeBarResult);
+            setResult(CommonStatusCodes.SUCCESS, data);
+            finish();
+        }
     }
 }
