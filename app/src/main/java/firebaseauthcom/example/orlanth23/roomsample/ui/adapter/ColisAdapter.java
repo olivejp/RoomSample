@@ -45,7 +45,7 @@ public class ColisAdapter extends RecyclerView.Adapter<ColisAdapter.ViewHolderCo
     private static final String URL_AFTERSHIP_COURIER = "http://assets.aftership.com/couriers/svg/";
     private static final String AFTERSHIP_COURIER_EXTENSION = ".svg";
 
-    private List<? extends ColisWithSteps> colisEntities;
+    private List<ColisWithSteps> colisEntities;
     private RequestBuilder<PictureDrawable> requester;
     private View.OnClickListener onClickListener;
 
@@ -54,7 +54,7 @@ public class ColisAdapter extends RecyclerView.Adapter<ColisAdapter.ViewHolderCo
         this.onClickListener = onClickListener;
     }
 
-    public void setColisList(final List<? extends ColisWithSteps> colisEntities1) {
+    public void setColisList(final List<ColisWithSteps> colisEntities1) {
         if (colisEntities == null) {
             colisEntities = colisEntities1;
             notifyItemRangeInserted(0, colisEntities1.size());
@@ -182,6 +182,12 @@ public class ColisAdapter extends RecyclerView.Adapter<ColisAdapter.ViewHolderCo
         @BindView(R.id.constraint_detail_colis_layout)
         ConstraintLayout mConstraintDetailColisLayout;
 
+        @BindView(R.id.constraint_delete_layout)
+        ConstraintLayout mConstraintDeleted;
+
+        @BindView(R.id.constraint_delivered_layout)
+        ConstraintLayout mConstraintDelivered;
+
         @BindView(R.id.step_last_update)
         TextView mStepLastUpdate;
 
@@ -204,6 +210,14 @@ public class ColisAdapter extends RecyclerView.Adapter<ColisAdapter.ViewHolderCo
 
         public ConstraintLayout getmConstraintDetailColisLayout() {
             return mConstraintDetailColisLayout;
+        }
+
+        public ConstraintLayout getmConstraintDeletedLayout() {
+            return mConstraintDeleted;
+        }
+
+        public ConstraintLayout getmConstraintDeliveredLayout() {
+            return mConstraintDelivered;
         }
 
         public ColisWithSteps getColisWithSteps() {

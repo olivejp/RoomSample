@@ -92,9 +92,10 @@ public class MainActivityFragment extends Fragment implements SwipeRefreshLayout
         colisAdapter = new ColisAdapter(viewModel.getGlideRequester(), onClickDisplay);
 
         // Retrieve data from the ViewModel to populate the adapter
-        viewModel.getLiveListActiveColis().observe(appCompatActivity, colisWithSteps -> {
-            colisAdapter.setColisList(colisWithSteps);
-        });
+        // viewModel.getLiveListActiveColis().observe(appCompatActivity, colisAdapter::setColisList);
+
+        viewModel.getLiveColisWithSteps().observe(this, colisAdapter::setColisList);
+
     }
 
     @Nullable
@@ -107,13 +108,15 @@ public class MainActivityFragment extends Fragment implements SwipeRefreshLayout
         ButterKnife.bind(this, rootView);
 
         // If empty list, then
-        if (!viewModel.isListColisEmpty()) {
-            recyclerViewColisList.setVisibility(View.VISIBLE);
-            textExplicatifView.setVisibility(View.GONE);
-        } else {
-            recyclerViewColisList.setVisibility(View.GONE);
-            textExplicatifView.setVisibility(View.VISIBLE);
-        }
+        viewModel.isListColisActiveEmpty().observe(this, integer -> {
+            if (integer != null && integer > 0) {
+                recyclerViewColisList.setVisibility(View.VISIBLE);
+                textExplicatifView.setVisibility(View.GONE);
+            } else {
+                recyclerViewColisList.setVisibility(View.GONE);
+                textExplicatifView.setVisibility(View.VISIBLE);
+            }
+        });
 
         // Attach adapter to the recyclerView
         recyclerViewColisList.setAdapter(colisAdapter);

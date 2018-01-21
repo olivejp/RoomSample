@@ -3,7 +3,6 @@ package firebaseauthcom.example.orlanth23.roomsample.ui;
 import android.graphics.Canvas;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
-import android.util.Log;
 import android.view.View;
 
 import firebaseauthcom.example.orlanth23.roomsample.ui.adapter.ColisAdapter;
@@ -59,30 +58,18 @@ public class RecyclerItemTouchHelper extends ItemTouchHelper.SimpleCallback {
                             int actionState, boolean isCurrentlyActive) {
         final ColisAdapter.ViewHolderColisAdapter vh = (ColisAdapter.ViewHolderColisAdapter) viewHolder;
         final View foregroundView = vh.getmConstraintDetailColisLayout();
+        final View deletingView = vh.getmConstraintDeletedLayout();
+        final View deliveringView = vh.getmConstraintDeliveredLayout();
 
-        Log.d("JPIO", "dX = " + dX);
-        boolean swipeRightAllowed = !vh.getColisWithSteps().colisEntity.isDelivered();
-
-        int middle = (foregroundView.getWidth() / 2);
-        if (dX > middle) {
-            dX = middle;
-        }
-        if (dX < (middle * -1)) {
-            dX = middle * -1;
-        }
-        float mouvementX = dX;
-
-        if (mouvementX > 0) {
-            if (swipeRightAllowed) {
-                if (mouvementX >= middle) mouvementX = middle;
-            } else {
-                mouvementX = ((ColisAdapter.ViewHolderColisAdapter) viewHolder).getmConstraintDetailColisLayout().getX();
-            }
+        if (dX > 0) {
+            deletingView.setVisibility(View.GONE);
+            deliveringView.setVisibility(View.VISIBLE);
         } else {
-            middle = middle * -1;
-            if (mouvementX < middle) mouvementX = middle;
+            deletingView.setVisibility(View.VISIBLE);
+            deliveringView.setVisibility(View.GONE);
         }
-        getDefaultUIUtil().onDraw(c, recyclerView, foregroundView, mouvementX, dY, actionState, isCurrentlyActive);
+
+        getDefaultUIUtil().onDraw(c, recyclerView, foregroundView, dX, dY, actionState, isCurrentlyActive);
     }
 
     public interface SwipeListener {

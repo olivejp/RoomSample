@@ -91,19 +91,16 @@ class CoreSync {
                         callDetectCourierAfterShip(colisWithSteps, trackingNumber);
                     })
                     .subscribe(htmlString -> {
-                                ColisDto colisDto = new ColisDto();
-                                colisDto.setIdColis(trackingNumber);
-                                colisDto.setDescription(colisEntity.getDescription());
-                                ColisWithSteps resultColis;
-                                if (transformHtmlToColisDto(colisDto, htmlString)) {
+                                ColisWithSteps colisWithSteps = new ColisWithSteps();
+                                colisWithSteps.colisEntity = colisEntity;
+                                ColisDto colisDto = transformHtmlToColisDto(trackingNumber, colisEntity.getDescription(), htmlString);
+                                if (colisDto != null) {
                                     Log.d(TAG, "Transformation de la réponse OPT OK");
-                                    resultColis = ColisMapper.convertToActiveEntity(colisDto);
+                                    colisWithSteps = ColisMapper.convertToActiveEntity(colisDto, colisWithSteps);
                                 } else {
                                     Log.e(TAG, "Fail to receive response from OPT service");
-                                    resultColis = new ColisWithSteps();
-                                    resultColis.colisEntity.setIdColis(trackingNumber);
                                 }
-                                callDetectCourierAfterShip(resultColis, trackingNumber);
+                                callDetectCourierAfterShip(colisWithSteps, trackingNumber);
                             },
                             consThrowable
                     );
@@ -111,26 +108,30 @@ class CoreSync {
     }
 
     /**
-     * @param colisDto
+     * @param trackingNumber
+     * @param description
      * @param htmlToTransform
      * @return
      */
-    private boolean transformHtmlToColisDto(ColisDto colisDto, String htmlToTransform) {
+    private ColisDto transformHtmlToColisDto(String trackingNumber, String description, String htmlToTransform) {
         try {
+            ColisDto colisDto = new ColisDto();
+            colisDto.setIdColis(trackingNumber);
+            colisDto.setDescription(description);
             switch (HtmlTransformer.getColisFromHtml(htmlToTransform, colisDto)) {
                 case HtmlTransformer.RESULT_SUCCESS:
                     Log.d(TAG, "HtmlTransformer return SUCCESS");
-                    return true;
+                    return colisDto;
                 case HtmlTransformer.RESULT_NO_ITEM_FOUND:
                     Log.d(TAG, "HtmlTransformer return NO ITEM FOUND");
-                    return false;
+                    return null;
                 default:
-                    return false;
+                    return null;
             }
         } catch (HtmlTransformer.HtmlTransformerException e) {
             Log.e(TAG, e.getMessage(), e);
         }
-        return false;
+        return null;
     }
 
     /**

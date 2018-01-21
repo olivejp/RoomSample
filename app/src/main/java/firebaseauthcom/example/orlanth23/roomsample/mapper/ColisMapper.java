@@ -32,18 +32,16 @@ public class ColisMapper {
      * @param dto
      * @return {@link ColisWithSteps}
      */
-    public static ColisWithSteps convertToActiveEntity(ColisDto dto) {
+    public static ColisWithSteps convertToActiveEntity(ColisDto dto, ColisWithSteps result) {
         Log.d(TAG, "(convertToActiveEntity)");
-        ColisWithSteps colis = new ColisWithSteps();
-        colis.colisEntity.setIdColis(dto.getIdColis());
         if (dto.getEtapeDtoArrayList() != null && !dto.getEtapeDtoArrayList().isEmpty()) {
             List<StepEntity> listStepEntity = new ArrayList<>();
             for (EtapeDto etapeDto : dto.getEtapeDtoArrayList()) {
                 listStepEntity.add(EtapeMapper.convertToEntity(dto.getIdColis(), etapeDto));
             }
-            colis.stepEntityList = listStepEntity;
+            result.stepEntityList = listStepEntity;
         }
-        return colis;
+        return result;
     }
 
     /**

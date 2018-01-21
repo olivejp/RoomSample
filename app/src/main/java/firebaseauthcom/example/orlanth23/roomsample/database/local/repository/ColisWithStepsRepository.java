@@ -1,5 +1,6 @@
 package firebaseauthcom.example.orlanth23.roomsample.database.local.repository;
 
+import android.arch.lifecycle.LiveData;
 import android.content.Context;
 
 import java.util.List;
@@ -46,4 +47,15 @@ public class ColisWithStepsRepository {
     public Flowable<List<ColisWithSteps>> getActiveFlowableColisWithSteps() {
         return this.colisWithStepsDao.getFlowableActiveColisWithSteps();
     }
+
+    public LiveData<List<ColisWithSteps>> getLiveActiveColisWithSteps() {
+        return this.colisWithStepsDao.getLiveActiveColisWithSteps();
+    }
+
+
+    public LiveData<Integer> getLiveCountActiveColisWithSteps() {
+        return this.colisWithStepsDao.getLiveCountActiveColisWithSteps();
+    }
+
+
 }

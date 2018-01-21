@@ -11,6 +11,7 @@ import android.support.annotation.Nullable;
 import com.bumptech.glide.RequestBuilder;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import firebaseauthcom.example.orlanth23.roomsample.R;
 import firebaseauthcom.example.orlanth23.roomsample.broadcast.NetworkReceiver;
@@ -38,6 +39,7 @@ public class MainActivityViewModel extends AndroidViewModel {
     private RequestBuilder<PictureDrawable> requester;
     private MutableLiveData<ColisWithSteps> colisWithStepsSelected = new MutableLiveData<>();
     private MutableLiveData<List<ColisWithSteps>> colisWithStepsList = new MutableLiveData<>();
+    private MutableLiveData<AtomicBoolean> isRecyclerViewVisisble = new MutableLiveData<>();
     private String idColisSelected;
     private boolean twoPane;
 
@@ -55,6 +57,10 @@ public class MainActivityViewModel extends AndroidViewModel {
                 .placeholder(R.drawable.ic_archive_grey_900_48dp)
                 .error(R.drawable.ic_archive_grey_900_48dp)
                 .listener(new SvgSoftwareLayerSetter());
+    }
+
+    public LiveData<List<ColisWithSteps>> getLiveColisWithSteps(){
+        return  colisWithStepsRepository.getLiveActiveColisWithSteps();
     }
 
     /**
@@ -94,15 +100,6 @@ public class MainActivityViewModel extends AndroidViewModel {
         return this.requester;
     }
 
-    /**
-     * Return a LiveData containing the List of ALL the colis with their steps in the DB
-     *
-     * @return LiveData<List<ColisWithSteps>>
-     */
-    public LiveData<List<ColisWithSteps>> getLiveListActiveColis() {
-        return this.colisWithStepsList;
-    }
-
     private void launchSyncTask(SyncTask.TypeSyncTask type, @Nullable String idColis) {
         new SyncTask(getApplication(), type, idColis).execute();
     }
@@ -123,8 +120,8 @@ public class MainActivityViewModel extends AndroidViewModel {
         colisRepository.markAsDelivered(colisEntity);
     }
 
-    public boolean isListColisEmpty(){
-        return (this.colisWithStepsList.getValue() == null || this.colisWithStepsList.getValue().isEmpty());
+    public LiveData<Integer> isListColisActiveEmpty(){
+        return colisWithStepsRepository.getLiveCountActiveColisWithSteps();
     }
 
     public void refresh() {
