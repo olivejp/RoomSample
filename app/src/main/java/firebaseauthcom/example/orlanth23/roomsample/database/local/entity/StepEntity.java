@@ -6,8 +6,6 @@ import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.Index;
 import android.arch.persistence.room.PrimaryKey;
 import android.arch.persistence.room.TypeConverters;
-import android.os.Parcel;
-import android.os.Parcelable;
 import android.support.annotation.NonNull;
 
 import firebaseauthcom.example.orlanth23.roomsample.database.local.StepOrigine;
@@ -151,8 +149,7 @@ public class StepEntity {
 
     @Override
     public int hashCode() {
-        int result = idEtapeAcheminement.hashCode();
-        result = 31 * result + (idColis != null ? idColis.hashCode() : 0);
+        int result = (idColis != null ? idColis.hashCode() : 0);
         result = 31 * result + (date != null ? date.hashCode() : 0);
         result = 31 * result + (pays != null ? pays.hashCode() : 0);
         result = 31 * result + (localisation != null ? localisation.hashCode() : 0);
@@ -163,4 +160,18 @@ public class StepEntity {
         return result;
     }
 
+    @Override
+    public String toString() {
+        return "StepEntity{" +
+                "idEtapeAcheminement=" + idEtapeAcheminement +
+                ", idColis='" + idColis + '\'' +
+                ", date=" + date +
+                ", pays='" + pays + '\'' +
+                ", localisation='" + localisation + '\'' +
+                ", description='" + description + '\'' +
+                ", commentaire='" + commentaire + '\'' +
+                ", status='" + status + '\'' +
+                ", origine=" + origine +
+                '}';
+    }
 }

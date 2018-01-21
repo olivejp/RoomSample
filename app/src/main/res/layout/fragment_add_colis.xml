@@ -14,14 +14,16 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
-        android:layout_marginTop="8dp"
-        android:text="Veuillez saisir les 13 lettres/chiffres de votre colis"
+        android:layout_marginTop="20dp"
+        android:textSize="15sp"
+        android:text="Veuillez saisir les 13 lettres/chiffres de votre colis\nOu scanner son code barre avec votre appareil photo"
         android:textAlignment="center"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
+        android:id="@+id/img_search"
         android:layout_width="35dp"
         android:layout_height="35dp"
         android:layout_marginEnd="0dp"
@@ -37,7 +39,7 @@
         android:layout_marginTop="46dp"
         app:layout_constraintRight_toLeftOf="@+id/edit_description_parcel"
         app:layout_constraintTop_toBottomOf="@+id/edit_id_parcel"
-        app:srcCompat="@drawable/ic_note_add_grey_900_48dp" />
+        app:srcCompat="@drawable/ic_label_grey_900_48dp" />
 
     <EditText
         android:id="@+id/edit_id_parcel"
@@ -59,9 +61,9 @@
         android:id="@+id/img_scan"
         android:layout_width="35dp"
         android:layout_height="35dp"
-        app:layout_constraintBottom_toBottomOf="@+id/edit_id_parcel"
+        app:layout_constraintBottom_toBottomOf="@+id/img_search"
         app:layout_constraintLeft_toRightOf="@+id/edit_id_parcel"
-        app:srcCompat="@drawable/ic_visibility_grey_900_48dp" />
+        app:srcCompat="@drawable/ic_photo_camera_grey_900_48dp" />
 
     <EditText
         android:id="@+id/edit_description_parcel"
@@ -90,5 +92,5 @@
         app:backgroundTint="@color/colorAccent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:srcCompat="@drawable/ic_search_white_48dp" />
+        app:srcCompat="@drawable/ic_add_white_48dp" />
 </android.support.constraint.ConstraintLayout>

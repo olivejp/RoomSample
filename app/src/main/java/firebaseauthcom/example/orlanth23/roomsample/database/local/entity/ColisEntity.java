@@ -159,4 +159,19 @@ public class ColisEntity implements Parcelable {
             return new ColisEntity[size];
         }
     };
+
+    @Override
+    public String toString() {
+        return "ColisEntity{" +
+                "idColis='" + idColis + '\'' +
+                ", description='" + description + '\'' +
+                ", lastUpdate=" + lastUpdate +
+                ", lastUpdateSuccessful=" + lastUpdateSuccessful +
+                ", deleted=" + deleted +
+                ", slug='" + slug + '\'' +
+                ", fbLinked=" + fbLinked +
+                ", afterShipId='" + afterShipId + '\'' +
+                ", delivered=" + delivered +
+                '}';
+    }
 }

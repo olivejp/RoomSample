@@ -20,5 +20,15 @@ public class ColisWithSteps {
     public ColisWithSteps() {
         this.colisEntity = new ColisEntity();
         this.stepEntityList = new ArrayList<>();
+        this.colisEntity.setDeleted(0);
+        this.colisEntity.setDelivered(0);
+    }
+
+    @Override
+    public String toString() {
+        return "ColisWithSteps{" +
+                "colisEntity=" + colisEntity +
+                ", stepEntityList=" + stepEntityList +
+                '}';
     }
 }

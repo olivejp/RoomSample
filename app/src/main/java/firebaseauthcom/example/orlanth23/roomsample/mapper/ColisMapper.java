@@ -28,6 +28,7 @@ public class ColisMapper {
     /**
      * Create a new ColisWithSteps
      * Fill the ColisEntity with the {@link ColisDto} informations.
+     *
      * @param dto
      * @return {@link ColisWithSteps}
      */
@@ -35,7 +36,6 @@ public class ColisMapper {
         Log.d(TAG, "(convertToActiveEntity)");
         ColisWithSteps colis = new ColisWithSteps();
         colis.colisEntity.setIdColis(dto.getIdColis());
-        colis.colisEntity.setDeleted(0);
         if (dto.getEtapeDtoArrayList() != null && !dto.getEtapeDtoArrayList().isEmpty()) {
             List<StepEntity> listStepEntity = new ArrayList<>();
             for (EtapeDto etapeDto : dto.getEtapeDtoArrayList()) {
@@ -57,6 +57,7 @@ public class ColisMapper {
         Log.d(TAG, "(convertTrackingDataToEntity)");
         resultColis.colisEntity.setAfterShipId(trackingData.getId());
         for (Checkpoint checkpoint : trackingData.getCheckpoints()) {
+            Log.d(TAG, "(createEtapeFromCheckpoint)" + checkpoint.toString());
             StepEntity stepEntity = createEtapeFromCheckpoint(resultColis.colisEntity.getIdColis(), checkpoint);
             resultColis.stepEntityList.add(stepEntity);
         }

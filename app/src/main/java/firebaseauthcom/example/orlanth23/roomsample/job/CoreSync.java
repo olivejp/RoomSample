@@ -93,6 +93,7 @@ class CoreSync {
                     .subscribe(htmlString -> {
                                 ColisDto colisDto = new ColisDto();
                                 colisDto.setIdColis(trackingNumber);
+                                colisDto.setDescription(colisEntity.getDescription());
                                 ColisWithSteps resultColis;
                                 if (transformHtmlToColisDto(colisDto, htmlString)) {
                                     Log.d(TAG, "Transformation de la réponse OPT OK");
@@ -100,6 +101,7 @@ class CoreSync {
                                 } else {
                                     Log.e(TAG, "Fail to receive response from OPT service");
                                     resultColis = new ColisWithSteps();
+                                    resultColis.colisEntity.setIdColis(trackingNumber);
                                 }
                                 callDetectCourierAfterShip(resultColis, trackingNumber);
                             },
@@ -240,6 +242,7 @@ class CoreSync {
      * @param resultColis
      */
     private void saveSuccessfulColis(ColisWithSteps resultColis) {
+        Log.d(TAG, "ColisWithSteps qui va être enregistré : " + resultColis.toString());
         Context context = contextWeakReference.get();
         ColisWithStepsRepository.getInstance(context).findActiveColisWithStepsByIdColis(resultColis.colisEntity.getIdColis())
                 .subscribe(colisWithSteps -> {

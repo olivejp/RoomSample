@@ -155,6 +155,8 @@ public class ColisAdapter extends RecyclerView.Adapter<ColisAdapter.ViewHolderCo
         bindImageStatus(holder, colis, lastEtape);
     }
 
+
+
     @Override
     public int getItemCount() {
         return colisEntities == null ? 0 : colisEntities.size();

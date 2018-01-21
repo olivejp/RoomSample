@@ -93,9 +93,12 @@ public class SyncColisService extends IntentService {
     private void handleActionSyncColis(Bundle bundle) {
         if (bundle.containsKey(ARG_ID_COLIS)) {
             String idColis = bundle.getString(ARG_ID_COLIS);
-            ColisRepository.getInstance(this).findById(idColis).subscribe(colisEntity -> {
-                if (idColis != null) CoreSync.getInstance(this, false).callOptTracking(colisEntity);
-            });
+            ColisRepository.getInstance(this).
+                    findById(idColis).
+                    subscribe(colisEntity -> {
+                        if (idColis != null)
+                            CoreSync.getInstance(this, false).callOptTracking(colisEntity);
+                    });
         }
     }
 

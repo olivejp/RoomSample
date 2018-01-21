@@ -2,9 +2,9 @@ package firebaseauthcom.example.orlanth23.roomsample.mapper;
 
 
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import firebaseauthcom.example.orlanth23.roomsample.DateConverter;
-import firebaseauthcom.example.orlanth23.roomsample.R;
 import firebaseauthcom.example.orlanth23.roomsample.database.local.StepOrigine;
 import firebaseauthcom.example.orlanth23.roomsample.database.local.entity.StepEntity;
 import firebaseauthcom.example.orlanth23.roomsample.job.aftership.Checkpoint;
@@ -15,6 +15,8 @@ import firebaseauthcom.example.orlanth23.roomsample.job.opt.EtapeDto;
  */
 
 public class EtapeMapper {
+
+    private static final String TAG = EtapeMapper.class.getName();
 
     private EtapeMapper() {
     }
@@ -60,6 +62,7 @@ public class EtapeMapper {
         stepEntity.setDescription((checkpoint.getMessage() != null) ? checkpoint.getMessage() : "");
         stepEntity.setPays((checkpoint.getCountryName() != null) ? checkpoint.getCountryName().toString() : "");
         stepEntity.setOrigine(StepOrigine.AFTER_SHIP);
+        Log.d(TAG, "createEtapeFromCheckpoint : " + stepEntity.toString());
         return stepEntity;
     }
 }
