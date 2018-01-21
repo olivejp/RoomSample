@@ -3,6 +3,7 @@
     package="firebaseauthcom.example.orlanth23.roomsample">
 
     <uses-feature android:name="android.hardware.camera" />
+
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission
         android:name="android.permission.INTERNET"
@@ -35,8 +36,14 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.activity.MainActivity" />
         </activity>
-        <activity android:name=".barcodreader.BarcodeCaptureActivity"
-            android:label="Read Barcode"/>
+        <activity
+            android:name=".barcodreader.BarcodeCaptureActivity"
+            android:label="Read Barcode"
+            android:parentActivityName=".ui.activity.AddColisActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.activity.AddColisActivity" />
+        </activity>
 
         <service
             android:name=".job.SyncColisService"

@@ -36,7 +36,7 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
-import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -77,8 +77,6 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
     public static final String BarcodeString = "Barcode";
 
     private CameraSource mCameraSource;
-    private CameraSourcePreview mPreview;
-    private GraphicOverlay<BarcodeGraphic> mGraphicOverlay;
 
     // helper objects for detecting taps and pinches.
     private ScaleGestureDetector scaleGestureDetector;
@@ -88,8 +86,13 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
     TextView textBarcode;
 
     @BindView(R.id.button_record)
-    Button buttonRecord;
+    ImageButton buttonRecord;
 
+    @BindView(R.id.preview)
+    CameraSourcePreview mPreview;
+
+    @BindView(R.id.graphicOverlay)
+    GraphicOverlay<BarcodeGraphic> mGraphicOverlay;
 
     /**
      * Initializes the UI and creates the detector pipeline.
@@ -100,9 +103,6 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
         setContentView(R.layout.barcode_capture);
 
         ButterKnife.bind(this);
-
-        mPreview = findViewById(R.id.preview);
-        mGraphicOverlay = findViewById(R.id.graphicOverlay);
 
         // read parameters from the intent used to launch the activity.
         boolean autoFocus = getIntent().getBooleanExtra(AutoFocus, false);

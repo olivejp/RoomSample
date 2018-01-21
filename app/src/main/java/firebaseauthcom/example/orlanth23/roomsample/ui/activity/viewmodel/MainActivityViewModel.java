@@ -123,6 +123,10 @@ public class MainActivityViewModel extends AndroidViewModel {
         colisRepository.markAsDelivered(colisEntity);
     }
 
+    public boolean isListColisEmpty(){
+        return (this.colisWithStepsList.getValue() == null || this.colisWithStepsList.getValue().isEmpty());
+    }
+
     public void refresh() {
         if (NetworkReceiver.checkConnection(getApplication())) {
             if (colisWithStepsSelected.getValue() != null) {

@@ -17,6 +17,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -48,6 +49,9 @@ public class MainActivityFragment extends Fragment implements SwipeRefreshLayout
 
     @BindView(R.id.swipeRefreshLayout)
     public SwipeRefreshLayout swipeRefreshLayout;
+
+    @BindView(R.id.text_explicatif_suivi_colis)
+    public TextView textExplicatifView;
 
     private MainActivityViewModel viewModel;
     private AppCompatActivity appCompatActivity;
@@ -88,7 +92,9 @@ public class MainActivityFragment extends Fragment implements SwipeRefreshLayout
         colisAdapter = new ColisAdapter(viewModel.getGlideRequester(), onClickDisplay);
 
         // Retrieve data from the ViewModel to populate the adapter
-        viewModel.getLiveListActiveColis().observe(appCompatActivity, colisAdapter::setColisList);
+        viewModel.getLiveListActiveColis().observe(appCompatActivity, colisWithSteps -> {
+            colisAdapter.setColisList(colisWithSteps);
+        });
     }
 
     @Nullable
@@ -99,6 +105,15 @@ public class MainActivityFragment extends Fragment implements SwipeRefreshLayout
         // View creation
         View rootView = inflater.inflate(R.layout.fragment_main_activity, container, false);
         ButterKnife.bind(this, rootView);
+
+        // If empty list, then
+        if (!viewModel.isListColisEmpty()) {
+            recyclerViewColisList.setVisibility(View.VISIBLE);
+            textExplicatifView.setVisibility(View.GONE);
+        } else {
+            recyclerViewColisList.setVisibility(View.GONE);
+            textExplicatifView.setVisibility(View.VISIBLE);
+        }
 
         // Attach adapter to the recyclerView
         recyclerViewColisList.setAdapter(colisAdapter);

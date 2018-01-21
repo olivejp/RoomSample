@@ -32,7 +32,7 @@ public class AddColisActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == CommonStatusCodes.SUCCESS) {
             if (data != null) {
-                String codeBarResult = data.getParcelableExtra(BarcodeCaptureActivity.BarcodeString);
+                String codeBarResult = data.getStringExtra(BarcodeCaptureActivity.BarcodeString);
                 viewModel.setIdColis(codeBarResult);
                 Log.d("TAG", "Code barre récupéré = " + codeBarResult);
             } else {
