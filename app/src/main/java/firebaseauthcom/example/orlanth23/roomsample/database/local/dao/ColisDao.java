@@ -7,7 +7,6 @@ import java.util.List;
 
 import firebaseauthcom.example.orlanth23.roomsample.database.local.entity.ColisEntity;
 import io.reactivex.Maybe;
-import io.reactivex.Single;
 
 
 /**
@@ -26,7 +25,7 @@ public interface ColisDao extends AbstractDao<ColisEntity>{
     Maybe<List<ColisEntity>> listMaybeColisSupprimes();
 
     @Query("SELECT * FROM colis WHERE idColis = :idColis")
-    Single<ColisEntity> findById(String idColis);
+    Maybe<ColisEntity> findById(String idColis);
 
     @Query("SELECT * FROM colis WHERE DELETED <> '1' AND DELIVERED <> '1'")
     Maybe<List<ColisEntity>> listMaybeColisActifsAndNotDelivered();

@@ -9,7 +9,8 @@ import android.support.annotation.NonNull;
 import firebaseauthcom.example.orlanth23.roomsample.database.local.entity.ColisEntity;
 import firebaseauthcom.example.orlanth23.roomsample.database.local.repository.ColisRepository;
 import firebaseauthcom.example.orlanth23.roomsample.job.SyncTask;
-import io.reactivex.Single;
+import io.reactivex.Maybe;
+import io.reactivex.schedulers.Schedulers;
 
 import static firebaseauthcom.example.orlanth23.roomsample.job.SyncTask.TypeSyncTask.SOLO;
 
@@ -45,15 +46,17 @@ public class AddColisFragmentViewModel extends AndroidViewModel {
         colisRepository.insert(colisEntity);
     }
 
-    public Single<ColisEntity> findById(String idColis) {
-        return ColisRepository.getInstance(getApplication()).findById(idColis);
+    public Maybe<ColisEntity> findBy(String idColis) {
+        return ColisRepository.getInstance(getApplication()).findById(idColis)
+                .subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.io());
     }
 
-    public LiveData<String> getIdColis(){
+    public LiveData<String> getIdColis() {
         return idColis;
     }
 
-    public void setIdColis(String idColis){
+    public void setIdColis(String idColis) {
         this.idColis.postValue(idColis);
     }
 }

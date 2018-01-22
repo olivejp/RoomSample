@@ -11,7 +11,6 @@ import firebaseauthcom.example.orlanth23.roomsample.database.local.entity.ColisE
 import firebaseauthcom.example.orlanth23.roomsample.database.local.repository.task.ColisRepositoryTask;
 import firebaseauthcom.example.orlanth23.roomsample.database.local.repository.task.TypeTask;
 import io.reactivex.Maybe;
-import io.reactivex.Single;
 import io.reactivex.schedulers.Schedulers;
 
 /**
@@ -111,8 +110,8 @@ public class ColisRepository {
     }
 
     /**
-     * Check if the idColis count in the DB.
-     * If it count we just update, otherwise insert.
+     * Check if the idColis findBy in the DB.
+     * If it findBy we just update, otherwise insert.
      *
      * @param colisEntities to save (update or insert)
      */
@@ -131,7 +130,7 @@ public class ColisRepository {
         }
     }
 
-    public Single<ColisEntity> findById(String idColis) {
+    public Maybe<ColisEntity> findById(String idColis) {
         return this.colisDao.findById(idColis);
     }
 }

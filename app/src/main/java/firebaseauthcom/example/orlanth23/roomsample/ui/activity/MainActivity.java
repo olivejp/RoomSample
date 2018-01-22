@@ -14,6 +14,7 @@ import firebaseauthcom.example.orlanth23.roomsample.ui.fragment.HistoriqueColisF
 import firebaseauthcom.example.orlanth23.roomsample.ui.fragment.MainActivityFragment;
 
 import static firebaseauthcom.example.orlanth23.roomsample.ui.fragment.MainActivityFragment.ARG_NOTICE_BUNDLE_COLIS;
+import static firebaseauthcom.example.orlanth23.roomsample.ui.fragment.MainActivityFragment.ARG_NOTICE_BUNDLE_POSITION;
 import static firebaseauthcom.example.orlanth23.roomsample.ui.fragment.MainActivityFragment.DIALOG_TAG_DELETE;
 import static firebaseauthcom.example.orlanth23.roomsample.ui.fragment.MainActivityFragment.DIALOG_TAG_DELIVERED;
 
@@ -87,8 +88,10 @@ public class MainActivity extends AppCompatActivity implements NoticeDialogFragm
         if (dialog.getTag() != null && dialog.getTag().equals(DIALOG_TAG_DELIVERED)) {
             if (dialog.getBundle() != null && dialog.getBundle().containsKey(ARG_NOTICE_BUNDLE_COLIS)) {
                 ColisEntity colisEntity = dialog.getBundle().getParcelable(ARG_NOTICE_BUNDLE_COLIS);
+                int position = dialog.getBundle().getInt(ARG_NOTICE_BUNDLE_POSITION);
                 if (colisEntity != null) {
                     viewModel.markAsDelivered(colisEntity);
+                    viewModel.notifyItemChanged(position);
                 }
             }
         }
@@ -96,6 +99,9 @@ public class MainActivity extends AppCompatActivity implements NoticeDialogFragm
 
     @Override
     public void onDialogNegativeClick(NoticeDialogFragment dialog) {
-        // Do Nothing
+        if (dialog.getTag() != null && (dialog.getTag().equals(DIALOG_TAG_DELETE) || dialog.getTag().equals(DIALOG_TAG_DELIVERED))) {
+            int position = dialog.getBundle().getInt(ARG_NOTICE_BUNDLE_POSITION);
+            viewModel.notifyItemChanged(position);
+        }
     }
 }

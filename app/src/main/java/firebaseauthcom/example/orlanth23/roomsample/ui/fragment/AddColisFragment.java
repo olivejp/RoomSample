@@ -9,6 +9,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -73,14 +74,16 @@ public class AddColisFragment extends Fragment {
             String idColis = editIdParcel.getText().toString();
             String description = (editDescriptionParcel.getText() != null) ? editDescriptionParcel.getText().toString() : null;
 
-            viewModel.findById(idColis).subscribe(colisEntity -> {
-                if (colisEntity.isDeleted()) {
-                    viewModel.deleteColis(idColis);
-                    callVmToCreateColis(idColis, description);
-                } else {
-                    Snackbar.make(v, String.format("Le colis %s est déjà suivi", idColis), Snackbar.LENGTH_LONG).show();
-                }
-            }, throwable -> callVmToCreateColis(idColis, description));
+            viewModel.findBy(idColis).subscribe(colisEntity -> {
+                        if (colisEntity.isDeleted()) {
+                            viewModel.deleteColis(idColis);
+                            callVmToCreateColis(idColis, description);
+                        } else {
+                            Snackbar.make(v, String.format("Le colis %s est déjà suivi", idColis), Snackbar.LENGTH_LONG).show();
+                        }
+                    }
+                    , throwable -> Log.e(throwable.getMessage(), "C'est la merde")
+                    , () -> callVmToCreateColis(idColis, description));
         }
     }
 
