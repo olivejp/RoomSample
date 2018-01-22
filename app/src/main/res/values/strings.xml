@@ -6,4 +6,8 @@
     <string name="permission_camera_rationale">L\'accès à la caméra est nécessaire pour lire le code barre</string>
     <string name="low_storage_error">Les dépendances du détecteur de visage ne peuvent pas être téléchargés à cause d\'un manque d'espace</string>
     <string name="no_camera_permission">Cette application nécessite l\'accès à la caméra pour fonctionner.</string>
+    <string name="title_activity_bottom_navigation">BottomNavigationActivity</string>
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Notifications</string>
 </resources>
