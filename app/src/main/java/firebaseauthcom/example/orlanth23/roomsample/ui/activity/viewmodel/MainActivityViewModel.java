@@ -14,6 +14,7 @@ import java.util.List;
 
 import firebaseauthcom.example.orlanth23.roomsample.R;
 import firebaseauthcom.example.orlanth23.roomsample.broadcast.NetworkReceiver;
+import firebaseauthcom.example.orlanth23.roomsample.database.local.StepOrigine;
 import firebaseauthcom.example.orlanth23.roomsample.database.local.entity.ColisEntity;
 import firebaseauthcom.example.orlanth23.roomsample.database.local.entity.ColisWithSteps;
 import firebaseauthcom.example.orlanth23.roomsample.database.local.entity.StepEntity;
@@ -93,6 +94,14 @@ public class MainActivityViewModel extends AndroidViewModel {
 
     public LiveData<List<StepEntity>> liveListStepsOrderedByIdColis(String idColis) {
         return stepRepository.liveListStepsOrderedByIdColis(idColis);
+    }
+
+    public LiveData<List<StepEntity>> getListStepFromOpt(String idColis) {
+        return stepRepository.liveListStepsOrderedByIdColisAndOrigine(idColis, StepOrigine.OPT);
+    }
+
+    public LiveData<List<StepEntity>> getListStepFromAfterShip(String idColis) {
+        return stepRepository.liveListStepsOrderedByIdColisAndOrigine(idColis, StepOrigine.AFTER_SHIP);
     }
 
     public RequestBuilder<PictureDrawable> getGlideRequester() {

@@ -6,6 +6,7 @@ import android.content.Context;
 import java.util.List;
 
 import firebaseauthcom.example.orlanth23.roomsample.database.local.ColisDatabase;
+import firebaseauthcom.example.orlanth23.roomsample.database.local.StepOrigine;
 import firebaseauthcom.example.orlanth23.roomsample.database.local.dao.StepDao;
 import firebaseauthcom.example.orlanth23.roomsample.database.local.entity.StepEntity;
 import firebaseauthcom.example.orlanth23.roomsample.database.local.repository.task.EtapeRepositoryTask;
@@ -41,6 +42,10 @@ public class StepRepository {
 
     public LiveData<List<StepEntity>> liveListStepsOrderedByIdColis(String idColis) {
         return this.stepDao.liveListStepsOrderedByIdColis(idColis);
+    }
+
+    public LiveData<List<StepEntity>> liveListStepsOrderedByIdColisAndOrigine(String idColis, StepOrigine origine) {
+        return this.stepDao.liveListStepsOrderedByIdColisAndOrigine(idColis, origine.getValue());
     }
 
     public void insert(StepEntity... stepEntities) {
