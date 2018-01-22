@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
@@ -36,6 +37,9 @@ public class AddColisFragment extends Fragment {
 
     @BindView(R.id.edit_description_parcel)
     EditText editDescriptionParcel;
+
+    @BindView(R.id.coordinator_add_colis)
+    CoordinatorLayout coordinatorLayout;
 
     public AddColisFragment() {
         // Required empty public constructor
@@ -79,7 +83,7 @@ public class AddColisFragment extends Fragment {
                             viewModel.deleteColis(idColis);
                             callVmToCreateColis(idColis, description);
                         } else {
-                            Snackbar.make(v, String.format("Le colis %s est déjà suivi", idColis), Snackbar.LENGTH_LONG).show();
+                            Snackbar.make(coordinatorLayout, String.format("Le colis %s est déjà suivi", idColis), Snackbar.LENGTH_LONG).show();
                         }
                     }
                     , throwable -> Log.e(throwable.getMessage(), "C'est la merde")
