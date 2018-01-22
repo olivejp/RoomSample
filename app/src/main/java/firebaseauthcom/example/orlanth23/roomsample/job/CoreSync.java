@@ -3,9 +3,6 @@ package firebaseauthcom.example.orlanth23.roomsample.job;
 import android.content.Context;
 import android.util.Log;
 
-import java.lang.ref.WeakReference;
-import java.util.concurrent.TimeUnit;
-
 import firebaseauthcom.example.orlanth23.roomsample.NotificationSender;
 import firebaseauthcom.example.orlanth23.roomsample.R;
 import firebaseauthcom.example.orlanth23.roomsample.database.local.entity.ColisEntity;
@@ -22,7 +19,7 @@ import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 
 import static firebaseauthcom.example.orlanth23.roomsample.mapper.ColisMapper.convertTrackingDataToEntity;
-import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static java.util.concurrent.TimeUnit.SECONDS;
 
 /**
  * Created by orlanth23 on 18/12/2017.
@@ -33,13 +30,13 @@ class CoreSync {
     private static final String TAG = CoreSync.class.getName();
 
     private static CoreSync INSTANCE;
-    private WeakReference<Context> contextWeakReference;
+    private Context context;
     private Consumer<Throwable> consThrowable;
     private boolean sendNotification;
 
     private CoreSync(Context context, boolean sendNotification) {
         if (context != null) {
-            this.contextWeakReference = new WeakReference<>(context);
+            this.context = context;
         }
         this.sendNotification = sendNotification;
         this.consThrowable = throwable -> Log.e(TAG, "Erreur sur l'API AfterShip : " + throwable.getMessage() + " Localized message : " + throwable.getLocalizedMessage(), throwable);
@@ -59,13 +56,12 @@ class CoreSync {
      * L'interval de temps nous permet de ne pas saturer le réseau avec des requêtes quand on a trop de colis dans la DB.
      */
     void callGetAllTracking() {
-        ColisRepository.getInstance(contextWeakReference.get()).getAllActiveAndNonDeliveredColis()
+        ColisRepository.getInstance(context).getAllActiveAndNonDeliveredColis()
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.io())
                 .subscribe(listColis ->
                         Observable.zip(
-                                // ToDo remettre à 10 secondes
-                                Observable.interval(1, TimeUnit.MILLISECONDS),
+                                Observable.interval(5, SECONDS),
                                 Observable.just(listColis).flatMapIterable(colisEntities -> colisEntities),
                                 (aLong, colisEntity) -> colisEntity)
                                 .subscribe(this::callOptTracking, consThrowable)
@@ -81,7 +77,7 @@ class CoreSync {
      * @param colisEntity
      */
     void callOptTracking(ColisEntity colisEntity) {
-        if (contextWeakReference.get() != null) {
+        if (context != null) {
             String trackingNumber = colisEntity.getIdColis();
             RetrofitAfterShipClient.getTrackingOpt(trackingNumber)
                     .doOnError(throwable -> {
@@ -169,8 +165,7 @@ class CoreSync {
                     Log.d(TAG, "Post tracking fail, try to get it by get trackings/:slug/:trackingNumber for the tracking : " + trackingNumber);
                     callGetTrackingBySlugAndTrackingNumber(resultColis, slug, trackingNumber);
                 })
-                // ToDo remettre à 10 secondes
-                .delay(1, MILLISECONDS)
+                .delay(5, SECONDS)
                 .subscribe(trackingData -> {
                     Log.d(TAG, "Post Tracking Successful, try to get the tracking by get trackings/:id");
                     callGetTrackingByTrackingId(resultColis, trackingData.getId());
@@ -219,9 +214,7 @@ class CoreSync {
                         .subscribe(trackingDelete ->
                                         Log.d(TAG, "Suppression effective du tracking " + trackingDelete.getId() + " sur l'API AfterShip")
                                 , consThrowable, () -> {
-                                    ColisRepository.getInstance(contextWeakReference.get()).delete(colis.getIdColis());
-                                    // ToDo Réactiver interaction Firebase
-                                    // FirebaseService.deleteRemoteColis(colis.getIdColis());
+                                    ColisRepository.getInstance(context).delete(colis.getIdColis());
                                 });
             } else {
                 Log.e(TAG, "Can't markAsDeleted without tracking number");
@@ -233,7 +226,7 @@ class CoreSync {
 
     /**
      * Find the record in DB.
-     * If count :
+     * If findBy :
      * - Update only the steps.
      * If not :
      * - Insert the new colis
@@ -244,7 +237,7 @@ class CoreSync {
      */
     private void saveSuccessfulColis(ColisWithSteps resultColis) {
         Log.d(TAG, "ColisWithSteps qui va être enregistré : " + resultColis.toString());
-        Context context = contextWeakReference.get();
+        Context context = this.context;
         ColisWithStepsRepository.getInstance(context).findActiveColisWithStepsByIdColis(resultColis.colisEntity.getIdColis())
                 .subscribe(colisWithSteps -> {
                     if (colisWithSteps != null) {

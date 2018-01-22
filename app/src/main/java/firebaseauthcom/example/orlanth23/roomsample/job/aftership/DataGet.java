@@ -20,7 +20,7 @@ public class DataGet {
     @Expose
     public long limit;
 
-    @SerializedName("count")
+    @SerializedName("findBy")
     @Expose
     public long count;
 

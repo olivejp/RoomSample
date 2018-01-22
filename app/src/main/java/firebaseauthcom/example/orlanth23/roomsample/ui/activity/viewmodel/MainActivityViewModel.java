@@ -11,7 +11,6 @@ import android.support.annotation.Nullable;
 import com.bumptech.glide.RequestBuilder;
 
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import firebaseauthcom.example.orlanth23.roomsample.R;
 import firebaseauthcom.example.orlanth23.roomsample.broadcast.NetworkReceiver;
@@ -40,7 +39,7 @@ public class MainActivityViewModel extends AndroidViewModel {
     private RequestBuilder<PictureDrawable> requester;
     private MutableLiveData<ColisWithSteps> colisWithStepsSelected = new MutableLiveData<>();
     private MutableLiveData<List<ColisWithSteps>> colisWithStepsList = new MutableLiveData<>();
-    private MutableLiveData<AtomicBoolean> isRecyclerViewVisisble = new MutableLiveData<>();
+    private MutableLiveData<Integer> shouldNotify = new MutableLiveData<>();
     private String idColisSelected;
     private boolean twoPane;
 
@@ -60,8 +59,8 @@ public class MainActivityViewModel extends AndroidViewModel {
                 .listener(new SvgSoftwareLayerSetter());
     }
 
-    public LiveData<List<ColisWithSteps>> getLiveColisWithSteps(){
-        return  colisWithStepsRepository.getLiveActiveColisWithSteps();
+    public LiveData<List<ColisWithSteps>> getLiveColisWithSteps() {
+        return colisWithStepsRepository.getLiveActiveColisWithSteps();
     }
 
     /**
@@ -129,8 +128,16 @@ public class MainActivityViewModel extends AndroidViewModel {
         colisRepository.markAsDelivered(colisEntity);
     }
 
-    public LiveData<Integer> isListColisActiveEmpty(){
+    public LiveData<Integer> isListColisActiveEmpty() {
         return colisWithStepsRepository.getLiveCountActiveColisWithSteps();
+    }
+
+    public void notifyItemChanged(int position) {
+        shouldNotify.postValue(position);
+    }
+
+    public LiveData<Integer> isDataSetChanged(){
+        return this.shouldNotify;
     }
 
     public void refresh() {

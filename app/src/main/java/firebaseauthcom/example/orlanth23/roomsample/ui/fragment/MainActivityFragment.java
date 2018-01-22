@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -24,6 +25,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import firebaseauthcom.example.orlanth23.roomsample.R;
 import firebaseauthcom.example.orlanth23.roomsample.Utilities;
+import firebaseauthcom.example.orlanth23.roomsample.broadcast.NetworkReceiver;
 import firebaseauthcom.example.orlanth23.roomsample.database.local.entity.ColisWithSteps;
 import firebaseauthcom.example.orlanth23.roomsample.ui.NoticeDialogFragment;
 import firebaseauthcom.example.orlanth23.roomsample.ui.RecyclerItemTouchHelper;
@@ -41,6 +43,7 @@ public class MainActivityFragment extends Fragment implements SwipeRefreshLayout
 
     public static final String TAG = MainActivityFragment.class.getName();
     public static final String ARG_NOTICE_BUNDLE_COLIS = "ARG_NOTICE_BUNDLE_COLIS";
+    public static final String ARG_NOTICE_BUNDLE_POSITION = "ARG_NOTICE_BUNDLE_POSITION";
     public static final String DIALOG_TAG_DELETE = "DIALOG_TAG_DELETE";
     public static final String DIALOG_TAG_DELIVERED = "DIALOG_TAG_DELIVERED";
 
@@ -95,6 +98,8 @@ public class MainActivityFragment extends Fragment implements SwipeRefreshLayout
         // viewModel.getLiveListActiveColis().observe(appCompatActivity, colisAdapter::setColisList);
 
         viewModel.getLiveColisWithSteps().observe(this, colisAdapter::setColisList);
+
+        viewModel.isDataSetChanged().observe(this, positionItemChanged -> colisAdapter.notifyItemChanged(positionItemChanged));
 
     }
 
@@ -161,9 +166,14 @@ public class MainActivityFragment extends Fragment implements SwipeRefreshLayout
 
     @Override
     public void onRefresh() {
-        viewModel.refresh();
-        swipeRefreshLayout.setRefreshing(true);
-        refreshTimeDelayHandler.postDelayed(() -> swipeRefreshLayout.setRefreshing(false), 5000);
+        if (NetworkReceiver.checkConnection(appCompatActivity)) {
+            viewModel.refresh();
+            swipeRefreshLayout.setRefreshing(true);
+            refreshTimeDelayHandler.postDelayed(() -> swipeRefreshLayout.setRefreshing(false), 5000);
+        } else {
+            Snackbar.make(swipeRefreshLayout, "Une connexion est requise", Snackbar.LENGTH_LONG).show();
+            swipeRefreshLayout.setRefreshing(false);
+        }
     }
 
     @Override
@@ -175,6 +185,7 @@ public class MainActivityFragment extends Fragment implements SwipeRefreshLayout
             // Création d'un bundle dans lequel on va passer nos items
             Bundle bundle = new Bundle();
             bundle.putParcelable(ARG_NOTICE_BUNDLE_COLIS, colis.colisEntity);
+            bundle.putInt(ARG_NOTICE_BUNDLE_POSITION, viewHolderColisAdapter.getAdapterPosition());
 
             if (direction == ItemTouchHelper.LEFT) {
                 // Appel d'un fragment qui va demander à l'utilisateur s'il est sûr de vouloir supprimer le colis.
