@@ -44,10 +44,11 @@ public class MainActivity extends AppCompatActivity implements NoticeDialogFragm
         detailFragment = getSupportFragmentManager().findFragmentByTag(TAG_DETAIL_FRAGMENT);
         if (detailFragment != null) {
             getSupportFragmentManager().beginTransaction().remove(detailFragment).commit();
+            HistoriqueColisFragment historiqueFragment = new HistoriqueColisFragment();
             if (viewModel.isTwoPane()) {
-                getSupportFragmentManager().beginTransaction().replace(R.id.frame_detail, new HistoriqueColisFragment(), TAG_DETAIL_FRAGMENT).commit();
+                getSupportFragmentManager().beginTransaction().replace(R.id.frame_detail, historiqueFragment, TAG_DETAIL_FRAGMENT).commit();
             } else {
-                getSupportFragmentManager().beginTransaction().replace(R.id.frame_master, new HistoriqueColisFragment(), TAG_DETAIL_FRAGMENT).addToBackStack(null).commit();
+                getSupportFragmentManager().beginTransaction().replace(R.id.frame_master, historiqueFragment, TAG_DETAIL_FRAGMENT).addToBackStack(null).commit();
             }
         }
     }

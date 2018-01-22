@@ -41,6 +41,7 @@ public class MainActivityViewModel extends AndroidViewModel {
     private MutableLiveData<List<ColisWithSteps>> colisWithStepsList = new MutableLiveData<>();
     private MutableLiveData<Integer> shouldNotify = new MutableLiveData<>();
     private String idColisSelected;
+    private StepOrigine stepOrigineSelected;
     private boolean twoPane;
 
     public MainActivityViewModel(@NonNull Application application) {
@@ -106,6 +107,10 @@ public class MainActivityViewModel extends AndroidViewModel {
 
     public RequestBuilder<PictureDrawable> getGlideRequester() {
         return this.requester;
+    }
+
+    public void setOrigineSelected(StepOrigine stepOrigine) {
+        stepOrigineSelected = stepOrigine;
     }
 
     private void launchSyncTask(SyncTask.TypeSyncTask type, @Nullable String idColis) {

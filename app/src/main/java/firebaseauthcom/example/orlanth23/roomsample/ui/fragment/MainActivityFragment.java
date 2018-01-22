@@ -14,6 +14,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.transition.Fade;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -74,6 +75,16 @@ public class MainActivityFragment extends Fragment implements SwipeRefreshLayout
         displayHistorique(viewModel.isTwoPane());
     };
 
+    public MainActivityFragment() {
+        // Required empty public constructor
+        Fade enterFade = new Fade();
+        Fade exitFade = new Fade();
+        enterFade.setDuration(200);
+        exitFade.setDuration(200);
+        this.setEnterTransition(enterFade);
+        this.setExitTransition(exitFade);
+    }
+
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -93,9 +104,6 @@ public class MainActivityFragment extends Fragment implements SwipeRefreshLayout
 
         // Initialize adapter
         colisAdapter = new ColisAdapter(viewModel.getGlideRequester(), onClickDisplay);
-
-        // Retrieve data from the ViewModel to populate the adapter
-        // viewModel.getLiveListActiveColis().observe(appCompatActivity, colisAdapter::setColisList);
 
         viewModel.getLiveColisWithSteps().observe(this, colisAdapter::setColisList);
 
@@ -156,10 +164,11 @@ public class MainActivityFragment extends Fragment implements SwipeRefreshLayout
      */
     private void displayHistorique(boolean twoPane) {
         if (getFragmentManager() != null) {
+            HistoriqueColisFragment historiqueFragment = new HistoriqueColisFragment();
             if (twoPane) {
-                getFragmentManager().beginTransaction().replace(R.id.frame_detail, new HistoriqueColisFragment(), TAG_DETAIL_FRAGMENT).commit();
+                getFragmentManager().beginTransaction().replace(R.id.frame_detail, historiqueFragment, TAG_DETAIL_FRAGMENT).commit();
             } else {
-                getFragmentManager().beginTransaction().replace(R.id.frame_master, new HistoriqueColisFragment(), TAG_DETAIL_FRAGMENT).addToBackStack(null).commit();
+                getFragmentManager().beginTransaction().replace(R.id.frame_master, historiqueFragment, TAG_DETAIL_FRAGMENT).addToBackStack(null).commit();
             }
         }
     }
