@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import firebaseauthcom.example.orlanth23.roomsample.database.local.entity.ColisEntity;
 import firebaseauthcom.example.orlanth23.roomsample.database.local.repository.ColisRepository;
@@ -102,9 +103,6 @@ public class SyncColisService extends IntentService {
         }
     }
 
-    /**
-     *
-     */
     private void handleActionSyncAll(boolean sendNotification) {
         CoreSync.getInstance(this, sendNotification).callGetAllTracking();
     }
@@ -119,21 +117,21 @@ public class SyncColisService extends IntentService {
                 if (action != null) {
                     switch (action) {
                         case ARG_ACTION_SYNC_COLIS:
+                            Log.d(TAG, "Lancement du batch interactif pour un colis particulier");
                             handleActionSyncColis(bundle);
                             break;
                         case ARG_ACTION_SYNC_ALL:
+                            Log.d(TAG, "Lancement du batch interactif pour tout les colis");
                             handleActionSyncAll(sendNotification);
                             break;
                         case ARG_ACTION_SYNC_ALL_FROM_SCHEDULER:
+                            Log.d(TAG, "Lancement du batch par le Scheduler");
                             handleActionSyncAll(sendNotification);
                             break;
                         default:
                             break;
                     }
                     launchSynchroDelete(this);
-
-                    // ToDo Réactiver la synchro avec Fb
-                    // updateFirebase(this, listFromProvider(this, true));
                 }
             }
         }

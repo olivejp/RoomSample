@@ -199,7 +199,7 @@ public class MainActivityFragment extends Fragment implements SwipeRefreshLayout
             if (direction == ItemTouchHelper.LEFT) {
                 // Appel d'un fragment qui va demander à l'utilisateur s'il est sûr de vouloir supprimer le colis.
                 Utilities.sendDialogByFragmentManagerWithRes(getFragmentManager(),
-                        String.format("Supprimer le colis %s ?", colis.colisEntity.getIdColis()),
+                        String.format("Supprimer le numéro de suivi %s ?\n\nLe numéro de suivi ainsi que toutes ses étapes seront perdues.", colis.colisEntity.getIdColis()),
                         NoticeDialogFragment.TYPE_BOUTON_YESNO,
                         R.drawable.ic_delete_grey_900_24dp,
                         DIALOG_TAG_DELETE,
@@ -209,7 +209,7 @@ public class MainActivityFragment extends Fragment implements SwipeRefreshLayout
                 if (!colis.colisEntity.isDelivered()) {
                     // Appel d'un fragment qui va demander à l'utilisateur s'il est sûr de vouloir délivrer le colis.
                     Utilities.sendDialogByFragmentManagerWithRes(getFragmentManager(),
-                            String.format("Marquer le colis %s comme délivré ?", colis.colisEntity.getIdColis()),
+                            String.format("Marquer le numéro de suivi %s comme délivré ?\n\nCeci arrêtera son suivi automatique.", colis.colisEntity.getIdColis()),
                             NoticeDialogFragment.TYPE_BOUTON_YESNO,
                             R.drawable.ic_check_circle_grey_900_48dp,
                             DIALOG_TAG_DELIVERED,

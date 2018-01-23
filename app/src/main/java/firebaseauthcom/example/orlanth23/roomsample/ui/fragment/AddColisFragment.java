@@ -90,7 +90,7 @@ public class AddColisFragment extends Fragment {
     private void callVmToCreateColis(String idColis, String description) {
         viewModel.saveColis(idColis, description);
         viewModel.syncColis(idColis);
-        getActivity().finish();
+        appCompatActivity.finish();
     }
 
     @Override
@@ -103,7 +103,8 @@ public class AddColisFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_add_colis, container, false);
         ButterKnife.bind(this, rootView);
-        viewModel.getIdColis().observe(getActivity(), s -> {
+        editIdParcel.requestFocus();
+        viewModel.getIdColis().observe(appCompatActivity, s -> {
             if (s != null) {
                 editIdParcel.setText(s);
             }

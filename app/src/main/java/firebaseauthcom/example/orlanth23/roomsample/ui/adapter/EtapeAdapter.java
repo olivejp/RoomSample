@@ -1,7 +1,6 @@
 package firebaseauthcom.example.orlanth23.roomsample.ui.adapter;
 
 import android.support.v7.util.DiffUtil;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -91,12 +90,6 @@ public class EtapeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             viewHeader.mStepCommentaire.setText(viewHeader.etape.getCommentaire());
         }
 
-        // We remove the line if we are on the last element.
-        viewHeader.mStepLine.setVisibility(View.VISIBLE);
-        if (position == mEtapes.size() - 1) {
-            viewHeader.mStepLine.setVisibility(View.GONE);
-        }
-
         // Change status image.
         viewHeader.mStepStatus.setImageResource(Utilities.getStatusDrawable(viewHeader.etape.getStatus()));
     }
@@ -122,9 +115,6 @@ public class EtapeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
         @BindView(R.id.img_step_status)
         ImageView mStepStatus;
-
-        @BindView(R.id.img_step_line)
-        CardView mStepLine;
 
         StepEntity etape;
 

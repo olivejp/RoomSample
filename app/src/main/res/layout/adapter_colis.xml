@@ -103,6 +103,7 @@
             android:layout_marginStart="8dp"
             android:textAppearance="@style/Base.TextAppearance.AppCompat.Body1"
             android:textSize="14sp"
+            android:layout_marginBottom="5dp"
             android:textStyle="bold"
             app:layout_constraintBottom_toTopOf="@id/step_last_description"
             app:layout_constraintLeft_toRightOf="@+id/linear_image"
@@ -139,6 +140,7 @@
             app:layout_constraintBottom_toTopOf="@+id/step_last_date"
             app:layout_constraintLeft_toRightOf="@+id/linear_image"
             app:layout_constraintRight_toRightOf="parent"
+            android:layout_marginBottom="5dp"
             app:layout_goneMarginBottom="8dp"
             tools:text="Envoyé mais pas encore reçu" />
 
@@ -160,8 +162,10 @@
             android:layout_height="wrap_content"
             android:layout_gravity="start"
             android:layout_marginStart="8dp"
-            android:layout_marginTop="5dp"
+            android:textStyle="bold"
             android:gravity="start"
+            android:layout_marginBottom="5dp"
+            android:textColor="@color/colorAccent"
             android:textSize="12sp"
             app:layout_constraintBottom_toTopOf="@+id/step_last_update"
             app:layout_constraintLeft_toRightOf="@+id/linear_image"

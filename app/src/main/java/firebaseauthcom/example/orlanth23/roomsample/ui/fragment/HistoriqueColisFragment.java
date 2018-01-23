@@ -42,6 +42,9 @@ public class HistoriqueColisFragment extends Fragment {
     @BindView(R.id.navigation)
     BottomNavigationView bottomNavigationView;
 
+    @BindView(R.id.step_line)
+    View stepView;
+
     private MainActivityViewModel viewModel;
     private AppCompatActivity appCompatActivity;
     private EtapeAdapter etapeAdapter;
@@ -125,6 +128,7 @@ public class HistoriqueColisFragment extends Fragment {
         boolean isEtapeListEmpty = stepEntities == null || stepEntities.isEmpty();
         textObjectNotFound.setVisibility(isEtapeListEmpty ? View.VISIBLE : View.GONE);
         mRecyclerView.setVisibility(isEtapeListEmpty ? View.GONE : View.VISIBLE);
+        stepView.setVisibility(isEtapeListEmpty ? View.GONE : View.VISIBLE);
     }
 
     private String getPrefOrigine(@NonNull Context context) {
