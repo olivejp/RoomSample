@@ -49,9 +49,9 @@
             android:layout_marginBottom="10dp"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
-            android:background="@drawable/ripple_effect"
             app:layout_constraintBottom_toBottomOf="parent"
             app:srcCompat="@drawable/ic_photo_camera_grey_900_48dp" />
+        <!--android:background="@drawable/ripple_effect"-->
     </android.support.constraint.ConstraintLayout>
 
 </android.support.constraint.ConstraintLayout>
