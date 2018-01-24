@@ -2,7 +2,6 @@ package nc.opt.mobile.optmobile.ui.fragment;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -20,18 +19,17 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import nc.opt.mobile.optmobile.PreferenceManager;
+import nc.opt.mobile.optmobile.R;
 import nc.opt.mobile.optmobile.database.local.entity.StepEntity;
 import nc.opt.mobile.optmobile.ui.activity.viewmodel.MainActivityViewModel;
 import nc.opt.mobile.optmobile.ui.adapter.EtapeAdapter;
-import nc.opt.mobile.optmobile.R;
 
-import static nc.opt.mobile.optmobile.Constants.PREF_USER;
+import static nc.opt.mobile.optmobile.PreferenceManager.AFTERSHIP;
+import static nc.opt.mobile.optmobile.PreferenceManager.OPT;
 
 
 public class HistoriqueColisFragment extends Fragment {
-
-    private static final String OPT = "OPT";
-    private static final String AFTERSHIP = "AFTERSHIP";
 
     @BindView(R.id.recycler_etape_list)
     RecyclerView mRecyclerView;
@@ -49,6 +47,7 @@ public class HistoriqueColisFragment extends Fragment {
     private AppCompatActivity appCompatActivity;
     private EtapeAdapter etapeAdapter;
     private BottomNavigationView.OnNavigationItemSelectedListener bottomListener;
+    private PreferenceManager preferenceManager;
 
     public HistoriqueColisFragment() {
         // Required empty public constructor
@@ -68,6 +67,7 @@ public class HistoriqueColisFragment extends Fragment {
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
+        preferenceManager = new PreferenceManager(appCompatActivity);
         super.onCreate(savedInstanceState);
         viewModel = ViewModelProviders.of(appCompatActivity).get(MainActivityViewModel.class);
         etapeAdapter = new EtapeAdapter();
@@ -75,12 +75,12 @@ public class HistoriqueColisFragment extends Fragment {
             int id = item.getItemId();
             if (id == R.id.navigation_opt) {
                 viewModel.getListStepFromOpt(viewModel.getSelectedIdColis()).observe(this, this::initViews);
-                savePrefOrigine(appCompatActivity, OPT);
+                preferenceManager.setPrefOrigine(AFTERSHIP);
                 return true;
             }
             if (id == R.id.navigation_aftership) {
                 viewModel.getListStepFromAfterShip(viewModel.getSelectedIdColis()).observe(this, this::initViews);
-                savePrefOrigine(appCompatActivity, AFTERSHIP);
+                preferenceManager.setPrefOrigine(AFTERSHIP);
                 return true;
             }
             return false;
@@ -105,7 +105,7 @@ public class HistoriqueColisFragment extends Fragment {
             appCompatActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
-        switch (getPrefOrigine(appCompatActivity)) {
+        switch (preferenceManager.getPrefOrigine()) {
             case OPT:
                 // Populate the adapter with the steps from the colis
                 viewModel.getListStepFromOpt(viewModel.getSelectedIdColis()).observe(this, this::initViews);
@@ -129,18 +129,5 @@ public class HistoriqueColisFragment extends Fragment {
         textObjectNotFound.setVisibility(isEtapeListEmpty ? View.VISIBLE : View.GONE);
         mRecyclerView.setVisibility(isEtapeListEmpty ? View.GONE : View.VISIBLE);
         stepView.setVisibility(isEtapeListEmpty ? View.GONE : View.VISIBLE);
-    }
-
-    private String getPrefOrigine(@NonNull Context context) {
-        SharedPreferences sharedPreferences = context.getSharedPreferences("PREFS", Context.MODE_PRIVATE);
-        return sharedPreferences.getString(PREF_USER, OPT);
-    }
-
-    private void savePrefOrigine(@NonNull Context context, String prefOrigine) {
-        // Save the UID of the user in the SharedPreference
-        SharedPreferences sharedPreferences = context.getSharedPreferences("PREFS", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString(PREF_USER, prefOrigine);
-        editor.apply();
     }
 }

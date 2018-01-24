@@ -5,4 +5,8 @@
     <color name="colorAccent">#FF4081</color>
     <color name="colorAccent2">#66bb6a</color>
     <color name="colorAccentDark">#880e4f</color>
+    <color name="black_overlay">#66000000</color>
+    <!-- Screens background color-->
+    <color name="dot_inactive">#FF4081</color>
+    <color name="dot_active">#880e4f</color>
 </resources>

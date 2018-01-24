@@ -3,12 +3,12 @@
 
     <item
         android:id="@+id/navigation_aftership"
-        android:icon="@drawable/ic_photo_camera_grey_900_48dp"
+        android:icon="@drawable/ic_aftership"
         android:title="Aftership" />
 
     <item
         android:id="@+id/navigation_opt"
-        android:icon="@drawable/ic_visibility_grey_900_48dp"
+        android:icon="@drawable/ic_opt"
         android:title="OPT-NC" />
 
 </menu>
