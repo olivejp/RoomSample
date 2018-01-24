@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:keepScreenOn="true">
 
-    <firebaseauthcom.example.orlanth23.roomsample.barcodreader.camera.CameraSourcePreview
+    <nc.opt.mobile.optmobile.barcodreader.camera.CameraSourcePreview
         android:id="@+id/preview"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -16,12 +16,12 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <firebaseauthcom.example.orlanth23.roomsample.barcodreader.camera.GraphicOverlay
+        <nc.opt.mobile.optmobile.barcodreader.camera.GraphicOverlay
             android:id="@+id/graphicOverlay"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
-    </firebaseauthcom.example.orlanth23.roomsample.barcodreader.camera.CameraSourcePreview>
+    </nc.opt.mobile.optmobile.barcodreader.camera.CameraSourcePreview>
 
     <android.support.constraint.ConstraintLayout
         android:id="@+id/detail"

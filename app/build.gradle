@@ -18,7 +18,7 @@ android {
                 arguments = ["room.schemaLocation": "$projectDir/schemas".toString()]
             }
         }
-        applicationId "firebaseauthcom.example.orlanth23.roomsample"
+        applicationId "nc.opt.mobile.optmobile"
         minSdkVersion 19
         targetSdkVersion 27
         versionCode 1
