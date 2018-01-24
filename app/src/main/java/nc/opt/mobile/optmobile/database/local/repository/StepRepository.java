@@ -81,4 +81,8 @@ public class StepRepository {
             });
         }
     }
+
+    public LiveData<Integer> getCountByOrigineAndIdColis(String idColis, String origine) {
+        return this.stepDao.countByIdColisAndOrigine(idColis, origine);
+    }
 }

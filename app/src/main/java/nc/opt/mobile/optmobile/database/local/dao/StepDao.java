@@ -23,5 +23,8 @@ public interface StepDao extends AbstractDao<StepEntity>{
 
     @Query("SELECT * FROM etape WHERE idColis = :idColis AND origine = :origine ORDER BY date, idEtapeAcheminement")
     LiveData<List<StepEntity>> liveListStepsOrderedByIdColisAndOrigine(String idColis, String origine);
+
+    @Query("SELECT COUNT(*) FROM etape WHERE idColis = :idColis AND origine = :origine")
+    LiveData<Integer> countByIdColisAndOrigine(String idColis, String origine);
 }
 

@@ -5,7 +5,6 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
@@ -14,6 +13,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import com.aurelhubert.ahbottomnavigation.AHBottomNavigation;
+import com.aurelhubert.ahbottomnavigation.AHBottomNavigationItem;
 
 import java.util.List;
 
@@ -37,8 +39,8 @@ public class HistoriqueColisFragment extends Fragment {
     @BindView(R.id.text_object_not_found)
     TextView textObjectNotFound;
 
-    @BindView(R.id.navigation)
-    BottomNavigationView bottomNavigationView;
+    @BindView(R.id.ah_bottom_navigation)
+    AHBottomNavigation bottomNavigationView;
 
     @BindView(R.id.step_line)
     View stepView;
@@ -46,8 +48,11 @@ public class HistoriqueColisFragment extends Fragment {
     private MainActivityViewModel viewModel;
     private AppCompatActivity appCompatActivity;
     private EtapeAdapter etapeAdapter;
-    private BottomNavigationView.OnNavigationItemSelectedListener bottomListener;
+    private AHBottomNavigation.OnTabSelectedListener bottomListener;
     private PreferenceManager preferenceManager;
+
+    private AHBottomNavigationItem itemOpt;
+    private AHBottomNavigationItem itemAfterShip;
 
     public HistoriqueColisFragment() {
         // Required empty public constructor
@@ -71,14 +76,18 @@ public class HistoriqueColisFragment extends Fragment {
         super.onCreate(savedInstanceState);
         viewModel = ViewModelProviders.of(appCompatActivity).get(MainActivityViewModel.class);
         etapeAdapter = new EtapeAdapter();
-        bottomListener = item -> {
-            int id = item.getItemId();
-            if (id == R.id.navigation_opt) {
+
+        // Paramétrage d'un BottomNavigation
+        itemOpt = new AHBottomNavigationItem("OPT", R.drawable.ic_opt);
+        itemAfterShip = new AHBottomNavigationItem("AfterShip", R.drawable.ic_aftership);
+
+        bottomListener = (position, wasSelected) -> {
+            if (position == 0) {
                 viewModel.getListStepFromOpt(viewModel.getSelectedIdColis()).observe(this, this::initViews);
-                preferenceManager.setPrefOrigine(AFTERSHIP);
+                preferenceManager.setPrefOrigine(OPT);
                 return true;
             }
-            if (id == R.id.navigation_aftership) {
+            if (position == 1) {
                 viewModel.getListStepFromAfterShip(viewModel.getSelectedIdColis()).observe(this, this::initViews);
                 preferenceManager.setPrefOrigine(AFTERSHIP);
                 return true;
@@ -92,6 +101,17 @@ public class HistoriqueColisFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_historique_colis, container, false);
         ButterKnife.bind(this, rootView);
+
+        // Paramétrage de notre BottomNavigation
+        bottomNavigationView.addItem(itemOpt);
+        bottomNavigationView.addItem(itemAfterShip);
+        bottomNavigationView.setDefaultBackgroundColor(getResources().getColor(R.color.colorPrimary));
+        bottomNavigationView.setAccentColor(getResources().getColor(R.color.colorAccent));
+        bottomNavigationView.setInactiveColor(getResources().getColor(R.color.colorAccentDark));
+        bottomNavigationView.setColored(true);
+
+        viewModel.getCountOptSteps(viewModel.getSelectedIdColis()).observe(this, integer -> bottomNavigationView.setNotification(integer.toString(), 0));
+        viewModel.getCountAfterShipSteps(viewModel.getSelectedIdColis()).observe(this, integer -> bottomNavigationView.setNotification(integer.toString(), 1));
 
         mRecyclerView.setAdapter(etapeAdapter);
 
@@ -109,16 +129,16 @@ public class HistoriqueColisFragment extends Fragment {
             case OPT:
                 // Populate the adapter with the steps from the colis
                 viewModel.getListStepFromOpt(viewModel.getSelectedIdColis()).observe(this, this::initViews);
-                bottomNavigationView.setSelectedItemId(R.id.navigation_opt);
+                bottomNavigationView.setCurrentItem(0);
                 break;
             case AFTERSHIP:
                 // Populate the adapter with the steps from the colis
                 viewModel.getListStepFromAfterShip(viewModel.getSelectedIdColis()).observe(this, this::initViews);
-                bottomNavigationView.setSelectedItemId(R.id.navigation_aftership);
+                bottomNavigationView.setCurrentItem(1);
                 break;
         }
 
-        bottomNavigationView.setOnNavigationItemSelectedListener(bottomListener);
+        bottomNavigationView.setOnTabSelectedListener(bottomListener);
 
         return rootView;
     }

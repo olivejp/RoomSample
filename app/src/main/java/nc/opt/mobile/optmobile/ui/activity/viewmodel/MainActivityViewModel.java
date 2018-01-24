@@ -12,20 +12,20 @@ import com.bumptech.glide.RequestBuilder;
 
 import java.util.List;
 
-import nc.opt.mobile.optmobile.database.local.repository.ColisRepository;
-import nc.opt.mobile.optmobile.database.local.repository.ColisWithStepsRepository;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 import nc.opt.mobile.optmobile.R;
 import nc.opt.mobile.optmobile.broadcast.NetworkReceiver;
 import nc.opt.mobile.optmobile.database.local.StepOrigine;
 import nc.opt.mobile.optmobile.database.local.entity.ColisEntity;
 import nc.opt.mobile.optmobile.database.local.entity.ColisWithSteps;
 import nc.opt.mobile.optmobile.database.local.entity.StepEntity;
+import nc.opt.mobile.optmobile.database.local.repository.ColisRepository;
+import nc.opt.mobile.optmobile.database.local.repository.ColisWithStepsRepository;
 import nc.opt.mobile.optmobile.database.local.repository.StepRepository;
 import nc.opt.mobile.optmobile.job.SyncTask;
 import nc.opt.mobile.optmobile.ui.glide.GlideApp;
 import nc.opt.mobile.optmobile.ui.glide.SvgSoftwareLayerSetter;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by orlanth23 on 11/01/2018.
@@ -134,6 +134,14 @@ public class MainActivityViewModel extends AndroidViewModel {
 
     public LiveData<Integer> isDataSetChanged(){
         return this.shouldNotify;
+    }
+
+    public LiveData<Integer> getCountOptSteps(String idColis) {
+        return stepRepository.getCountByOrigineAndIdColis(idColis, StepOrigine.OPT.getValue());
+    }
+
+    public LiveData<Integer> getCountAfterShipSteps(String idColis) {
+        return stepRepository.getCountByOrigineAndIdColis(idColis, StepOrigine.AFTER_SHIP.getValue());
     }
 
     public void refresh() {
