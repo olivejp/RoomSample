@@ -5,11 +5,13 @@ import android.arch.persistence.room.Room;
 import android.arch.persistence.room.RoomDatabase;
 import android.content.Context;
 
+import nc.opt.mobile.optmobile.database.local.dao.ColisDao;
 import nc.opt.mobile.optmobile.database.local.dao.ColisWithStepsDao;
 import nc.opt.mobile.optmobile.database.local.dao.StepDao;
 import nc.opt.mobile.optmobile.database.local.entity.ColisEntity;
 import nc.opt.mobile.optmobile.database.local.entity.StepEntity;
-import nc.opt.mobile.optmobile.database.local.dao.ColisDao;
+
+import static nc.opt.mobile.optmobile.DatabaseMigrations.MIGRATION_1_2;
 
 /**
  * Created by orlanth23 on 01/07/2017.
@@ -21,7 +23,10 @@ public abstract class ColisDatabase extends RoomDatabase {
 
     public static synchronized ColisDatabase getInstance(Context context) {
         if (INSTANCE == null) {
-            INSTANCE = Room.databaseBuilder(context.getApplicationContext(), ColisDatabase.class, "colis-database").fallbackToDestructiveMigration().build();
+            INSTANCE = Room.databaseBuilder(context.getApplicationContext(), ColisDatabase.class, "optDatabase")
+                    .fallbackToDestructiveMigration()
+                    .addMigrations(MIGRATION_1_2)
+                    .build();
         }
         return INSTANCE;
     }
