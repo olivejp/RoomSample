@@ -2,13 +2,11 @@ package nc.opt.mobile.optmobile.mapper;
 
 
 import android.support.annotation.NonNull;
-import android.util.Log;
 
 import nc.opt.mobile.optmobile.DateConverter;
 import nc.opt.mobile.optmobile.database.local.StepOrigine;
 import nc.opt.mobile.optmobile.database.local.entity.ColisEntity;
 import nc.opt.mobile.optmobile.database.local.entity.StepEntity;
-import nc.opt.mobile.optmobile.job.aftership.Checkpoint;
 import nc.opt.mobile.optmobile.job.opt.EtapeDto;
 
 /**
@@ -17,15 +15,13 @@ import nc.opt.mobile.optmobile.job.opt.EtapeDto;
 
 public class EtapeMapper {
 
-    private static final String TAG = EtapeMapper.class.getName();
-
     private EtapeMapper() {
     }
 
     /**
      * Convert an {@link EtapeDto} to an {@link StepEntity}
      *
-     * @param idColis Foreign key to {@link ColisEntity}
+     * @param idColis  Foreign key to {@link ColisEntity}
      * @param etapeDto to transform
      * @return {@link StepEntity}
      */
@@ -39,31 +35,6 @@ public class EtapeMapper {
         stepEntity.setStatus(etapeDto.getStatus());
         stepEntity.setPays(etapeDto.getPays());
         stepEntity.setOrigine(StepOrigine.OPT);
-        return stepEntity;
-    }
-
-    /**
-     * Convert an {@link Checkpoint} to an {@link StepEntity}
-     *
-     * @param idColis Foreign key to {@link ColisEntity}
-     * @param checkpoint to transform
-     * @return {@link StepEntity}
-     */
-    static StepEntity createEtapeFromCheckpoint(@NonNull String idColis, @NonNull Checkpoint checkpoint) {
-        StepEntity stepEntity = new StepEntity();
-        stepEntity.setIdColis(idColis);
-        if (checkpoint.getCheckpointTime() != null) {
-            stepEntity.setDate(DateConverter.convertDateAfterShipToEntity(checkpoint.getCheckpointTime()));
-        } else {
-            stepEntity.setDate(0L);
-        }
-        stepEntity.setCommentaire("");
-        stepEntity.setLocalisation((checkpoint.getLocation() != null) ? checkpoint.getLocation().toString() : "");
-        stepEntity.setStatus((checkpoint.getTag() != null) ? checkpoint.getTag() : "");
-        stepEntity.setDescription((checkpoint.getMessage() != null) ? checkpoint.getMessage() : "");
-        stepEntity.setPays((checkpoint.getCountryName() != null) ? checkpoint.getCountryName().toString() : "");
-        stepEntity.setOrigine(StepOrigine.AFTER_SHIP);
-        Log.d(TAG, "createEtapeFromCheckpoint : " + stepEntity.toString());
         return stepEntity;
     }
 }

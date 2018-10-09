@@ -22,10 +22,6 @@ public interface ColisWithStepsDao {
 
     @Transaction
     @Query("SELECT * FROM colis WHERE deleted <> 1")
-    Maybe<List<ColisWithSteps>> getMaybeActiveColisWithSteps();
-
-    @Transaction
-    @Query("SELECT * FROM colis WHERE deleted <> 1")
     Flowable<List<ColisWithSteps>> getFlowableActiveColisWithSteps();
 
     @Transaction

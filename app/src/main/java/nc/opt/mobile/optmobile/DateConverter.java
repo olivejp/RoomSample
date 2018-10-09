@@ -1,6 +1,5 @@
 package nc.opt.mobile.optmobile;
 
-import android.support.annotation.NonNull;
 import android.util.Log;
 
 import java.text.ParseException;
@@ -18,6 +17,7 @@ public class DateConverter {
 
     public enum DatePattern {
         PATTERN_DTO("dd/MM/yyyy HH:mm:ss"),
+        PATTERN_DTO_WITHOUT_HOUR("dd/MM/yyyy"),
         PATTERN_ENTITY("yyyyMMddHHmmss"),
         PATTERN_UI("dd MMM yyyy à HH:mm"),
         PATTERN_AFTER_HIP("yyyy-MM-dd'T'HH:mm:ss");
@@ -39,44 +39,11 @@ public class DateConverter {
     }
 
     public static final SimpleDateFormat simpleDtoDateFormat = new SimpleDateFormat(DatePattern.PATTERN_DTO.getDatePattern(), Locale.FRANCE);
+    public static final SimpleDateFormat simpleDtoDateFormatWithoutHour = new SimpleDateFormat(DatePattern.PATTERN_DTO_WITHOUT_HOUR.getDatePattern(), Locale.FRANCE);
     public static final SimpleDateFormat simpleUiDateFormat = new SimpleDateFormat(DatePattern.PATTERN_UI.getDatePattern(), Locale.FRANCE);
     public static final SimpleDateFormat simpleEntityDateFormat = new SimpleDateFormat(DatePattern.PATTERN_ENTITY.getDatePattern(), Locale.FRANCE);
-    public static final SimpleDateFormat simpleAfterShipDateFormat = new SimpleDateFormat(DatePattern.PATTERN_AFTER_HIP.getDatePattern(), Locale.FRANCE);
 
     private DateConverter() {
-    }
-
-    /**
-     * @param stringDate
-     * @param patternOrigin
-     * @return
-     */
-    public static long howLongSince(@NonNull String stringDate, @NonNull DatePattern patternOrigin) throws ParseException {
-
-        Date dateConverted = null;
-        long duration = 0L;
-
-        switch (patternOrigin) {
-            case PATTERN_AFTER_HIP:
-                dateConverted = simpleAfterShipDateFormat.parse(stringDate);
-                break;
-            case PATTERN_DTO:
-                dateConverted = simpleDtoDateFormat.parse(stringDate);
-                break;
-            case PATTERN_UI:
-                dateConverted = simpleUiDateFormat.parse(stringDate);
-                break;
-            case PATTERN_ENTITY:
-                dateConverted = simpleEntityDateFormat.parse(stringDate);
-                break;
-        }
-
-        if (dateConverted != null) {
-            Date now = Calendar.getInstance().getTime();
-            duration = now.getTime() - dateConverted.getTime();
-        }
-
-        return duration;
     }
 
     /**
@@ -103,24 +70,6 @@ public class DateConverter {
     public static String howLongFromNow(Long dateEntity) {
         if (dateEntity != null) {
             return howLongFromNow(DateConverter.convertDateEntityToDto(dateEntity));
-        }
-        return null;
-    }
-
-    /**
-     *
-     * @param dateEntity
-     * @return la différence entre maintenant et la date passée en paramètre en format Entity
-     */
-    public static Long howLongFromNowLong(Long dateEntity) {
-        if (dateEntity != null) {
-            try {
-                Date nowDate = simpleDtoDateFormat.parse(String.valueOf(getNowDto()));
-                Date myDate = simpleEntityDateFormat.parse(String.valueOf(dateEntity));
-                return Math.abs(nowDate.getTime() - myDate.getTime());
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
         }
         return null;
     }
@@ -189,25 +138,14 @@ public class DateConverter {
             String dateConverted = simpleEntityDateFormat.format(simpleDtoDateFormat.parse(dateDto));
             return Long.parseLong(dateConverted);
         } catch (ParseException e) {
-            Log.e(TAG, e.getMessage(), e);
-        } catch (NullPointerException e1) {
-            Log.e(TAG, e1.getMessage(), e1);
-        }
-        return 0L;
-    }
+            Log.e(TAG, "Date parse exception : Date is not in " + simpleDtoDateFormat.toPattern() + " format. We will try with " + simpleDtoDateFormatWithoutHour.toPattern() + " format.", e);
 
-    /**
-     * Transformation d'une date de type yyyy-MM-ddTHH:mm:ss vers le format yyyyMMddHHmmss en Long
-     *
-     * @param dateAferShip
-     * @return
-     */
-    public static Long convertDateAfterShipToEntity(String dateAferShip) {
-        try {
-            String dateConverted = simpleEntityDateFormat.format(simpleAfterShipDateFormat.parse(dateAferShip));
-            return Long.parseLong(dateConverted);
-        } catch (ParseException e) {
-            Log.e(TAG, e.getMessage(), e);
+            try {
+                String dateConverted = simpleEntityDateFormat.format(simpleDtoDateFormatWithoutHour.parse(dateDto));
+                return Long.parseLong(dateConverted);
+            } catch (ParseException e1) {
+                Log.e(TAG, "Date parse exception : Date is not in " + simpleDtoDateFormatWithoutHour.toPattern() + " format. Unknown date format for this string " + dateDto, e);
+            }
         } catch (NullPointerException e1) {
             Log.e(TAG, e1.getMessage(), e1);
         }
@@ -238,15 +176,5 @@ public class DateConverter {
     public static Long getNowEntity() {
         Calendar cal = Calendar.getInstance();
         return Long.parseLong(simpleEntityDateFormat.format(cal.getTime()));
-    }
-
-    /**
-     * Va renvoyer la date du jour au format dd/MM/yyyy HH:mm:ss en String
-     *
-     * @return String
-     */
-    public static String getNowDto() {
-        Calendar cal = Calendar.getInstance();
-        return simpleDtoDateFormat.format(cal.getTime());
     }
 }

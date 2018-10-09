@@ -78,22 +78,18 @@ public class MainActivity extends AppCompatActivity implements NoticeDialogFragm
 
     @Override
     public void onDialogPositiveClick(NoticeDialogFragment dialog) {
-        if (dialog.getTag() != null && dialog.getTag().equals(DIALOG_TAG_DELETE)) {
-            if (dialog.getBundle() != null && dialog.getBundle().containsKey(ARG_NOTICE_BUNDLE_COLIS)) {
-                ColisEntity colisEntity = dialog.getBundle().getParcelable(ARG_NOTICE_BUNDLE_COLIS);
-                if (colisEntity != null) {
-                    viewModel.markAsDeleted(colisEntity);
-                }
+        if (dialog.getTag() != null && dialog.getTag().equals(DIALOG_TAG_DELETE) && dialog.getBundle() != null && dialog.getBundle().containsKey(ARG_NOTICE_BUNDLE_COLIS)) {
+            ColisEntity colisEntity = dialog.getBundle().getParcelable(ARG_NOTICE_BUNDLE_COLIS);
+            if (colisEntity != null) {
+                viewModel.markAsDeleted(colisEntity);
             }
         }
-        if (dialog.getTag() != null && dialog.getTag().equals(DIALOG_TAG_DELIVERED)) {
-            if (dialog.getBundle() != null && dialog.getBundle().containsKey(ARG_NOTICE_BUNDLE_COLIS)) {
-                ColisEntity colisEntity = dialog.getBundle().getParcelable(ARG_NOTICE_BUNDLE_COLIS);
-                int position = dialog.getBundle().getInt(ARG_NOTICE_BUNDLE_POSITION);
-                if (colisEntity != null) {
-                    viewModel.markAsDelivered(colisEntity);
-                    viewModel.notifyItemChanged(position);
-                }
+        if (dialog.getTag() != null && dialog.getTag().equals(DIALOG_TAG_DELIVERED) && dialog.getBundle() != null && dialog.getBundle().containsKey(ARG_NOTICE_BUNDLE_COLIS)) {
+            ColisEntity colisEntity = dialog.getBundle().getParcelable(ARG_NOTICE_BUNDLE_COLIS);
+            int position = dialog.getBundle().getInt(ARG_NOTICE_BUNDLE_POSITION);
+            if (colisEntity != null) {
+                viewModel.markAsDelivered(colisEntity);
+                viewModel.notifyItemChanged(position);
             }
         }
     }

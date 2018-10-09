@@ -24,6 +24,22 @@ public class ColisWithSteps {
         this.colisEntity.setDelivered(0);
     }
 
+    public ColisEntity getColisEntity() {
+        return colisEntity;
+    }
+
+    public void setColisEntity(ColisEntity colisEntity) {
+        this.colisEntity = colisEntity;
+    }
+
+    public List<StepEntity> getStepEntityList() {
+        return stepEntityList;
+    }
+
+    public void setStepEntityList(List<StepEntity> stepEntityList) {
+        this.stepEntityList = stepEntityList;
+    }
+
     @Override
     public String toString() {
         return "ColisWithSteps{" +

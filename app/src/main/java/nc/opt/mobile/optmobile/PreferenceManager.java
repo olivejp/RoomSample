@@ -15,10 +15,6 @@ public class PreferenceManager {
     // Shared preferences file name
     private static final String PREF_NAME = "COLIS-NC";
     private static final String FIRST_TIME = "FIRST_TIME";
-    private static final String PREF_ORIGINE = "PREF_ORIGINE";
-
-    public static final String OPT = "OPT";
-    public static final String AFTERSHIP = "AFTERSHIP";
 
     public PreferenceManager(Context context) {
         int PRIVATE_MODE = 0;
@@ -33,14 +29,5 @@ public class PreferenceManager {
 
     public boolean isFirstTimeLaunch() {
         return pref.getBoolean(FIRST_TIME, true);
-    }
-
-    public void setPrefOrigine(String preferenceOrigine) {
-        editor.putString(PREF_ORIGINE, preferenceOrigine);
-        editor.commit();
-    }
-
-    public String getPrefOrigine() {
-        return pref.getString(PREF_ORIGINE, OPT);
     }
 }

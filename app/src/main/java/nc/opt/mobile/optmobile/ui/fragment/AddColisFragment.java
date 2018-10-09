@@ -72,22 +72,24 @@ public class AddColisFragment extends Fragment {
     @OnClick(R.id.fab_add_colis)
     public void addColisCallbackListener(View v) {
         // On cache le clavier
-        Utilities.hideKeyboard(getActivity());
+        Utilities.hideKeyboard(appCompatActivity);
 
         if (!editIdParcel.getText().toString().isEmpty()) {
             String idColis = editIdParcel.getText().toString();
             String description = (editDescriptionParcel.getText() != null) ? editDescriptionParcel.getText().toString() : null;
 
-            viewModel.findBy(idColis).subscribe(colisEntity -> {
+            viewModel.findBy(idColis)
+                    .doOnComplete(() -> callVmToCreateColis(idColis, description))
+                    .doOnSuccess(colisEntity -> {
                         if (colisEntity.isDeleted()) {
                             viewModel.deleteColis(idColis);
                             callVmToCreateColis(idColis, description);
                         } else {
                             Snackbar.make(coordinatorLayout, String.format("Le colis %s est déjà suivi", idColis), Snackbar.LENGTH_LONG).show();
                         }
-                    }
-                    , throwable -> Log.e(throwable.getMessage(), "C'est la merde")
-                    , () -> callVmToCreateColis(idColis, description));
+                    })
+                    .doOnError(throwable -> Log.e(throwable.getMessage(), "C'est la merde"))
+                    .subscribe();
         }
     }
 

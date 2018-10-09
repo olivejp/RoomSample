@@ -48,10 +48,12 @@ public class MainActivityViewModel extends AndroidViewModel {
         colisWithStepsRepository = ColisWithStepsRepository.getInstance(application);
         colisRepository = ColisRepository.getInstance(application);
         stepRepository = StepRepository.getInstance(application);
+
         colisWithStepsRepository.getActiveFlowableColisWithSteps()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(colisWithSteps -> colisWithStepsList.postValue(colisWithSteps));
+                .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+                .doOnNext(colisWithSteps -> colisWithStepsList.postValue(colisWithSteps))
+                .subscribe();
+
         requester = GlideApp.with(application)
                 .as(PictureDrawable.class)
                 .placeholder(R.drawable.ic_archive_grey_900_48dp)
@@ -96,10 +98,6 @@ public class MainActivityViewModel extends AndroidViewModel {
         return stepRepository.liveListStepsOrderedByIdColisAndOrigine(idColis, StepOrigine.OPT);
     }
 
-    public LiveData<List<StepEntity>> getListStepFromAfterShip(String idColis) {
-        return stepRepository.liveListStepsOrderedByIdColisAndOrigine(idColis, StepOrigine.AFTER_SHIP);
-    }
-
     public RequestBuilder<PictureDrawable> getGlideRequester() {
         return this.requester;
     }
@@ -132,16 +130,8 @@ public class MainActivityViewModel extends AndroidViewModel {
         shouldNotify.postValue(position);
     }
 
-    public LiveData<Integer> isDataSetChanged(){
+    public LiveData<Integer> isDataSetChanged() {
         return this.shouldNotify;
-    }
-
-    public LiveData<Integer> getCountOptSteps(String idColis) {
-        return stepRepository.getCountByOrigineAndIdColis(idColis, StepOrigine.OPT.getValue());
-    }
-
-    public LiveData<Integer> getCountAfterShipSteps(String idColis) {
-        return stepRepository.getCountByOrigineAndIdColis(idColis, StepOrigine.AFTER_SHIP.getValue());
     }
 
     public void refresh() {

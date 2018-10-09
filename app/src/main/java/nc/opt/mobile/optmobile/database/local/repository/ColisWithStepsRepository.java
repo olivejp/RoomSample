@@ -38,12 +38,6 @@ public class ColisWithStepsRepository {
                 .subscribeOn(Schedulers.io());
     }
 
-    public Maybe<List<ColisWithSteps>> getActiveColisWithSteps() {
-        return this.colisWithStepsDao.getMaybeActiveColisWithSteps()
-                .observeOn(Schedulers.io())
-                .subscribeOn(Schedulers.io());
-    }
-
     public Flowable<List<ColisWithSteps>> getActiveFlowableColisWithSteps() {
         return this.colisWithStepsDao.getFlowableActiveColisWithSteps();
     }

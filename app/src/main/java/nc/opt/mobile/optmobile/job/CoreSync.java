@@ -13,12 +13,11 @@ import nc.opt.mobile.optmobile.database.local.repository.StepRepository;
 import nc.opt.mobile.optmobile.job.opt.ColisDto;
 import nc.opt.mobile.optmobile.job.opt.HtmlTransformer;
 import nc.opt.mobile.optmobile.mapper.ColisMapper;
-import nc.opt.mobile.optmobile.network.aftership.RetrofitAfterShipClient;
+import nc.opt.mobile.optmobile.network.aftership.RetrofitClient;
 import io.reactivex.Observable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 
-import static nc.opt.mobile.optmobile.mapper.ColisMapper.convertTrackingDataToEntity;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
 /**
@@ -39,7 +38,7 @@ class CoreSync {
             this.context = context;
         }
         this.sendNotification = sendNotification;
-        this.consThrowable = throwable -> Log.e(TAG, "Erreur sur l'API AfterShip : " + throwable.getMessage() + " Localized message : " + throwable.getLocalizedMessage(), throwable);
+        this.consThrowable = throwable -> Log.e(TAG, "Erreur : " + throwable.getMessage() + " Localized message : " + throwable.getLocalizedMessage(), throwable);
     }
 
     public static CoreSync getInstance(Context context, boolean sendNotification) {
@@ -57,16 +56,17 @@ class CoreSync {
      */
     void callGetAllTracking() {
         ColisRepository.getInstance(context).getAllActiveAndNonDeliveredColis()
-                .subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.io())
-                .subscribe(listColis ->
+                .subscribeOn(Schedulers.io()).observeOn(Schedulers.io())
+                .doOnSuccess(listColis ->
                         Observable.zip(
                                 Observable.interval(5, SECONDS),
                                 Observable.just(listColis).flatMapIterable(colisEntities -> colisEntities),
                                 (aLong, colisEntity) -> colisEntity)
-                                .subscribe(this::callOptTracking, consThrowable)
-                );
-
+                                .doOnNext(this::callOptTracking)
+                                .doOnError(consThrowable)
+                                .subscribe()
+                )
+                .subscribe();
     }
 
     /**
@@ -79,27 +79,21 @@ class CoreSync {
     void callOptTracking(ColisEntity colisEntity) {
         if (context != null) {
             String trackingNumber = colisEntity.getIdColis();
-            RetrofitAfterShipClient.getTrackingOpt(trackingNumber)
-                    .doOnError(throwable -> {
+            RetrofitClient.getTrackingOpt(trackingNumber)
+                    .doOnNext(htmlString -> {
                         ColisWithSteps colisWithSteps = new ColisWithSteps();
                         colisWithSteps.colisEntity = colisEntity;
-                        colisWithSteps.colisEntity.setDeleted(0);
-                        callDetectCourierAfterShip(colisWithSteps, trackingNumber);
+                        ColisDto colisDto = transformHtmlToColisDto(trackingNumber, colisEntity.getDescription(), htmlString);
+                        if (colisDto != null) {
+                            Log.d(TAG, "Transformation de la réponse OPT OK");
+                            colisWithSteps = ColisMapper.convertToEntity(colisDto, colisWithSteps);
+                            saveSuccessfulColis(colisWithSteps);
+                        } else {
+                            Log.e(TAG, "Fail to receive response from OPT service");
+                        }
                     })
-                    .subscribe(htmlString -> {
-                                ColisWithSteps colisWithSteps = new ColisWithSteps();
-                                colisWithSteps.colisEntity = colisEntity;
-                                ColisDto colisDto = transformHtmlToColisDto(trackingNumber, colisEntity.getDescription(), htmlString);
-                                if (colisDto != null) {
-                                    Log.d(TAG, "Transformation de la réponse OPT OK");
-                                    colisWithSteps = ColisMapper.convertToActiveEntity(colisDto, colisWithSteps);
-                                } else {
-                                    Log.e(TAG, "Fail to receive response from OPT service");
-                                }
-                                callDetectCourierAfterShip(colisWithSteps, trackingNumber);
-                            },
-                            consThrowable
-                    );
+                    .doOnError(consThrowable)
+                    .subscribe();
         }
     }
 
@@ -119,7 +113,7 @@ class CoreSync {
                     Log.d(TAG, "HtmlTransformer return SUCCESS");
                     return colisDto;
                 case HtmlTransformer.RESULT_NO_ITEM_FOUND:
-                    Log.d(TAG, "HtmlTransformer return NO ITEM FOUND");
+                    Log.w(TAG, "HtmlTransformer return NO ITEM FOUND");
                     return null;
                 default:
                     return null;
@@ -131,96 +125,15 @@ class CoreSync {
     }
 
     /**
-     * @param resultColis
-     * @param trackingNumber
-     */
-    private void callDetectCourierAfterShip(final ColisWithSteps resultColis, String trackingNumber) {
-        Log.d(TAG, "Détection du bon slug.");
-        RetrofitAfterShipClient.detectCourier(trackingNumber)
-                .subscribe(responseDataDetectCourier -> {
-                    if (!responseDataDetectCourier.getCouriers().isEmpty()) {
-                        final String slug = responseDataDetectCourier.getCouriers().get(0).getSlug();
-                        Log.d(TAG, "Slug found for the tracking : " + trackingNumber + ", it's : " + slug);
-                        resultColis.colisEntity.setSlug(slug);
-
-                        // Post tracking
-                        postAfterShipTracking(resultColis, trackingNumber, slug);
-                    } else {
-                        Log.d(TAG, "No courier was found for this tracking number : " + trackingNumber);
-                    }
-                }, consThrowable);
-    }
-
-    /**
-     * Post the Tracking number to the AfterShip API
-     * Response from the AfterShip API could take some time, so we wait 10 seconds
-     *
-     * @param trackingNumber
-     * @param slug
-     * @param resultColis
-     */
-    private void postAfterShipTracking(final ColisWithSteps resultColis, String trackingNumber, String slug) {
-        RetrofitAfterShipClient.postTracking(trackingNumber)
-                .doOnError(throwable0 -> {
-                    Log.d(TAG, "Post tracking fail, try to get it by get trackings/:slug/:trackingNumber for the tracking : " + trackingNumber);
-                    callGetTrackingBySlugAndTrackingNumber(resultColis, slug, trackingNumber);
-                })
-                .delay(5, SECONDS)
-                .subscribe(trackingData -> {
-                    Log.d(TAG, "Post Tracking Successful, try to get the tracking by get trackings/:id");
-                    callGetTrackingByTrackingId(resultColis, trackingData.getId());
-                }, consThrowable);
-    }
-
-    /**
-     * @param slug
-     * @param trackingNumber
-     * @param resultColis
-     */
-    private void callGetTrackingBySlugAndTrackingNumber(final ColisWithSteps resultColis, String slug, String trackingNumber) {
-        RetrofitAfterShipClient.getTrackingBySlugAndTrackingNumber(slug, trackingNumber)
-                .subscribe(trackingData -> {
-                    Log.d(TAG, "TrackingData récupéré : " + trackingData.toString());
-                    convertTrackingDataToEntity(resultColis, trackingData);
-                    saveSuccessfulColis(resultColis);
-                }, consThrowable);
-    }
-
-
-    /**
-     * Call the AfterShip API to get tracking informations
-     *
-     * @param trackingId
-     * @param resultColis
-     */
-    private void callGetTrackingByTrackingId(final ColisWithSteps resultColis, String trackingId) {
-        RetrofitAfterShipClient.getTrackingByTrackingId(trackingId)
-                .subscribe(trackingData -> {
-                    Log.d(TAG, "TrackingData récupéré : " + trackingData.toString());
-                    convertTrackingDataToEntity(resultColis, trackingData);
-                    saveSuccessfulColis(resultColis);
-                }, consThrowable);
-    }
-
-    /**
      * Delete tracking from the AfterShip account.
      *
      * @param colis
      */
-    void deleteAfterShipTracking(ColisEntity colis) {
-        if (colis.getSlug() != null && colis.getSlug().length() != 0) {
-            if (colis.getIdColis() != null && colis.getIdColis().length() != 0) {
-                RetrofitAfterShipClient.deleteTrackingBySlugAndTrackingNumber(colis.getSlug(), colis.getIdColis())
-                        .subscribe(trackingDelete ->
-                                        Log.d(TAG, "Suppression effective du tracking " + trackingDelete.getId() + " sur l'API AfterShip")
-                                , consThrowable, () -> {
-                                    ColisRepository.getInstance(context).delete(colis.getIdColis());
-                                });
-            } else {
-                Log.e(TAG, "Can't markAsDeleted without tracking number");
-            }
+    void deleteColis(ColisEntity colis) {
+        if (colis.getIdColis() != null && colis.getIdColis().length() != 0) {
+            ColisRepository.getInstance(context).delete(colis.getIdColis());
         } else {
-            Log.e(TAG, "Can't markAsDeleted without slug");
+            Log.e(TAG, "Can't markAsDeleted without tracking number");
         }
     }
 
@@ -237,20 +150,19 @@ class CoreSync {
      */
     private void saveSuccessfulColis(ColisWithSteps resultColis) {
         Log.d(TAG, "ColisWithSteps qui va être enregistré : " + resultColis.toString());
-        Context context = this.context;
         ColisWithStepsRepository.getInstance(context).findActiveColisWithStepsByIdColis(resultColis.colisEntity.getIdColis())
-                .subscribe(colisWithSteps -> {
+                .doOnSuccess(colisWithSteps -> {
                     if (colisWithSteps != null) {
-                        if (resultColis.stepEntityList.size() > colisWithSteps.stepEntityList.size()) {
-                            if (sendNotification) {
-                                NotificationSender.sendNotification(context, context.getString(R.string.app_name), resultColis.colisEntity.getIdColis() + " a été mis à jour.", R.drawable.ic_archive_white_48dp);
-                            }
+                        if (resultColis.stepEntityList.size() > colisWithSteps.stepEntityList.size() && sendNotification) {
+                            NotificationSender.sendNotification(context, context.getString(R.string.app_name), resultColis.colisEntity.getIdColis() + " a été mis à jour.", R.drawable.ic_archive_white_48dp);
                         }
                     } else {
                         ColisRepository.getInstance(context).save(resultColis.colisEntity);
                     }
                     StepRepository.getInstance(context).save(resultColis.stepEntityList);
                     ColisRepository.getInstance(context).updateLastSuccessfulUpdate(resultColis.colisEntity);
-                });
+                })
+                .doOnError(consThrowable)
+                .subscribe();
     }
 }

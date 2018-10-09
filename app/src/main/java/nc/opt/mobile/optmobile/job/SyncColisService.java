@@ -76,15 +76,14 @@ public class SyncColisService extends IntentService {
      * @param context
      */
     public static void launchSynchroDelete(@NonNull Context context) {
-        ColisRepository.getInstance(context)
-                .getAllColis(false)
-                .subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.io())
-                .subscribe(listColisDeleted -> {
+        ColisRepository.getInstance(context).getAllColis(false)
+                .subscribeOn(Schedulers.io()).observeOn(Schedulers.io())
+                .doOnSuccess(listColisDeleted -> {
                     for (ColisEntity colis : listColisDeleted) {
-                        CoreSync.getInstance(context, false).deleteAfterShipTracking(colis);
+                        CoreSync.getInstance(context, false).deleteColis(colis);
                     }
-                });
+                })
+                .subscribe();
 
     }
 
@@ -94,12 +93,12 @@ public class SyncColisService extends IntentService {
     private void handleActionSyncColis(Bundle bundle) {
         if (bundle.containsKey(ARG_ID_COLIS)) {
             String idColis = bundle.getString(ARG_ID_COLIS);
-            ColisRepository.getInstance(this).
-                    findById(idColis).
-                    subscribe(colisEntity -> {
+            ColisRepository.getInstance(this).findById(idColis)
+                    .doOnSuccess(colisEntity -> {
                         if (idColis != null)
                             CoreSync.getInstance(this, false).callOptTracking(colisEntity);
-                    });
+                    })
+                    .subscribe();
         }
     }
 

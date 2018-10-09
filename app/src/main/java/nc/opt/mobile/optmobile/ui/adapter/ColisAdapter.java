@@ -16,7 +16,7 @@
 
 package nc.opt.mobile.optmobile.ui.adapter;
 
-import android.graphics.drawable.PictureDrawable;
+import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
@@ -26,31 +26,24 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bumptech.glide.RequestBuilder;
-
 import java.util.List;
 import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import nc.opt.mobile.optmobile.database.local.entity.ColisWithSteps;
 import nc.opt.mobile.optmobile.DateConverter;
 import nc.opt.mobile.optmobile.R;
 import nc.opt.mobile.optmobile.Utilities;
 import nc.opt.mobile.optmobile.database.local.entity.ColisEntity;
+import nc.opt.mobile.optmobile.database.local.entity.ColisWithSteps;
 import nc.opt.mobile.optmobile.database.local.entity.StepEntity;
 
 public class ColisAdapter extends RecyclerView.Adapter<ColisAdapter.ViewHolderColisAdapter> {
 
-    private static final String URL_AFTERSHIP_COURIER = "http://assets.aftership.com/couriers/svg/";
-    private static final String AFTERSHIP_COURIER_EXTENSION = ".svg";
-
     private List<ColisWithSteps> colisEntities;
-    private RequestBuilder<PictureDrawable> requester;
     private View.OnClickListener onClickListener;
 
-    public ColisAdapter(RequestBuilder<PictureDrawable> requester, View.OnClickListener onClickListener) {
-        this.requester = requester;
+    public ColisAdapter(View.OnClickListener onClickListener) {
         this.onClickListener = onClickListener;
     }
 
@@ -90,7 +83,7 @@ public class ColisAdapter extends RecyclerView.Adapter<ColisAdapter.ViewHolderCo
     }
 
     @Override
-    public ViewHolderColisAdapter onCreateViewHolder(ViewGroup parent, int viewType) {
+    public ViewHolderColisAdapter onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View rootView = LayoutInflater.from(parent.getContext()).inflate(R.layout.adapter_colis, parent, false);
         return new ViewHolderColisAdapter(rootView);
     }
@@ -105,13 +98,6 @@ public class ColisAdapter extends RecyclerView.Adapter<ColisAdapter.ViewHolderCo
             holder.mStepLastUpdateText.setVisibility(View.VISIBLE);
             holder.mStepLastUpdate.setVisibility(View.VISIBLE);
             holder.mStepLastUpdate.setText((colis.getLastUpdate() != null) ? DateConverter.howLongFromNow(colis.getLastUpdate()) : null);
-        }
-
-        if (colis.getSlug() != null) {
-            holder.mStepSlug.setVisibility(View.VISIBLE);
-            requester.load(URL_AFTERSHIP_COURIER + colis.getSlug() + AFTERSHIP_COURIER_EXTENSION).into(holder.mStepSlug);
-        } else {
-            holder.mStepSlug.setVisibility(View.GONE);
         }
     }
 
@@ -141,7 +127,7 @@ public class ColisAdapter extends RecyclerView.Adapter<ColisAdapter.ViewHolderCo
     }
 
     @Override
-    public void onBindViewHolder(ViewHolderColisAdapter holder, int position) {
+    public void onBindViewHolder(@NonNull ViewHolderColisAdapter holder, int position) {
         holder.colisWithSteps = colisEntities.get(position);
         holder.mConstraintDetailColisLayout.setTag(holder.colisWithSteps);
         ColisEntity colis = holder.colisWithSteps.colisEntity;
@@ -154,7 +140,6 @@ public class ColisAdapter extends RecyclerView.Adapter<ColisAdapter.ViewHolderCo
         bindEtape(holder, lastEtape);
         bindImageStatus(holder, colis, lastEtape);
     }
-
 
 
     @Override

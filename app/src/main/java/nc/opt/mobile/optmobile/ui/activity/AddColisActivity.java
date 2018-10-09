@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
+
 import com.google.android.gms.common.api.CommonStatusCodes;
 
 import nc.opt.mobile.optmobile.ui.fragment.AddColisFragment;
@@ -16,6 +17,8 @@ import nc.opt.mobile.optmobile.barcodreader.BarcodeCaptureActivity;
 
 @SuppressWarnings("squid:MaximumInheritanceDepth")
 public class AddColisActivity extends AppCompatActivity {
+
+    private static final String TAG = AddColisActivity.class.getCanonicalName();
 
     public static final int RC_BARCODE_CAPTURE = 9001;
     private AddColisFragmentViewModel viewModel;
@@ -34,9 +37,9 @@ public class AddColisActivity extends AppCompatActivity {
             if (data != null) {
                 String codeBarResult = data.getStringExtra(BarcodeCaptureActivity.BarcodeString);
                 viewModel.setIdColis(codeBarResult);
-                Log.d("TAG", "Code barre récupéré = " + codeBarResult);
+                Log.d(TAG, "Code barre récupéré = " + codeBarResult);
             } else {
-                Log.d("TAG", "Aucun barre code récupérer");
+                Log.w(TAG, "Aucun barre code récupéré");
             }
         }
     }

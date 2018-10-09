@@ -22,6 +22,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.util.Collections;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -106,9 +108,18 @@ public class MainActivityFragment extends Fragment implements SwipeRefreshLayout
         itemDecoration = new DividerItemDecoration(appCompatActivity, DividerItemDecoration.VERTICAL);
 
         // Initialize adapter
-        colisAdapter = new ColisAdapter(viewModel.getGlideRequester(), onClickDisplay);
+        colisAdapter = new ColisAdapter(onClickDisplay);
 
-        viewModel.getLiveColisWithSteps().observe(this, colisAdapter::setColisList);
+        // Lecture en base de toutes les colis et de leurs étapes en base.
+        viewModel.getLiveColisWithSteps().observe(this, colisWithSteps -> {
+            if (colisWithSteps != null) {
+                // On trie les étapes dans l'ordre des dates
+                for (ColisWithSteps colis : colisWithSteps) {
+                    Collections.sort(colis.getStepEntityList(), (stepEntity1, stepEntity2) -> stepEntity1.getDate().compareTo(stepEntity2.getDate()));
+                }
+                colisAdapter.setColisList(colisWithSteps);
+            }
+        });
 
         viewModel.isDataSetChanged().observe(this, positionItemChanged -> colisAdapter.notifyItemChanged(positionItemChanged));
 

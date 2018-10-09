@@ -11,8 +11,7 @@
         android:layout_height="match_parent"
         android:background="@color/colorAccent2"
         android:clickable="true"
-        android:focusable="true"
-        android:padding="10dp">
+        android:focusable="true">
 
         <ImageView
             android:id="@+id/img_delivered"
@@ -103,6 +102,7 @@
             android:layout_marginStart="8dp"
             android:textAppearance="@style/Base.TextAppearance.AppCompat.Body1"
             android:textSize="14sp"
+            android:layout_marginTop="5dp"
             android:layout_marginBottom="5dp"
             android:textStyle="bold"
             app:layout_constraintBottom_toTopOf="@id/step_last_description"
