@@ -36,10 +36,6 @@ public class ColisWithSteps {
         return stepEntityList;
     }
 
-    public void setStepEntityList(List<StepEntity> stepEntityList) {
-        this.stepEntityList = stepEntityList;
-    }
-
     @Override
     public String toString() {
         return "ColisWithSteps{" +

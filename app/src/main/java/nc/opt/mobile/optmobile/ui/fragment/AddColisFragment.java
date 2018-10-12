@@ -19,6 +19,7 @@ import android.widget.EditText;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import nc.opt.mobile.optmobile.broadcast.NetworkReceiver;
 import nc.opt.mobile.optmobile.ui.fragment.viewmodel.AddColisFragmentViewModel;
 import nc.opt.mobile.optmobile.R;
 import nc.opt.mobile.optmobile.Utilities;
@@ -95,7 +96,9 @@ public class AddColisFragment extends Fragment {
 
     private void callVmToCreateColis(String idColis, String description) {
         viewModel.saveColis(idColis, description);
-        viewModel.syncColis(idColis);
+        if (NetworkReceiver.checkConnection(appCompatActivity)) {
+            viewModel.syncColis(idColis);
+        }
         appCompatActivity.finish();
     }
 

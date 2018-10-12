@@ -52,36 +52,41 @@ public class ColisAdapter extends RecyclerView.Adapter<ColisAdapter.ViewHolderCo
             colisEntities = colisEntities1;
             notifyItemRangeInserted(0, colisEntities1.size());
         } else {
-            DiffUtil.DiffResult result = DiffUtil.calculateDiff(new DiffUtil.Callback() {
-                @Override
-                public int getOldListSize() {
-                    return colisEntities.size();
-                }
-
-                @Override
-                public int getNewListSize() {
-                    return colisEntities1.size();
-                }
-
-                @Override
-                public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
-                    return colisEntities.get(oldItemPosition).colisEntity.getIdColis().equals(colisEntities1.get(newItemPosition).colisEntity.getIdColis());
-                }
-
-                @Override
-                public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
-                    ColisWithSteps newColis = colisEntities1.get(newItemPosition);
-                    ColisWithSteps oldColis = colisEntities.get(oldItemPosition);
-                    return Objects.equals(newColis.colisEntity.getIdColis(), oldColis.colisEntity.getIdColis())
-                            && Objects.equals(newColis.colisEntity.getDescription(), oldColis.colisEntity.getDescription())
-                            && Objects.equals(newColis.colisEntity.getSlug(), oldColis.colisEntity.getSlug());
-                }
-            });
-            colisEntities = colisEntities1;
-            result.dispatchUpdatesTo(this);
+            checkDifferenceBetweenLists(colisEntities1);
         }
     }
 
+    private void checkDifferenceBetweenLists(List<ColisWithSteps> colisEntities1) {
+        DiffUtil.DiffResult result = DiffUtil.calculateDiff(new DiffUtil.Callback() {
+            @Override
+            public int getOldListSize() {
+                return colisEntities.size();
+            }
+
+            @Override
+            public int getNewListSize() {
+                return colisEntities1.size();
+            }
+
+            @Override
+            public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
+                return colisEntities.get(oldItemPosition).colisEntity.getIdColis().equals(colisEntities1.get(newItemPosition).colisEntity.getIdColis());
+            }
+
+            @Override
+            public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
+                ColisWithSteps newColis = colisEntities1.get(newItemPosition);
+                ColisWithSteps oldColis = colisEntities.get(oldItemPosition);
+                return Objects.equals(newColis.colisEntity.getIdColis(), oldColis.colisEntity.getIdColis())
+                        && Objects.equals(newColis.colisEntity.getDescription(), oldColis.colisEntity.getDescription())
+                        && Objects.equals(newColis.colisEntity.getSlug(), oldColis.colisEntity.getSlug());
+            }
+        });
+        colisEntities = colisEntities1;
+        result.dispatchUpdatesTo(this);
+    }
+
+    @NonNull
     @Override
     public ViewHolderColisAdapter onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View rootView = LayoutInflater.from(parent.getContext()).inflate(R.layout.adapter_colis, parent, false);
@@ -109,14 +114,14 @@ public class ColisAdapter extends RecyclerView.Adapter<ColisAdapter.ViewHolderCo
         } else {
             holder.mStepLastDate.setVisibility(View.GONE);
             holder.mStepLastLocalisation.setVisibility(View.GONE);
-            holder.mStepLastDescription.setText("Aucune étape pour ce colis");
+            holder.mStepLastDescription.setText(R.string.NO_STEP_FOR_THIS_PARCEL);
         }
     }
 
     private void bindImageStatus(ViewHolderColisAdapter holder, ColisEntity colisEntity, StepEntity stepEntity) {
         holder.mStepStatus.setImageResource(R.drawable.ic_status_pending);
         if (colisEntity.isDelivered()) {
-            holder.mStepStatus.setImageResource(Utilities.getStatusDrawable("Delivered"));
+            holder.mStepStatus.setImageResource(Utilities.getStatusDrawable(Utilities.DELIVERED));
         } else {
             if (stepEntity != null && stepEntity.getStatus() != null) {
                 holder.mStepStatus.setImageResource(Utilities.getStatusDrawable(stepEntity.getStatus()));

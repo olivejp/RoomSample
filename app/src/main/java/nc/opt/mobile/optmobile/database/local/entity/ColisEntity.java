@@ -45,6 +45,11 @@ public class ColisEntity implements Parcelable {
         this.description = description;
     }
 
+    public ColisEntity buildDescription(String description) {
+        this.description = description;
+        return this;
+    }
+
     public Long getLastUpdate() {
         return lastUpdate;
     }

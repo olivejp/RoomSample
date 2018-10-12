@@ -124,6 +124,16 @@ public class NoticeDialogFragment extends DialogFragment {
         }
 
         // Gestion de l'image à afficher en haut de la fenêtre
+        manageImage(view, typeImage, idResource);
+
+        // Récupération du bon type de bouton.
+        getTypeBouton(builder, typeBouton);
+
+        // On retourne l'objet créé.
+        return builder.create();
+    }
+
+    private void manageImage(View view, Integer typeImage, int idResource) {
         ImageView imgView = view.findViewById(R.id.imageDialog);
         if (idResource != 0) {
             imgView.setImageResource(idResource);
@@ -145,12 +155,6 @@ public class NoticeDialogFragment extends DialogFragment {
                 }
             }
         }
-
-        // Récupération du bon type de bouton.
-        getTypeBouton(builder, typeBouton);
-
-        // On retourne l'objet créé.
-        return builder.create();
     }
 
     /* The mActivity that creates an instance of this dialog fragment must

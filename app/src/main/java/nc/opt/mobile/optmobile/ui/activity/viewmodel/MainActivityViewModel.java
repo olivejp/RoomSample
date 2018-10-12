@@ -4,17 +4,14 @@ import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
-import android.graphics.drawable.PictureDrawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.bumptech.glide.RequestBuilder;
-
 import java.util.List;
 
+import io.reactivex.Maybe;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
-import nc.opt.mobile.optmobile.R;
 import nc.opt.mobile.optmobile.broadcast.NetworkReceiver;
 import nc.opt.mobile.optmobile.database.local.StepOrigine;
 import nc.opt.mobile.optmobile.database.local.entity.ColisEntity;
@@ -24,8 +21,6 @@ import nc.opt.mobile.optmobile.database.local.repository.ColisRepository;
 import nc.opt.mobile.optmobile.database.local.repository.ColisWithStepsRepository;
 import nc.opt.mobile.optmobile.database.local.repository.StepRepository;
 import nc.opt.mobile.optmobile.job.SyncTask;
-import nc.opt.mobile.optmobile.ui.glide.GlideApp;
-import nc.opt.mobile.optmobile.ui.glide.SvgSoftwareLayerSetter;
 
 /**
  * Created by orlanth23 on 11/01/2018.
@@ -36,7 +31,6 @@ public class MainActivityViewModel extends AndroidViewModel {
     private ColisWithStepsRepository colisWithStepsRepository;
     private ColisRepository colisRepository;
     private StepRepository stepRepository;
-    private RequestBuilder<PictureDrawable> requester;
     private MutableLiveData<ColisWithSteps> colisWithStepsSelected = new MutableLiveData<>();
     private MutableLiveData<List<ColisWithSteps>> colisWithStepsList = new MutableLiveData<>();
     private MutableLiveData<Integer> shouldNotify = new MutableLiveData<>();
@@ -53,12 +47,6 @@ public class MainActivityViewModel extends AndroidViewModel {
                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
                 .doOnNext(colisWithSteps -> colisWithStepsList.postValue(colisWithSteps))
                 .subscribe();
-
-        requester = GlideApp.with(application)
-                .as(PictureDrawable.class)
-                .placeholder(R.drawable.ic_archive_grey_900_48dp)
-                .error(R.drawable.ic_archive_grey_900_48dp)
-                .listener(new SvgSoftwareLayerSetter());
     }
 
     public LiveData<List<ColisWithSteps>> getLiveColisWithSteps() {
@@ -90,16 +78,16 @@ public class MainActivityViewModel extends AndroidViewModel {
         }
     }
 
+    public Maybe<ColisEntity> findColisById(String idColis) {
+        return colisRepository.findById(idColis);
+    }
+
     public String getSelectedIdColis() {
         return idColisSelected;
     }
 
     public LiveData<List<StepEntity>> getListStepFromOpt(String idColis) {
         return stepRepository.liveListStepsOrderedByIdColisAndOrigine(idColis, StepOrigine.OPT);
-    }
-
-    public RequestBuilder<PictureDrawable> getGlideRequester() {
-        return this.requester;
     }
 
     private void launchSyncTask(SyncTask.TypeSyncTask type, @Nullable String idColis) {
@@ -134,6 +122,10 @@ public class MainActivityViewModel extends AndroidViewModel {
         return this.shouldNotify;
     }
 
+    public void deleteAllSteps() {
+        stepRepository.deleteByIdColis(idColisSelected);
+    }
+
     public void refresh() {
         if (NetworkReceiver.checkConnection(getApplication())) {
             if (colisWithStepsSelected.getValue() != null) {
@@ -142,5 +134,13 @@ public class MainActivityViewModel extends AndroidViewModel {
                 launchSyncTask(SyncTask.TypeSyncTask.ALL, null);
             }
         }
+    }
+
+    public void updateDescription(String description) {
+        colisRepository.findById(idColisSelected)
+                .subscribeOn(Schedulers.io()).observeOn(Schedulers.io())
+                .map(colisEntity -> colisEntity.buildDescription(description))
+                .doOnSuccess(colisRepository::update)
+                .subscribe();
     }
 }

@@ -18,6 +18,15 @@ import nc.opt.mobile.optmobile.ui.NoticeDialogFragment;
 
 public class Utilities {
 
+    public static final String INFO_RECEIVED = "InfoReceived";
+    public static final String ATTEMPT_FAIL = "AttemptFail";
+    public static final String DELIVERED = "Delivered";
+    public static final String EXCEPTION = "Exception";
+    public static final String EXPIRED = "Expired";
+    public static final String IN_TRANSIT = "InTransit";
+    public static final String OUT_FOR_DELIVERY = "OutForDelivery";
+    public static final String PENDING = "Pending";
+
     private Utilities() {
     }
 
@@ -48,21 +57,21 @@ public class Utilities {
     @DrawableRes
     public static int getStatusDrawable(@NonNull String status) {
         switch (status) {
-            case "InfoReceived":
+            case INFO_RECEIVED:
                 return nc.opt.mobile.optmobile.R.drawable.ic_status_info_receive;
-            case "AttemptFail":
+            case ATTEMPT_FAIL:
                 return nc.opt.mobile.optmobile.R.drawable.ic_status_attemptfail;
-            case "Delivered":
+            case DELIVERED:
                 return nc.opt.mobile.optmobile.R.drawable.ic_status_delivered;
-            case "Exception":
+            case EXCEPTION:
                 return nc.opt.mobile.optmobile.R.drawable.ic_status_exception;
-            case "Expired":
+            case EXPIRED:
                 return nc.opt.mobile.optmobile.R.drawable.ic_status_expired;
-            case "InTransit":
+            case IN_TRANSIT:
                 return nc.opt.mobile.optmobile.R.drawable.ic_status_in_transit;
-            case "OutForDelivery":
+            case OUT_FOR_DELIVERY:
                 return nc.opt.mobile.optmobile.R.drawable.ic_status_out_for_delivery;
-            case "Pending":
+            case PENDING:
                 return nc.opt.mobile.optmobile.R.drawable.ic_status_pending;
             default:
                 return nc.opt.mobile.optmobile.R.drawable.ic_status_pending;

@@ -18,11 +18,14 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 import android.transition.Fade;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import java.util.Collections;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -82,12 +85,6 @@ public class MainActivityFragment extends Fragment implements SwipeRefreshLayout
 
     public MainActivityFragment() {
         // Required empty public constructor
-        Fade enterFade = new Fade();
-        Fade exitFade = new Fade();
-        enterFade.setDuration(200);
-        exitFade.setDuration(200);
-        this.setEnterTransition(enterFade);
-        this.setExitTransition(exitFade);
     }
 
     @Override
@@ -111,17 +108,13 @@ public class MainActivityFragment extends Fragment implements SwipeRefreshLayout
         colisAdapter = new ColisAdapter(onClickDisplay);
 
         // Lecture en base de toutes les colis et de leurs étapes en base.
-        viewModel.getLiveColisWithSteps().observe(this, colisWithSteps -> {
-            if (colisWithSteps != null) {
-                // On trie les étapes dans l'ordre des dates
-                for (ColisWithSteps colis : colisWithSteps) {
-                    Collections.sort(colis.getStepEntityList(), (stepEntity1, stepEntity2) -> stepEntity1.getDate().compareTo(stepEntity2.getDate()));
-                }
-                colisAdapter.setColisList(colisWithSteps);
+        viewModel.getLiveColisWithSteps().observe(this, this::putListIntoAdapter);
+
+        viewModel.isDataSetChanged().observe(this, positionItemChanged -> {
+            if (positionItemChanged != null) {
+                colisAdapter.notifyItemChanged(positionItemChanged);
             }
         });
-
-        viewModel.isDataSetChanged().observe(this, positionItemChanged -> colisAdapter.notifyItemChanged(positionItemChanged));
 
     }
 
@@ -160,22 +153,22 @@ public class MainActivityFragment extends Fragment implements SwipeRefreshLayout
         return rootView;
     }
 
-    /**
-     * Call the Activity to add a new Colis
-     *
-     * @param v
-     */
     @OnClick(R.id.fab_add_colis)
     public void addColis(View v) {
         Intent intent = new Intent(getContext(), AddColisActivity.class);
         startActivity(intent);
     }
 
-    /**
-     * Depending on the parameter twoPane we display the HistoriqueColisFragment in a different frame
-     *
-     * @param twoPane
-     */
+    private void putListIntoAdapter(List<ColisWithSteps> colisWithSteps) {
+        if (colisWithSteps != null) {
+            // On trie les étapes dans l'ordre des dates
+            for (ColisWithSteps colis : colisWithSteps) {
+                Collections.sort(colis.getStepEntityList(), (stepEntity1, stepEntity2) -> stepEntity1.getDate().compareTo(stepEntity2.getDate()));
+            }
+            colisAdapter.setColisList(colisWithSteps);
+        }
+    }
+
     private void displayHistorique(boolean twoPane) {
         if (getFragmentManager() != null) {
             HistoriqueColisFragment historiqueFragment = new HistoriqueColisFragment();
@@ -194,7 +187,7 @@ public class MainActivityFragment extends Fragment implements SwipeRefreshLayout
             swipeRefreshLayout.setRefreshing(true);
             refreshTimeDelayHandler.postDelayed(() -> swipeRefreshLayout.setRefreshing(false), 5000);
         } else {
-            Snackbar.make(coordinatorLayout, "Une connexion est requise", Snackbar.LENGTH_LONG).show();
+            Snackbar.make(coordinatorLayout, R.string.CONNECTION_REQUIRED, Snackbar.LENGTH_LONG).show();
             swipeRefreshLayout.setRefreshing(false);
         }
     }

@@ -8,4 +8,9 @@
     <string name="title_activity_intro">IntroActivity</string>
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="NO_STEP_FOR_THIS_PARCEL">Aucune étape pour ce colis</string>
+    <string name="CONNECTION_REQUIRED">Une connexion est requise</string>
+    <string name="update_description">Modifier description</string>
+    <string name="reinitialize">Réinitialiser</string>
+    <string name="description">Description</string>
 </resources>

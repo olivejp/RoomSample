@@ -19,14 +19,14 @@ public class SyncColisJob extends Job {
 
     @Override
     @NonNull
-    protected Result onRunJob(Params params) {
+    protected Result onRunJob(@NonNull Params params) {
         // A job run on the background thread, so no need to call SyncTask here
         SyncColisService.launchSynchroFromScheduler(getContext());
         return Result.SUCCESS;
     }
 
     /**
-     * Schedule a periodic job which will be launch every 30 minutes.
+     * Schedule a periodic job which will be launched every 30 minutes.
      */
     public static void scheduleJob() {
         new JobRequest.Builder(SyncColisJob.SYNC_COLIS_JOB)

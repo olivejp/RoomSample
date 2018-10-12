@@ -5,6 +5,7 @@ import android.content.Context;
 
 import java.util.List;
 
+import eu.davidea.flexibleadapter.utils.Log;
 import nc.opt.mobile.optmobile.database.local.StepOrigine;
 import nc.opt.mobile.optmobile.database.local.dao.StepDao;
 import nc.opt.mobile.optmobile.database.local.entity.StepEntity;
@@ -24,6 +25,7 @@ import static nc.opt.mobile.optmobile.database.local.repository.task.TypeTask.UP
 
 public class StepRepository {
 
+    private static final String TAG = StepRepository.class.getCanonicalName();
     private static StepRepository INSTANCE;
 
     private StepDao stepDao;
@@ -40,10 +42,6 @@ public class StepRepository {
         return INSTANCE;
     }
 
-    public LiveData<List<StepEntity>> liveListStepsOrderedByIdColis(String idColis) {
-        return this.stepDao.liveListStepsOrderedByIdColis(idColis);
-    }
-
     public LiveData<List<StepEntity>> liveListStepsOrderedByIdColisAndOrigine(String idColis, StepOrigine origine) {
         return this.stepDao.liveListStepsOrderedByIdColisAndOrigine(idColis, origine.getValue());
     }
@@ -53,7 +51,7 @@ public class StepRepository {
     }
 
     public void insert(List<StepEntity> stepEntities) {
-        new EtapeRepositoryTask(this.stepDao, INSERT).execute((StepEntity[]) stepEntities.toArray());
+        new EtapeRepositoryTask(this.stepDao, INSERT).execute((StepEntity[]) stepEntities.toArray(new StepEntity[0]));
     }
 
     public void update(StepEntity... stepEntities) {
@@ -66,23 +64,29 @@ public class StepRepository {
 
     private Maybe<Integer> count(StepEntity stepEntity) {
         return this.stepDao.exist(stepEntity.getIdColis(), stepEntity.getOrigine().getValue(), stepEntity.getDate(), stepEntity.getDescription())
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
+                .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
 
     public void save(List<StepEntity> stepEntities) {
         for (StepEntity stepEntity : stepEntities) {
-            count(stepEntity).subscribe(count -> {
-                if (count > 0) {
-                    update(stepEntity);
-                } else {
-                    insert(stepEntity);
-                }
-            });
+            count(stepEntity)
+                    .subscribeOn(Schedulers.io()).observeOn(Schedulers.io())
+                    .doOnSuccess(count -> {
+                        if (count > 0) {
+                            update(stepEntity);
+                        } else {
+                            insert(stepEntity);
+                        }
+                    })
+                    .doOnError(throwable -> Log.e(TAG, "Erreur lors de la sauvegarde de la liste de step " + stepEntities))
+                    .subscribe();
         }
     }
 
-    public LiveData<Integer> getCountByOrigineAndIdColis(String idColis, String origine) {
-        return this.stepDao.countByIdColisAndOrigine(idColis, origine);
+    public void deleteByIdColis(String idColis) {
+        this.stepDao.getAllByIdColis(idColis)
+                .subscribeOn(Schedulers.io()).observeOn(Schedulers.io())
+                .doOnSuccess(this.stepDao::delete)
+                .subscribe();
     }
 }
